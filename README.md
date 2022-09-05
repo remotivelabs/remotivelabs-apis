@@ -1,5 +1,4 @@
-# RemotiveLabs GRPC API Stubs
+# RemotiveLabs GRPC API stubs
 
-Contains grpc api stubs and example code for multiple languages
-
+Contains gRPC API stubs and example code for multiple languages.
 
