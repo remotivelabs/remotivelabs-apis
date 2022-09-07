@@ -2,6 +2,8 @@
 
 from ..stubs_grpcio import system_api_pb2
 from ..stubs_grpcio import common_pb2
+from ..stubs_grpcio import network_api_pb2
+import remotivelabs.broker.sync as broker
 import os
 
 import hashlib
@@ -133,6 +135,32 @@ def download_and_install_license(system_stub, hash, id=None):
     system_stub.SetLicense(
         system_api_pb2.License(termsAgreement=True, data=license_bytes)
     )
+
+
+def act_on_signal(client_id, stub, sub_signals, on_change, fun, on_subcribed=None):
+    sub_info = network_api_pb2.SubscriberConfig(
+        clientId=client_id,
+        signals=network_api_pb2.SignalIds(signalId=sub_signals),
+        onChange=on_change,
+    )
+    try:
+        subscripton = stub.SubscribeToSignals(sub_info, timeout=None)
+        if on_subcribed:
+            on_subcribed(subscripton)
+        print("waiting for signal...")
+        for subs_counter in subscripton:
+            fun(subs_counter.signal)
+
+    except grpc.RpcError as e:
+        try:
+            subscripton.cancel()
+        except grpc.RpcError as e2:
+            pass
+
+    except grpc._channel._Rendezvous as err:
+        print(err)
+    # reload, alternatively non-existing signal
+    print("subscription terminated")
 
 
 ##################### END BOILERPLATE ####################################################

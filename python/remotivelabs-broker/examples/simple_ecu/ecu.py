@@ -1,22 +1,21 @@
-#!/usr/bin/env python3
-
-import os
-import time
-import binascii
-
-
-import sys, getopt
 import argparse
+import binascii
+import grpc
+import os
+import queue
+import sys, getopt
+import time
 
+from grpc_interceptor import ClientCallDetails, ClientInterceptor
+from typing import Any, Callable
 
+from remotivelabs.broker.sync import SignalCreator
 import remotivelabs.broker.sync as broker
 import remotivelabs.broker.sync.helper as helper
 
 from threading import Thread, Timer
-import queue
 from urllib.parse import urlparse
 
-from remotivelabs.broker.sync import SignalCreator
 
 signal_creator = None
 q = queue.Queue()
@@ -156,32 +155,6 @@ def get_value(signal):
         return "empty"
 
 
-def act_on_signal(client_id, stub, sub_signals, on_change, fun, on_subcribed=None):
-    sub_info = broker.network_api_pb2.SubscriberConfig(
-        clientId=client_id,
-        signals=broker.network_api_pb2.SignalIds(signalId=sub_signals),
-        onChange=on_change,
-    )
-    try:
-        subscripton = stub.SubscribeToSignals(sub_info, timeout=None)
-        if on_subcribed:
-            on_subcribed(subscripton)
-        print("waiting for signal...")
-        for subs_counter in subscripton:
-            fun(subs_counter.signal)
-
-    except broker.RpcError as e:
-        try:
-            subscripton.cancel()
-        except broker.RpcError as e2:
-            pass
-
-    except broker._channel._Rendezvous as err:
-        print(err)
-    # reload, alternatively non-existing signal
-    print("subscription terminated")
-
-
 def main(argv):
     parser = argparse.ArgumentParser(description="Provide address to Beambroker")
     parser.add_argument(
@@ -230,12 +203,6 @@ def double_and_publish(network_stub, client_id, trigger, signals):
                     # )
                 ],
             )
-
-
-import grpc
-
-from grpc_interceptor import ClientCallDetails, ClientInterceptor
-from typing import Any, Callable
 
 
 class HeaderInterceptor(ClientInterceptor):
@@ -312,7 +279,7 @@ def run(url, restart_broker, x_api_key):
     ecu_b_client_id = broker.common_pb2.ClientId(id="id_ecu_B")
 
     ecu_B_sub_thread = Thread(
-        target=act_on_signal,
+        target=helper.act_on_signal,
         args=(
             ecu_b_client_id,
             network_stub,
