@@ -267,13 +267,13 @@ def create_channel(url, x_api_key):
         creds = grpc.ssl_channel_credentials(
             root_certificates=None, private_key=None, certificate_chain=None
         )
-        channel = broker.secure_channel(
+        channel = grpc.secure_channel(
             url.hostname + ":" + str(url.port or "443"), creds
         )
     else:
-        channel = broker.insecure_channel(url.hostname + ":" + str(url.port or "50051"))
+        channel = grpc.insecure_channel(url.hostname + ":" + str(url.port or "50051"))
 
-    intercept_channel = broker.intercept_channel(
+    intercept_channel = grpc.intercept_channel(
         channel, HeaderInterceptor({"x-api-key": x_api_key})
     )
     return intercept_channel
@@ -284,8 +284,8 @@ def run(url, restart_broker, x_api_key):
     # Setting up stubs and configuration
     intercept_channel = create_channel(url, x_api_key)
 
-    network_stub = broker.network_api_pb2_grpc.NetworkServiceStub(channel)
-    system_stub = broker.system_api_pb2_grpc.SystemServiceStub(channel)
+    network_stub = broker.network_api_pb2_grpc.NetworkServiceStub(intercept_channel)
+    system_stub = broker.system_api_pb2_grpc.SystemServiceStub(intercept_channel)
     helper.check_license(system_stub)
 
     helper.upload_folder(system_stub, "configuration_udp")
