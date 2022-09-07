@@ -44,12 +44,6 @@ def read_signals(stub, signal):
         print(err)
 
 
-
-def printer(signals):
-    for signal in signals:
-        print(f"{signal.id.name} {signal.id.namespace.name} {get_value(signal)}")
-
-
 def ecu_A(stub, pause):
     """Publishes a value, read other value (published by ecu_B)
 

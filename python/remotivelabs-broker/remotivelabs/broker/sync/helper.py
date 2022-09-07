@@ -38,6 +38,11 @@ def publish_signals(client_id, stub, signals_with_payload, frequency=0):
         print(err)
 
 
+def printer(signals):
+    for signal in signals:
+        print(f"{signal.id.name} {signal.id.namespace.name} {get_value(signal)}")
+
+
 def get_sha256(file):
     f = open(file, "rb")
     bytes = f.read()  # read entire file as bytes
