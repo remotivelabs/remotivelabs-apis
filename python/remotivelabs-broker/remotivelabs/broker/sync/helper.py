@@ -14,6 +14,30 @@ import itertools
 import grpc
 
 
+def publish_signals(client_id, stub, signals_with_payload, frequency=0):
+    """Publish signals
+
+    Parameters
+    ----------
+    client_id : ClientId
+        Object instance of class
+    stub : NetworkServiceStub
+        Object instance of class
+    signals_with_payload : Signal
+        Object instance of class
+
+    """
+    publisher_info = network_api_pb2.PublisherConfig(
+        clientId=client_id,
+        signals=network_api_pb2.Signals(signal=signals_with_payload),
+        frequency=frequency,
+    )
+    try:
+        stub.PublishSignals(publisher_info)
+    except grpc._channel._Rendezvous as err:
+        print(err)
+
+
 def get_sha256(file):
     f = open(file, "rb")
     bytes = f.read()  # read entire file as bytes

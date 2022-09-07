@@ -44,29 +44,6 @@ def read_signals(stub, signal):
         print(err)
 
 
-def publish_signals(client_id, stub, signals_with_payload, frequency=0):
-    """Publish signals
-
-    Parameters
-    ----------
-    client_id : ClientId
-        Object instance of class
-    stub : NetworkServiceStub
-        Object instance of class
-    signals_with_payload : Signal
-        Object instance of class
-
-    """
-    publisher_info = broker.network_api_pb2.PublisherConfig(
-        clientId=client_id,
-        signals=broker.network_api_pb2.Signals(signal=signals_with_payload),
-        frequency=frequency,
-    )
-    try:
-        stub.PublishSignals(publisher_info)
-    except broker._channel._Rendezvous as err:
-        print(err)
-
 
 def printer(signals):
     for signal in signals:
@@ -92,7 +69,7 @@ def ecu_A(stub, pause):
         print("\necu_A, seed is ", increasing_counter)
         # Publishes value 'counter'
 
-        publish_signals(
+        helper.publish_signals(
             clientId,
             stub,
             [
@@ -190,7 +167,7 @@ def double_and_publish(network_stub, client_id, trigger, signals):
     for signal in signals:
         print(f"ecu_B, (subscribe) {signal.id.name} {get_value(signal)}")
         if signal.id == trigger:
-            publish_signals(
+            helper.publish_signals(
                 client_id,
                 network_stub,
                 [
