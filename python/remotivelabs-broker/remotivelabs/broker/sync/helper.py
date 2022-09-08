@@ -10,8 +10,53 @@ import hashlib
 import posixpath
 import ntpath
 import itertools
-
 import grpc
+
+from urllib.parse import urlparse
+from grpc_interceptor import ClientCallDetails, ClientInterceptor
+from typing import Any, Callable
+
+
+class HeaderInterceptor(ClientInterceptor):
+    def __init__(self, header_dict):
+        self.header_dict = header_dict
+
+    def intercept(
+        self,
+        method: Callable,
+        request_or_iterator: Any,
+        call_details: grpc.ClientCallDetails,
+    ):
+        new_details = ClientCallDetails(
+            call_details.method,
+            call_details.timeout,
+            self.header_dict.items(),
+            call_details.credentials,
+            call_details.wait_for_ready,
+            call_details.compression,
+        )
+
+        return method(request_or_iterator, new_details)
+
+
+def create_channel(url, x_api_key):
+
+    url = urlparse(url)
+
+    if url.scheme == "https":
+        creds = grpc.ssl_channel_credentials(
+            root_certificates=None, private_key=None, certificate_chain=None
+        )
+        channel = grpc.secure_channel(
+            url.hostname + ":" + str(url.port or "443"), creds
+        )
+    else:
+        channel = grpc.insecure_channel(url.hostname + ":" + str(url.port or "50051"))
+
+    intercept_channel = grpc.intercept_channel(
+        channel, HeaderInterceptor({"x-api-key": x_api_key})
+    )
+    return intercept_channel
 
 
 def publish_signals(client_id, stub, signals_with_payload, frequency=0):

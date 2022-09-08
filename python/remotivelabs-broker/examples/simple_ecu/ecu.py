@@ -6,15 +6,11 @@ import queue
 import sys, getopt
 import time
 
-from grpc_interceptor import ClientCallDetails, ClientInterceptor
-from typing import Any, Callable
-
 from remotivelabs.broker.sync import SignalCreator
 import remotivelabs.broker.sync as broker
 import remotivelabs.broker.sync.helper as helper
 
 from threading import Thread, Timer
-from urllib.parse import urlparse
 
 
 signal_creator = None
@@ -176,51 +172,10 @@ def double_and_publish(network_stub, client_id, trigger, signals):
             )
 
 
-class HeaderInterceptor(ClientInterceptor):
-    def __init__(self, header_dict):
-        self.header_dict = header_dict
-
-    def intercept(
-        self,
-        method: Callable,
-        request_or_iterator: Any,
-        call_details: grpc.ClientCallDetails,
-    ):
-        new_details = ClientCallDetails(
-            call_details.method,
-            call_details.timeout,
-            self.header_dict.items(),
-            call_details.credentials,
-            call_details.wait_for_ready,
-            call_details.compression,
-        )
-
-        return method(request_or_iterator, new_details)
-
-def create_channel(url, x_api_key):
-
-    url = urlparse(url)
-
-    if url.scheme == "https":
-        creds = grpc.ssl_channel_credentials(
-            root_certificates=None, private_key=None, certificate_chain=None
-        )
-        channel = grpc.secure_channel(
-            url.hostname + ":" + str(url.port or "443"), creds
-        )
-    else:
-        channel = grpc.insecure_channel(url.hostname + ":" + str(url.port or "50051"))
-
-    intercept_channel = grpc.intercept_channel(
-        channel, HeaderInterceptor({"x-api-key": x_api_key})
-    )
-    return intercept_channel
-
-
 def run(url, restart_broker, x_api_key):
     """Main function, checking arguments passed to script, setting up stubs, configuration and starting Threads."""
     # Setting up stubs and configuration
-    intercept_channel = create_channel(url, x_api_key)
+    intercept_channel = helper.create_channel(url, x_api_key)
 
     network_stub = broker.network_api_pb2_grpc.NetworkServiceStub(intercept_channel)
     system_stub = broker.system_api_pb2_grpc.SystemServiceStub(intercept_channel)
