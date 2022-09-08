@@ -32,6 +32,11 @@ Start a shell in the environment.
 
     hatch shell
 
+### Generate stubs
+This project has a script in the project file for generation. Generate stubs from proto files with:
+
+    hatch run generate_stubs
+
 ## License
 
 `remotivelabs-broker` is distributed under the terms of the [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) license.

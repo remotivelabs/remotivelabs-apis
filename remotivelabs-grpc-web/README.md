@@ -1,4 +1,4 @@
-# WEB-GRPC Stubs 
+# WEB-GRPC Stubs
 
 # Usage
 
@@ -18,11 +18,11 @@ docker build -t remotivelabs/grpc-web-generator .
 
 From this directory
 
-```
+```sh
 mkdir generated 
 
 docker run  \
-  -v $(pwd)/../proto:/protofile \
+  -v $(pwd)/../protos:/protofile \
   -v $(pwd)/generated:/output \
   -e "protofile=*.proto" remotivelabs/grpc-web-generator
 ```
