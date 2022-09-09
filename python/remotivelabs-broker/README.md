@@ -13,13 +13,13 @@
 - [License](#license)
 
 ## Installation
+Install into your Python environment with _PIP_:
 
-```console
-pip install remotivelabs-broker
-```
+    pip install remotivelabs-broker
+
 
 ## Examples
-Examples are found in the repository directory `python/remotivelabs-broker/examples`.
+Examples using this library are found in the [Remotive Labs samples repository](https://github.com/remotivelabs/remotivelabs-samples).
 
 ## Development
 This project is managed with [Hatch](https://hatch.pypa.io/latest/).
