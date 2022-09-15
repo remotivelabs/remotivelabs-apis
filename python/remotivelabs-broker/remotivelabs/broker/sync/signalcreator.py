@@ -3,6 +3,23 @@ import sys
 from ..stubs_grpcio import common_pb2
 from ..stubs_grpcio import network_api_pb2
 
+class MetaGetter:
+    def __init__(self, proto_message):
+        self.meta = proto_message
+
+    def _getDefault(field, default):
+        if field:
+            return field
+        elif default:
+            return default
+        else:
+            raise Exception("Failed to retrieve meta data field")
+
+    def getSize(self, default=None):
+        return MetaGetter._getDefault(self.meta.size, default)
+
+    def getCycleTime(self, default=None):
+        return MetaGetter._getDefault(self.meta.cycleTime, default)
 
 class SignalCreator:
     def __init__(self, system_stub):
@@ -30,12 +47,16 @@ class SignalCreator:
         k = (sinfo.id.namespace.name, sinfo.id.name)
         if k in self._sinfos:
             raise Exception(f"duplicate (namespace,signal): {k}")
-        self._sinfos[k] = sinfo.metaData
+        self._sinfos[k] = MetaGetter(sinfo.metaData)
 
-    def signal(self, name, namespace_name):
+    def get_meta(self, name, namespace_name):
         k = (namespace_name, name)
         if (k not in self._sinfos) and (namespace_name not in self._virtual):
             raise Exception(f"signal not declared (namespace, signal): {k}")
+        return self._sinfos[k]
+
+    def signal(self, name, namespace_name):
+        self.get_meta(name, namespace_name) # Checks if the signal is present
         return common_pb2.SignalId(
             name=name, namespace=common_pb2.NameSpace(name=namespace_name)
         )
@@ -73,7 +94,8 @@ class SignalCreator:
         if key not in types:
             raise Exception(f"type must be one of: {types}")
         if key == "raw" and allow_malformed == False:
-            assert len(value)*8 == self._sinfos[(namespace_name, name)].size, f"payload size missmatch, expected {self._sinfos[(namespace_name, name)].size/8} bytes"
+            expeceted = self.get_meta(namespace_name, name).getSize()
+            assert len(value)*8 == expected, f"payload size missmatch, expected {expected/8} bytes"
         params = {"id": signal, key: value}
         return network_api_pb2.Signal(**params)
 
