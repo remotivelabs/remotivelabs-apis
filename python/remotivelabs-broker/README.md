@@ -9,7 +9,6 @@
 
 - [Installation](#installation)
 - [Examples](#examples)
-- [Development](#development)
 - [License](#license)
 
 ## Installation
@@ -17,20 +16,8 @@ Install into your Python environment with _PIP_:
 
     pip install remotivelabs-broker
 
-
 ## Examples
 Examples using this library are found in the [Remotive Labs samples repository](https://github.com/remotivelabs/remotivelabs-samples).
-
-## Development
-This project is managed with [Hatch](https://hatch.pypa.io/latest/).
-
-Create an environment.
-
-    hatch env create
-
-Start a shell in the environment.
-
-    hatch shell
 
 ### Generate stubs
 This project has a script in the project file for generation. Generate stubs from proto files with:
