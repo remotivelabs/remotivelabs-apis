@@ -3,6 +3,10 @@
 Published on [PyPi](https://pypi.org/) with the prefix `remotivelabs-` and with the user [remotivelabs](https://pypi.org/user/remotivelabs/).
 All packages use [Hatch](https://hatch.pypa.io/) for packaging and publishing.
 
+Install hatch on your development computer:
+
+    pip install hatch
+
 Any project related information is stored in `pyproject.toml`.
 
 ## Development
