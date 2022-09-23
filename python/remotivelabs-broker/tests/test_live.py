@@ -1,0 +1,48 @@
+import google.protobuf
+import remotivelabs.broker.sync as br
+import remotivelabs.broker.sync.helper as helper
+import pytest
+
+class Connection:
+    def __init__(self):
+        self.channel = helper.create_channel("http://127.0.0.1:50051", "offline")
+        self.network_stub = br.network_api_pb2_grpc.NetworkServiceStub(self.channel)
+        self.system_stub = br.system_api_pb2_grpc.SystemServiceStub(self.channel)
+
+# Setup broker with predefined settings
+@pytest.fixture
+def broker_connection():
+    return Connection()
+
+# Setup broker configured for testing
+@pytest.fixture
+def broker_configured(broker_connection):
+    helper.upload_folder(broker_connection.system_stub, "tests/configuration_udp")
+    helper.reload_configuration(broker_connection.system_stub)
+    return broker_connection
+
+def test_check_license(broker_connection):
+    helper.check_license(broker_connection.system_stub)
+
+def test_meta_fields(broker_configured):
+    sc = br.SignalCreator(broker_configured.system_stub)
+    meta_speed = sc.get_meta('Speed', 'ecu_A')
+    parent_frame = sc.frame_by_signal('Speed', 'ecu_A')
+    assert parent_frame.name == 'PropulsionFrame'
+    meta_parent = sc.get_meta(parent_frame.name, 'ecu_A')
+
+    assert meta_speed.getDescription() == "Current velocity"
+    assert meta_speed.getMax() == 90.0
+    assert meta_speed.getMin() == 0
+    assert meta_speed.getUnit() == "km/h"
+    assert meta_speed.getSize() == 16
+    assert meta_speed.getIsRaw() == False
+    assert meta_parent.getIsRaw() == True
+    assert meta_speed.getFactor() == 1.0
+    assert meta_speed.getOffset() == 0.0
+    assert meta_speed.getSenders() == ['ECUA']
+    assert meta_parent.getSenders() == ['ECUA']
+    assert meta_speed.getReceivers() == ['ReceiverA', 'ReceiverB']
+    assert meta_parent.getCycleTime() == 42.0 # Cycle time is in parent frame
+    assert meta_speed.getStartValue() == 2.0
+

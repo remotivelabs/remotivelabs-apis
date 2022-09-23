@@ -8,18 +8,48 @@ class MetaGetter:
         self.meta = proto_message
 
     def _getDefault(field, default):
-        if field:
+        if field != None:
             return field
         elif default:
             return default
         else:
             raise Exception("Failed to retrieve meta data field")
 
+    def getDescription(self, default=None):
+        return MetaGetter._getDefault(self.meta.description, default)
+
+    def getUnit(self, default=None):
+        return MetaGetter._getDefault(self.meta.unit, default)
+
+    def getMax(self, default=None):
+        return MetaGetter._getDefault(self.meta.max, default)
+
+    def getMin(self, default=None):
+        return MetaGetter._getDefault(self.meta.min, default)
+
     def getSize(self, default=None):
         return MetaGetter._getDefault(self.meta.size, default)
 
+    def getIsRaw(self, default=None):
+        return MetaGetter._getDefault(self.meta.isRaw, default)
+
+    def getFactor(self, default=None):
+        return MetaGetter._getDefault(self.meta.factor, default)
+
+    def getOffset(self, default=None):
+        return MetaGetter._getDefault(self.meta.offset, default)
+
+    def getSenders(self, default=None):
+        return MetaGetter._getDefault(self.meta.sender, default)
+
+    def getReceivers(self, default=None):
+        return MetaGetter._getDefault(self.meta.receiver, default)
+
     def getCycleTime(self, default=None):
         return MetaGetter._getDefault(self.meta.cycleTime, default)
+
+    def getStartValue(self, default=None):
+        return MetaGetter._getDefault(self.meta.startValue, default)
 
 class SignalCreator:
     def __init__(self, system_stub):
