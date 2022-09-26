@@ -1,6 +1,5 @@
 import google.protobuf
 import remotivelabs.broker.sync as br
-import remotivelabs.broker.sync.helper as helper
 import pytest
 
 # Warning these tests require a RemotiveBroker up and running
@@ -11,7 +10,7 @@ _SERVER_APIKEY = 'offline'
 
 class Connection:
     def __init__(self):
-        self.channel = helper.create_channel(_SERVER_URL, _SERVER_APIKEY)
+        self.channel = br.create_channel(_SERVER_URL, _SERVER_APIKEY)
         self.network_stub = br.network_api_pb2_grpc.NetworkServiceStub(self.channel)
         self.system_stub = br.system_api_pb2_grpc.SystemServiceStub(self.channel)
 
@@ -23,13 +22,13 @@ def broker_connection():
 # Setup broker configured for testing
 @pytest.fixture
 def broker_configured(broker_connection):
-    helper.upload_folder(broker_connection.system_stub, "tests/configuration_udp")
-    helper.reload_configuration(broker_connection.system_stub)
+    br.upload_folder(broker_connection.system_stub, "tests/configuration_udp")
+    br.reload_configuration(broker_connection.system_stub)
     return broker_connection
 
 @pytest.mark.server
 def test_check_license(broker_connection):
-    helper.check_license(broker_connection.system_stub)
+    br.check_license(broker_connection.system_stub)
 
 @pytest.mark.server
 def test_meta_fields(broker_configured):

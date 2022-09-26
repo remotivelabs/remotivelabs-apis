@@ -166,7 +166,6 @@ def download_file(system_stub, path: str, dest_path: str):
     file.close()
 
 
-
 def upload_folder(system_stub, folder: str):
     """
     Upload directory and its content to Broker remote storage.
