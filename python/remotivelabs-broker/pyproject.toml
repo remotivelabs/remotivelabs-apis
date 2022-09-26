@@ -68,6 +68,11 @@ omit = [
   "remotivelabs/broker/__about__.py",
 ]
 
+[tool.pytest.ini_options]
+markers = [
+    "server: Run test towards a live server.",
+]
+
 [tool.coverage.report]
 exclude_lines = [
   "no cov",
