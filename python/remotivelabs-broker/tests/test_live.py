@@ -53,3 +53,19 @@ def test_meta_fields(broker_configured):
     assert meta_parent.getCycleTime() == 42.0 # Cycle time is in parent frame
     assert meta_speed.getStartValue() == 2.0
 
+def test_min_max(broker_configured):
+    sc = br.SignalCreator(broker_configured.system_stub)
+
+    # Works
+    sc.signal_with_payload('Speed', 'ecu_A', ('double', 45.0))
+    sc.signal_with_payload('Speed', 'ecu_A', ('double', 0.0))
+    sc.signal_with_payload('Speed', 'ecu_A', ('double', 90.0))
+
+    # Try to publing a value below mininum, API prevents this
+    with pytest.raises(ValueError):
+        sc.signal_with_payload('Speed', 'ecu_A', ('double', -1.0))
+
+    # Try to publing a value above maximum
+    with pytest.raises(ValueError):
+        sc.signal_with_payload('Speed', 'ecu_A', ('double', 91.0))
+

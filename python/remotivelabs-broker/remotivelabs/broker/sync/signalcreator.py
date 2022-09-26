@@ -180,14 +180,24 @@ class SignalCreator:
         """
 
         signal = self.signal(name, namespace_name)
+        meta = self.get_meta(name, namespace_name)
 
         key, value = value_pair
         types = ["integer", "double", "raw", "arbitration"]
         if key not in types:
             raise Exception(f"type must be one of: {types}")
         if key == "raw" and allow_malformed == False:
-            expeceted = self.get_meta(namespace_name, name).getSize()
+            expeceted = meta.getSize()
             assert len(value)*8 == expected, f"payload size missmatch, expected {expected/8} bytes"
+        else:
+            # Check bounds if any
+            checkMin = meta.getMin()
+            if (checkMin != None) and (value < checkMin):
+                raise ValueError('Value below minimum value of {}'.format(checkMin))
+            checkMax = meta.getMax()
+            if (checkMax != None) and (value > checkMax):
+                raise ValueError('Value above maximum value of {}'.format(checkMax))
+
         params = {"id": signal, key: value}
         return network_api_pb2.Signal(**params)
 
