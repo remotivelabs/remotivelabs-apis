@@ -1,7 +1,12 @@
 import sys
 
+import logging
+
 from ..stubs_grpcio import common_pb2
 from ..stubs_grpcio import network_api_pb2
+
+_logger = logging.getLogger('remotivelabs.SignalCreator')
+
 
 class MetaGetter:
     def __init__(self, proto_message):
@@ -92,7 +97,8 @@ class SignalCreator:
     def _add(self, sinfo):
         k = (sinfo.id.namespace.name, sinfo.id.name)
         if k in self._sinfos:
-            raise Exception(f"duplicate (namespace,signal): {k}")
+            msg = 'Warning duplicated (namespace.signal): {}, to avoid ambiguity set "short_names": false in your interfaces.json on {}'.format(k, sinfo.id.namespace)
+            _logger.warning(msg)
         self._sinfos[k] = MetaGetter(sinfo.metaData)
 
     def get_meta(self, name: str, namespace_name: str):
