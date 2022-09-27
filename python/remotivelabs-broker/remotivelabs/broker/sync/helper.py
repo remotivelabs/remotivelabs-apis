@@ -8,10 +8,8 @@ import base64
 import grpc
 import hashlib
 import itertools
-import json
 import ntpath
 import posixpath
-import requests
 
 from glob import glob
 from grpc_interceptor import ClientCallDetails, ClientInterceptor
@@ -209,55 +207,6 @@ def check_license(system_stub):
     status = system_stub.GetLicenseInfo(common_pb2.Empty()).status
     assert status == system_api_pb2.LicenseStatus.VALID, (
         "Check your license, status is: %d" % status
-    )
-
-
-# re-request a license. By default uses the same email (requestId) as before
-# hash will be found in your mailbox
-def request_license(system_stub, id=None):
-    """
-    Send a request for license.
-
-    :param system_stub: System gRPC channel stub
-    :param id: Optional email address
-    """
-
-    if id == None:
-        id = system_stub.GetLicenseInfo(common_pb2.Empty()).requestId
-        assert id != "", "no old id available, provide your email"
-    requestMachineId = system_stub.GetLicenseInfo(common_pb2.Empty()).requestMachineId
-    body = {"id": id, "machine_id": json.loads(requestMachineId)}
-    resp_request = requests.post(
-        "https://www.beamylabs.com/requestlicense",
-        json={
-            "licensejsonb64": base64.b64encode(
-                json.dumps(body).encode("utf-8")
-            ).decode()
-        },
-    )
-    assert (
-        resp_request.status_code == requests.codes.ok
-    ), "Response code not ok, code: %d" % (resp_request.status_code)
-    print("License requested, check your mail: ", id)
-
-
-# using your hash, upload your license (remove the dashes) use the same email (requestId) address as before
-def download_and_install_license(system_stub, hash, id=None):
-    if id == None:
-        id = system_stub.GetLicenseInfo(common_pb2.Empty()).requestId
-        assert id.encode("utf-8") != "", "no old id avaliable, provide your email"
-    resp_fetch = requests.post(
-        "https://www.beamylabs.com/fetchlicense",
-        json={"id": id, "hash": hash.replace("-", "")},
-    )
-    assert (
-        resp_fetch.status_code == requests.codes.ok
-    ), "Response code not ok, code: %d" % (resp_fetch.status_code)
-    license_info = resp_fetch.json()
-    license_bytes = license_info["license_data"].encode("utf-8")
-    # you agree to license and conditions found here https://www.beamylabs.com/license/
-    system_stub.SetLicense(
-        system_api_pb2.License(termsAgreement=True, data=license_bytes)
     )
 
 

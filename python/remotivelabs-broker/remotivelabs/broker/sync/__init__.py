@@ -23,7 +23,5 @@ from .helper import download_file
 from .helper import upload_folder
 from .helper import reload_configuration
 from .helper import check_license
-from .helper import request_license
-from .helper import download_and_install_license
 from .helper import act_on_signal
 
