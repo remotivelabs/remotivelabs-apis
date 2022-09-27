@@ -1,6 +1,6 @@
-from ..stubs_grpcio import system_api_pb2
-from ..stubs_grpcio import common_pb2
-from ..stubs_grpcio import network_api_pb2
+from ..generated.sync import common_pb2
+from ..generated.sync import network_api_pb2
+from ..generated.sync import system_api_pb2
 import remotivelabs.broker.sync as broker
 import os
 

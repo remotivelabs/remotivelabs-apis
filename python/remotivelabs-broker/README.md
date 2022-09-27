@@ -24,6 +24,8 @@ This project has a script in the project file for generation. Generate stubs fro
 
     hatch run generate_stubs
 
+Building the stubs is a requirement before build a python package of the project.
+
 ## License
 
 `remotivelabs-broker` is distributed under the terms of the [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) license.

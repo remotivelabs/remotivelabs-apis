@@ -2,8 +2,8 @@ import sys
 
 import logging
 
-from ..stubs_grpcio import common_pb2
-from ..stubs_grpcio import network_api_pb2
+from ..generated.sync import common_pb2
+from ..generated.sync import network_api_pb2
 
 _logger = logging.getLogger('remotivelabs.SignalCreator')
 

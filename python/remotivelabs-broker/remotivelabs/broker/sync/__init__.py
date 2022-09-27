@@ -1,15 +1,15 @@
-from ..stubs_grpcio import common_pb2
-from ..stubs_grpcio import common_pb2_grpc
-from ..stubs_grpcio import diagnostics_api_pb2
-from ..stubs_grpcio import diagnostics_api_pb2_grpc
-from ..stubs_grpcio import functional_api_pb2
-from ..stubs_grpcio import functional_api_pb2_grpc
-from ..stubs_grpcio import network_api_pb2
-from ..stubs_grpcio import network_api_pb2_grpc
-from ..stubs_grpcio import system_api_pb2
-from ..stubs_grpcio import system_api_pb2_grpc
-from ..stubs_grpcio import traffic_api_pb2
-from ..stubs_grpcio import traffic_api_pb2_grpc
+from ..generated.sync import common_pb2
+from ..generated.sync import common_pb2_grpc
+from ..generated.sync import diagnostics_api_pb2
+from ..generated.sync import diagnostics_api_pb2_grpc
+from ..generated.sync import functional_api_pb2
+from ..generated.sync import functional_api_pb2_grpc
+from ..generated.sync import network_api_pb2
+from ..generated.sync import network_api_pb2_grpc
+from ..generated.sync import system_api_pb2
+from ..generated.sync import system_api_pb2_grpc
+from ..generated.sync import traffic_api_pb2
+from ..generated.sync import traffic_api_pb2_grpc
 
 from .signalcreator import SignalCreator
 
