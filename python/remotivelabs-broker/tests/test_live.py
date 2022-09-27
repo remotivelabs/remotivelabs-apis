@@ -53,6 +53,7 @@ def test_meta_fields(broker_configured):
     assert meta_parent.getCycleTime() == 42.0 # Cycle time is in parent frame
     assert meta_speed.getStartValue() == 2.0
 
+@pytest.mark.server
 def test_min_max(broker_configured):
     sc = br.SignalCreator(broker_configured.system_stub)
 
@@ -68,4 +69,10 @@ def test_min_max(broker_configured):
     # Try to publing a value above maximum
     with pytest.raises(ValueError):
         sc.signal_with_payload('Speed', 'ecu_A', ('double', 91.0))
+
+@pytest.mark.server
+def test_list_signals(broker_configured):
+    namespace = br.common_pb2.NameSpace(name='ecu_A')
+    signals = broker_configured.system_stub.ListSignals(namespace)
+    assert len(signals.frame) == 5
 
