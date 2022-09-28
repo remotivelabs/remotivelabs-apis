@@ -199,10 +199,10 @@ class SignalCreator:
             # Check bounds if any
             checkMin = meta.getMin()
             if (checkMin != None) and (value < checkMin):
-                raise ValueError('Value below minimum value of {}'.format(checkMin))
+                raise ValueError('Value below minimum value of {} for signal \"{}\"'.format(checkMin, name))
             checkMax = meta.getMax()
             if (checkMax != None) and (value > checkMax):
-                raise ValueError('Value above maximum value of {}'.format(checkMax))
+                raise ValueError('Value above maximum value of {} for signal \"{}\"'.format(checkMax, name))
 
         params = {"id": signal, key: value}
         return network_api_pb2.Signal(**params)
