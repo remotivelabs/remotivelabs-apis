@@ -13,6 +13,11 @@ Any project related information is stored in `pyproject.toml`.
 Hatch supplies a basic set of tools for development.
 All operations should be done in an virtual environment created by hatch.
 
+Go to the directory of the module which you are going to be working on.
+For example:
+
+    cd python/remotivelabs-broker
+
 Create a local environment.
 
     hatch env create
