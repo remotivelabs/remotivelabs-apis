@@ -1,0 +1,81 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "remotivelabs-broker"
+description = 'RemotiveLabs Broker gRPC API'
+readme = "README.md"
+requires-python = ">=3.7"
+license = "Apache-2.0"
+keywords = []
+authors = [
+  { name = "Martin Sandgren", email = "carlmartus@gmail.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Manufacturing",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Topic :: Communications",
+  "Topic :: Internet",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+  "grpc-interceptor~=0.14.1",
+  "grpcio-tools==1.40.0",
+  "grpcio==1.40.0",
+  "requests~=2.21.0",
+]
+dynamic = ["version"]
+
+[project.urls]
+# Documentation = "https://github.com/unknown/remotivelabs-broker#readme"
+# Issues = "https://github.com/unknown/remotivelabs-broker/issues"
+# Source = "https://github.com/unknown/remotivelabs-broker"
+
+[tool.hatch.version]
+path = "remotivelabs/broker/__about__.py"
+
+[tool.hatch.envs.default]
+dependencies = [
+  "pytest-cov~=3.0.0",
+  "pytest-pep8~=1.0.6",
+  "pytest~=7.1.3",
+]
+[tool.hatch.envs.default.scripts]
+cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=remotivelabs --cov=tests"
+no-cov = "cov --no-cov"
+generate_stubs = "sh misc/build_proto.sh"
+
+[[tool.hatch.envs.test.matrix]]
+python = ["37", "38", "39", "310", "311"]
+
+[tool.coverage.run]
+branch = true
+parallel = true
+omit = [
+  "remotivelabs/broker/__about__.py",
+]
+
+[tool.pytest.ini_options]
+markers = [
+    "server: Run test towards a live server.",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]

@@ -1,0 +1,39 @@
+// * Sample DBC file for RemotiveBroker *
+// Units: https://covesa.github.io/vehicle_signal_specification/rule_set/data_entry/data_unit_types/
+
+VERSION "Sample-1.0.0"
+
+BO_ 1 PropulsionFrame: 8 ECUA
+ SG_ Speed: 7|16@0+ (1.0, 0.0) [0.0|90.0] "km/h" ReceiverA, ReceiverB
+ SG_ Acceleratation: 23|16@0+ (1.0, 0.0) [0.0|60.0] "Nm"
+
+BO_ 2 ControlFrame: 8 ECUA
+ SG_ Steering: 7|16@0+ (1.0, -100.0) [-30.0|30.0] "degrees"
+ SG_ Break: 23|16@0+ (1.0, 0.0) [0.0|100.0] "N"
+
+BO_ 3 WheelsFrame: 8 ECUA
+ SG_ WheelRotationFL: 7|8@0+ (1.0, 0.0) [0.0|360.0] "degrees"
+ SG_ WheelRotationFR: 15|8@0+ (1.0, 0.0) [0.0|360.0] "degrees"
+ SG_ WheelRotationBL: 23|8@0+ (1.0, 0.0) [0.0|360.0] "degrees"
+ SG_ WheelRotationBR: 31|8@0+ (1.0, 0.0) [0.0|360.0] "degrees"
+
+BO_ 10 DuplicateSignals1: 8 ECUA
+ SG_ Duplicate1: 7|8@0+ (1.0, 0.0) [0.0|10.0] "nounit"
+ SG_ Duplicate2: 15|8@0+ (1.0, 0.0) [0.0|10.0] "nounit"
+ SG_ Duplicate3: 23|8@0+ (1.0, 0.0) [0.0|10.0] "nounit"
+ SG_ Duplicate4: 31|8@0+ (1.0, 0.0) [0.0|10.0] "nounit"
+
+BO_ 11 DuplicateSignals2: 8 ECUA
+ SG_ Duplicate1: 7|8@0+ (1.0, 0.0) [0.0|10.0] "nounit"
+ SG_ Duplicate2: 15|8@0+ (1.0, 0.0) [0.0|10.0] "nounit"
+ SG_ Duplicate3: 23|8@0+ (1.0, 0.0) [0.0|10.0] "nounit"
+ SG_ Duplicate4: 31|8@0+ (1.0, 0.0) [0.0|10.0] "nounit"
+
+BA_DEF_ BO_ "GenMsgCycleTime" FLOAT 0 300000; // [ms]
+BA_DEF_ SG_ "GenSigStartValue" FLOAT -1.7976931348623157E308 18446744073709551615;
+BA_DEF_DEF_ "GenSigStartValue" 0;
+
+BA_ "GenSigStartValue" SG_ 1 Speed 2.0;
+BA_ "GenSigStartValue" SG_ 3 WheelRotationFL 80.0;
+BA_ "GenMsgCycleTime" BO_ 1 42.000;
+CM_ SG_ 1 Speed "Current velocity"
