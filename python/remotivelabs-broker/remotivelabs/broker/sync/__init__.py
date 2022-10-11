@@ -1,3 +1,9 @@
+"""
+Synchronous connection to the remotiveBroker API.
+
+Create a connection with the method `remotivelabs.broker.sync.create_channel`.
+"""
+
 from ..generated.sync import common_pb2
 from ..generated.sync import common_pb2_grpc
 from ..generated.sync import diagnostics_api_pb2
@@ -24,4 +30,30 @@ from .helper import upload_folder
 from .helper import reload_configuration
 from .helper import check_license
 from .helper import act_on_signal
+
+__all__ = [
+    'common_pb2',
+    'common_pb2_grpc',
+    'diagnostics_api_pb2',
+    'diagnostics_api_pb2_grpc',
+    'functional_api_pb2',
+    'functional_api_pb2_grpc',
+    'network_api_pb2',
+    'network_api_pb2_grpc',
+    'system_api_pb2',
+    'system_api_pb2_grpc',
+    'traffic_api_pb2',
+    'traffic_api_pb2_grpc',
+    'create_channel',
+    'publish_signals',
+    'printer',
+    'get_sha256',
+    'generate_data',
+    'upload_file',
+    'download_file',
+    'upload_folder',
+    'reload_configuration',
+    'check_license',
+    'act_on_signal',
+]
 

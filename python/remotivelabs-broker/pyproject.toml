@@ -10,7 +10,7 @@ requires-python = ">=3.7"
 license = "Apache-2.0"
 keywords = []
 authors = [
-  { name = "Martin Sandgren", email = "carlmartus@gmail.com" },
+  { name = "remotiveLabs", email = "hello@remotivelabs.com" },
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
