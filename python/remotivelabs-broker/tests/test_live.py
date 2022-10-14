@@ -1,6 +1,7 @@
 import google.protobuf
-import remotivelabs.broker.sync as br
+import logging
 import pytest
+import remotivelabs.broker.sync as br
 
 # Warning these tests require a RemotiveBroker up and running
 # server address:
@@ -54,7 +55,7 @@ def test_meta_fields(broker_configured):
     assert meta_speed.getStartValue() == 2.0
 
 @pytest.mark.server
-def test_min_max(broker_configured):
+def test_min_max(broker_configured, caplog):
     sc = br.SignalCreator(broker_configured.system_stub)
 
     # Works
@@ -62,13 +63,21 @@ def test_min_max(broker_configured):
     sc.signal_with_payload('Speed', 'ecu_A', ('double', 0.0))
     sc.signal_with_payload('Speed', 'ecu_A', ('double', 90.0))
 
-    # Try to publing a value below mininum, API prevents this
-    with pytest.raises(ValueError):
-        sc.signal_with_payload('Speed', 'ecu_A', ('double', -1.0))
+    # Catch warning logs
+    caplog.clear()
+    with caplog.at_level(logging.INFO):
+        assert len(caplog.records) == 0
 
-    # Try to publing a value above maximum
-    with pytest.raises(ValueError):
+        # Publing a value below mininum
+        sc.signal_with_payload('Speed', 'ecu_A', ('double', -1.0))
+        assert caplog.records[0].message == 'Value below minimum value of 0.0 for signal "Speed"'
+
+        # Publing a value above maximum
         sc.signal_with_payload('Speed', 'ecu_A', ('double', 91.0))
+        assert caplog.records[1].message == 'Value above maximum value of 90.0 for signal "Speed"'
+
+        assert len(caplog.records) == 2
+
 
 @pytest.mark.server
 def test_list_signals(broker_configured):
