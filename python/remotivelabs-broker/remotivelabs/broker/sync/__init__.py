@@ -17,7 +17,9 @@ This API uses protobuffer and gRPC stubs directly. Which are availble in the sub
 - `remotivelabs.broker.sync.traffic_api_pb2`.
 - `remotivelabs.broker.sync.traffic_api_pb2_grpc`.
 
-For an example on how to use these we recommend looking at the samples for this library. Which is available at the repository [remotiveLabs samples](https://github.com/remotivelabs/remotivelabs-samples/tree/main/python).
+For an example on how to use these we recommend looking at the samples for this library. Which is available at the repository remotiveLabs samples:
+
+Link: <https://github.com/remotivelabs/remotivelabs-samples/tree/main/python>.
 """
 
 from ..generated.sync import common_pb2

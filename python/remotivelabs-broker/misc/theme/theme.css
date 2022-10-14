@@ -1,0 +1,21 @@
+main.:root {
+    --pdoc-background: white;
+}
+
+nav.pdoc {
+    --text: white;
+    --muted: #9d9d9d;
+    --link: #58a6ff;
+    --link-hover: #3989ff;
+    --code: #333;
+    --active: #555;
+
+    --accent: #001C36;
+    --accent2: #B7CDE2;
+
+    --nav-hover: rgba(0, 0, 0, 0.1);
+    --name: #77C1FF;
+    --def: #0cdd0c;
+    --annotation: #00c037;
+}
+
