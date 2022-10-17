@@ -13,7 +13,7 @@ import posixpath
 
 from glob import glob
 from grpc_interceptor import ClientCallDetails, ClientInterceptor
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 from urllib.parse import urlparse
 
 
@@ -39,7 +39,7 @@ class HeaderInterceptor(ClientInterceptor):
         return method(request_or_iterator, new_details)
 
 
-def create_channel(url: str, x_api_key: str = 'offline'):
+def create_channel(url: str, x_api_key: Optional[str] = None):
     """
     Create communication channels for gRPC calls.
 
@@ -59,6 +59,9 @@ def create_channel(url: str, x_api_key: str = 'offline'):
         )
     else:
         channel = grpc.insecure_channel(url.hostname + ":" + str(url.port or "50051"))
+
+    if x_api_key == None:
+        x_api_key = 'none'
 
     intercept_channel = grpc.intercept_channel(
         channel, HeaderInterceptor({"x-api-key": x_api_key})
