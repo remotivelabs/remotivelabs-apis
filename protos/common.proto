@@ -5,6 +5,9 @@ package base;
 message Empty {
 }
 
+/**
+ * id, emitted signals from a specific client_id does not return to the same client (with the same client_id).
+ */
 message ClientId {
   string id = 1;
 }
