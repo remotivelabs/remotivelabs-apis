@@ -58,7 +58,8 @@ def create_channel(url: str, x_api_key: Optional[str] = None):
             url.hostname + ":" + str(url.port or "443"), creds
         )
     else:
-        channel = grpc.insecure_channel(url.hostname + ":" + str(url.port or "50051"))
+        addr = url.hostname + ":" + str(url.port or "50051")
+        channel = grpc.insecure_channel(addr)
 
     if x_api_key == None:
         x_api_key = 'none'
@@ -89,6 +90,7 @@ def publish_signals(client_id, stub, signals_with_payload, frequency: int = 0):
     except grpc._channel._Rendezvous as err:
         print(err)
 
+
 def printer(signals):
     """
     Debug printing of received array of signal with values.
@@ -97,7 +99,10 @@ def printer(signals):
     """
 
     for signal in signals:
-        print(f"{signal.id.name} {signal.id.namespace.name} {get_value(signal)}")
+        print("{} {} {}".format(
+            signal.id.name, signal.id.namespace.name, get_value(signal)
+        ))
+
 
 def get_sha256(path: str):
     """
@@ -113,18 +118,21 @@ def get_sha256(path: str):
     f.close()
     return readable_hash
 
+
 def generate_data(file, dest_path, chunk_size, sha256):
     for x in itertools.count(start=0):
         if x == 0:
             fileDescription = system_api_pb2.FileDescription(
                 sha256=sha256, path=dest_path
             )
-            yield system_api_pb2.FileUploadRequest(fileDescription=fileDescription)
+            yield system_api_pb2.FileUploadRequest(
+                    fileDescription=fileDescription)
         else:
             buf = file.read(chunk_size)
             if not buf:
                 break
             yield system_api_pb2.FileUploadRequest(chunk=buf)
+
 
 def upload_file(system_stub, path: str, dest_path: str):
     """
@@ -139,11 +147,13 @@ def upload_file(system_stub, path: str, dest_path: str):
     print(sha256)
     file = open(path, "rb")
 
-    # make sure path is unix style (necessary for windows, and does no harm om linux)
+    # make sure path is unix style (necessary for windows, and does no harm om
+    # linux)
     upload_iterator = generate_data(
         file, dest_path.replace(ntpath.sep, posixpath.sep), 1000000, sha256
     )
-    response = system_stub.UploadFile(upload_iterator, compression=grpc.Compression.Gzip)
+    response = system_stub.UploadFile(upload_iterator,
+                                      compression=grpc.Compression.Gzip)
     print("uploaded", path, response)
 
 
@@ -158,9 +168,10 @@ def download_file(system_stub, path: str, dest_path: str):
 
     file = open(dest_path, "wb")
     for response in system_stub.DownloadFile(
-        system_api_pb2.FileDescription(path=path.replace(ntpath.sep, posixpath.sep))
+        system_api_pb2.FileDescription(path=path.replace(ntpath.sep,
+                                                         posixpath.sep))
     ):
-        assert response.HasField("errorMessage") == False, (
+        assert not response.HasField("errorMessage"), (
             "Error uploading file, message is: %s" % response.errorMessage
         )
         file.write(response.chunk)
@@ -182,8 +193,7 @@ def upload_folder(system_stub, folder: str):
         if not os.path.isdir(y)
     ]
     assert len(files) != 0, (
-        "Specified upload folder is empty or does not exist, provided folder was: %s"
-        % folder
+        "Specified upload folder is empty or does not exist"
     )
     for file in files:
         upload_file(system_stub, file, file.replace(folder, ""))
@@ -213,7 +223,9 @@ def check_license(system_stub):
     )
 
 
-def act_on_signal(client_id, network_stub, sub_signals, on_change, fun, on_subcribed=None):
+def act_on_signal(
+        client_id, network_stub, sub_signals, on_change, fun, on_subcribed=None
+):
     """
     Bind callback to be triggered when receiving any of the specified signals.
 
@@ -247,4 +259,3 @@ def act_on_signal(client_id, network_stub, sub_signals, on_change, fun, on_subcr
         print(err)
     # reload, alternatively non-existing signal
     print("subscription terminated")
-
