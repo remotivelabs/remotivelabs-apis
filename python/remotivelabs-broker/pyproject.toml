@@ -40,9 +40,9 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-# Documentation = "https://github.com/unknown/remotivelabs-broker#readme"
-# Issues = "https://github.com/unknown/remotivelabs-broker/issues"
-# Source = "https://github.com/unknown/remotivelabs-broker"
+Documentation = "https://docs.remotivelabs.com/python/remotivelabs-broker/"
+Issues = "https://github.com/remotivelabs/remotivelabs-apis/issues"
+Source = "https://github.com/remotivelabs/remotivelabs-apis"
 
 [tool.hatch.version]
 path = "remotivelabs/broker/__about__.py"
