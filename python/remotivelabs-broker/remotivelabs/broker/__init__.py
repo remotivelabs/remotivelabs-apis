@@ -2,6 +2,8 @@
 remotiveLabs Python API for remotiveBroker.
 See `version` below.
 
+In addition to return codes, this package uses logging to show operational status. To enable 
+
 Use sub module: `remotivelabs.broker.sync`.
 """
 
@@ -13,7 +15,6 @@ from .__about__ import __version__
 import logging
 
 log = logging.getLogger("com.remotivelabs")
-log.addHandler(logging.NullHandler())
 
 version = __version__
 """Library version"""
