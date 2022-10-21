@@ -1,7 +1,7 @@
 from ..generated.sync import common_pb2
 from ..generated.sync import network_api_pb2
 from ..generated.sync import system_api_pb2
-import remotivelabs.broker.sync as broker
+import remotivelabs.broker.sync as br
 import os
 
 import base64
@@ -13,7 +13,7 @@ import posixpath
 
 from glob import glob
 from grpc_interceptor import ClientCallDetails, ClientInterceptor
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Sequence, Generator, Optional
 from urllib.parse import urlparse
 
 
@@ -39,7 +39,9 @@ class HeaderInterceptor(ClientInterceptor):
         return method(request_or_iterator, new_details)
 
 
-def create_channel(url: str, x_api_key: Optional[str] = None):
+def create_channel(
+        url: str, x_api_key: Optional[str] = None
+) -> grpc.intercept_channel:
     """
     Create communication channels for gRPC calls.
 
@@ -58,9 +60,10 @@ def create_channel(url: str, x_api_key: Optional[str] = None):
             url.hostname + ":" + str(url.port or "443"), creds
         )
     else:
-        channel = grpc.insecure_channel(url.hostname + ":" + str(url.port or "50051"))
+        addr = url.hostname + ":" + str(url.port or "50051")
+        channel = grpc.insecure_channel(addr)
 
-    if x_api_key == None:
+    if x_api_key is None:
         x_api_key = 'none'
 
     intercept_channel = grpc.intercept_channel(
@@ -69,7 +72,9 @@ def create_channel(url: str, x_api_key: Optional[str] = None):
     return intercept_channel
 
 
-def publish_signals(client_id, stub, signals_with_payload, frequency: int = 0):
+def publish_signals(
+        client_id, stub, signals_with_payload, frequency: int = 0
+) -> None:
     """
     Publish array of values for signals
 
@@ -89,7 +94,8 @@ def publish_signals(client_id, stub, signals_with_payload, frequency: int = 0):
     except grpc._channel._Rendezvous as err:
         print(err)
 
-def printer(signals):
+
+def printer(signals: Sequence[common_pb2.SignalId]) -> None:
     """
     Debug printing of received array of signal with values.
 
@@ -97,9 +103,14 @@ def printer(signals):
     """
 
     for signal in signals:
-        print(f"{signal.id.name} {signal.id.namespace.name} {get_value(signal)}")
+        print(
+            "{} {} {}".format(
+                signal.id.name, signal.id.namespace.name, get_value(signal)
+            )
+        )
 
-def get_sha256(path: str):
+
+def get_sha256(path: str) -> str:
     """
     Calculate SHA256 for a file.
 
@@ -113,20 +124,28 @@ def get_sha256(path: str):
     f.close()
     return readable_hash
 
-def generate_data(file, dest_path, chunk_size, sha256):
+
+def generate_data(
+        file, dest_path, chunk_size, sha256
+) -> Generator[system_api_pb2.FileUploadRequest, None, None]:
     for x in itertools.count(start=0):
         if x == 0:
             fileDescription = system_api_pb2.FileDescription(
                 sha256=sha256, path=dest_path
             )
-            yield system_api_pb2.FileUploadRequest(fileDescription=fileDescription)
+            yield system_api_pb2.FileUploadRequest(
+                    fileDescription=fileDescription)
         else:
             buf = file.read(chunk_size)
             if not buf:
                 break
             yield system_api_pb2.FileUploadRequest(chunk=buf)
 
-def upload_file(system_stub, path: str, dest_path: str):
+
+def upload_file(
+        system_stub: br.system_api_pb2_grpc.SystemServiceStub,
+        path: str, dest_path: str
+) -> None:
     """
     Upload single file to internal storage on broker.
 
@@ -139,15 +158,21 @@ def upload_file(system_stub, path: str, dest_path: str):
     print(sha256)
     file = open(path, "rb")
 
-    # make sure path is unix style (necessary for windows, and does no harm om linux)
+    # make sure path is unix style (necessary for windows, and does no harm om
+    # linux)
     upload_iterator = generate_data(
         file, dest_path.replace(ntpath.sep, posixpath.sep), 1000000, sha256
     )
-    response = system_stub.UploadFile(upload_iterator, compression=grpc.Compression.Gzip)
+    response = system_stub.UploadFile(
+        upload_iterator, compression=grpc.Compression.Gzip
+    )
     print("uploaded", path, response)
 
 
-def download_file(system_stub, path: str, dest_path: str):
+def download_file(
+        system_stub: br.system_api_pb2_grpc.SystemServiceStub,
+        path: str, dest_path: str
+) -> None:
     """
     Download file from Broker remote storage.
 
@@ -158,16 +183,20 @@ def download_file(system_stub, path: str, dest_path: str):
 
     file = open(dest_path, "wb")
     for response in system_stub.DownloadFile(
-        system_api_pb2.FileDescription(path=path.replace(ntpath.sep, posixpath.sep))
+        system_api_pb2.FileDescription(path=path.replace(ntpath.sep,
+                                                         posixpath.sep))
     ):
-        assert response.HasField("errorMessage") == False, (
+        assert not response.HasField("errorMessage"), (
             "Error uploading file, message is: %s" % response.errorMessage
         )
         file.write(response.chunk)
     file.close()
 
 
-def upload_folder(system_stub, folder: str):
+def upload_folder(
+        system_stub: br.system_api_pb2_grpc.SystemServiceStub,
+        folder: str
+) -> None:
     """
     Upload directory and its content to Broker remote storage.
 
@@ -182,14 +211,15 @@ def upload_folder(system_stub, folder: str):
         if not os.path.isdir(y)
     ]
     assert len(files) != 0, (
-        "Specified upload folder is empty or does not exist, provided folder was: %s"
-        % folder
+        "Specified upload folder is empty or does not exist"
     )
     for file in files:
         upload_file(system_stub, file, file.replace(folder, ""))
 
 
-def reload_configuration(system_stub):
+def reload_configuration(
+        system_stub: br.system_api_pb2_grpc.SystemServiceStub,
+) -> None:
     """
     Trigger reload of configuration on Broker.
 
@@ -201,7 +231,9 @@ def reload_configuration(system_stub):
     print(response)
 
 
-def check_license(system_stub):
+def check_license(
+        system_stub: br.system_api_pb2_grpc.SystemServiceStub,
+) -> None:
     """
     Check license to Broker. Throws exception if failure.
 
@@ -213,7 +245,14 @@ def check_license(system_stub):
     )
 
 
-def act_on_signal(client_id, network_stub, sub_signals, on_change, fun, on_subcribed=None):
+def act_on_signal(
+        client_id: br.common_pb2.ClientId,
+        network_stub: br.network_api_pb2_grpc.NetworkServiceStub,
+        sub_signals: Sequence[br.common_pb2.SignalId],
+        on_change: bool,
+        fun: Callable[[Sequence[br.network_api_pb2.Signal]], None],
+        on_subcribed: Optional[Callable[..., None]] = None
+) -> None:
     """
     Bind callback to be triggered when receiving any of the specified signals.
 
@@ -221,7 +260,8 @@ def act_on_signal(client_id, network_stub, sub_signals, on_change, fun, on_subcr
     :param network_stub: Network gRPC channel stub
     :param sub_signals: List of signals to listen for
     :param on_change: Callback to be triggered
-    :param fun: Callback for successful subscription
+    :param fun: Callback for receiving signals update
+    :param on_subcribed: Callback for successful subscription
     """
 
     sub_info = network_api_pb2.SubscriberConfig(
@@ -247,4 +287,3 @@ def act_on_signal(client_id, network_stub, sub_signals, on_change, fun, on_subcr
         print(err)
     # reload, alternatively non-existing signal
     print("subscription terminated")
-

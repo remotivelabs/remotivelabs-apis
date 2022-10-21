@@ -62,4 +62,3 @@ __all__ = [
     'check_license',
     'act_on_signal',
 ]
-
