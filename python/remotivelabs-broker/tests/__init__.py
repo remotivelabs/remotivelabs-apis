@@ -1,3 +1,3 @@
-# SPDX-FileCopyrightText: 2022-present remotiveLabs <hello@remotivelabs.com>
+# SPDX-FileCopyrightText: 2022-present remotiveLabs <support@remotivelabs.com>
 #
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
