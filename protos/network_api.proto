@@ -39,5 +39,5 @@ message Signal {
     bool empty = 6;
   }
   bytes raw = 5;
-  int64 timestamp = 7;
+  int64 timestamp = 7; // microseconds
 }
