@@ -1,9 +1,15 @@
-# SPDX-FileCopyrightText: 2022-present Martin Sandgren <carlmartus@gmail.com>
+"""
+remotiveLabs Python API for remotiveBroker.
+See `version` below.
+
+Use sub module: `remotivelabs.broker.sync`.
+"""
+
+# SPDX-FileCopyrightText: 2022-present remotiveLabs <support@remotivelabs.com>
 #
-# SPDX-License-Identifier: MIT
+# SPDX-License-Identifier: Apache-2.0
 
-"""
-RemotiveLabs Python API for RemotiveBroker.
-"""
+from .__about__ import __version__
 
-
+version = __version__
+"""Library version"""

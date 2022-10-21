@@ -6,7 +6,7 @@ import remotivelabs.broker.sync as br
 # Warning these tests require a RemotiveBroker up and running
 # server address:
 _SERVER_URL = 'http://127.0.0.1:50051'
-_SERVER_APIKEY = 'offline'
+_SERVER_APIKEY = None
 
 
 class Connection:
