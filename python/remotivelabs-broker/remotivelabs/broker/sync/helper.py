@@ -1,6 +1,7 @@
 from ..generated.sync import common_pb2
 from ..generated.sync import network_api_pb2
 from ..generated.sync import system_api_pb2
+from .. import log
 import remotivelabs.broker.sync as br
 import os
 
@@ -92,7 +93,7 @@ def publish_signals(
     try:
         stub.PublishSignals(publisher_info)
     except grpc._channel._Rendezvous as err:
-        print(err)
+        log.error(err)
 
 
 def printer(signals: Sequence[common_pb2.SignalId]) -> None:
@@ -103,7 +104,7 @@ def printer(signals: Sequence[common_pb2.SignalId]) -> None:
     """
 
     for signal in signals:
-        print(
+        log.info(
             "{} {} {}".format(
                 signal.id.name, signal.id.namespace.name, get_value(signal)
             )
@@ -155,7 +156,7 @@ def upload_file(
     """
 
     sha256 = get_sha256(path)
-    print(sha256)
+    log.debug("SHA256 for file {}: {}".format(path, sha256))
     file = open(path, "rb")
 
     # make sure path is unix style (necessary for windows, and does no harm om
@@ -166,7 +167,7 @@ def upload_file(
     response = system_stub.UploadFile(
         upload_iterator, compression=grpc.Compression.Gzip
     )
-    print("uploaded", path, response)
+    log.debug("Uploaded {} with response {}".format(path, response))
 
 
 def download_file(
@@ -228,7 +229,7 @@ def reload_configuration(
 
     request = common_pb2.Empty()
     response = system_stub.ReloadConfiguration(request, timeout=60000)
-    print(response)
+    log.debug("Reload configuration with response {}".format(response))
 
 
 def check_license(
@@ -264,6 +265,8 @@ def act_on_signal(
     :param on_subcribed: Callback for successful subscription
     """
 
+    log.debug("Subscription started")
+
     sub_info = network_api_pb2.SubscriberConfig(
         clientId=client_id,
         signals=network_api_pb2.SignalIds(signalId=sub_signals),
@@ -273,7 +276,7 @@ def act_on_signal(
         subscripton = network_stub.SubscribeToSignals(sub_info, timeout=None)
         if on_subcribed:
             on_subcribed(subscripton)
-        print("waiting for signal...")
+        log.debug("Waiting for signal...")
         for subs_counter in subscripton:
             fun(subs_counter.signal)
 
@@ -284,6 +287,6 @@ def act_on_signal(
             pass
 
     except grpc._channel._Rendezvous as err:
-        print(err)
+        log.error(err)
     # reload, alternatively non-existing signal
-    print("subscription terminated")
+    log.debug("Subscription terminated")
