@@ -27,10 +27,10 @@ Use sub module: `remotivelabs.broker.sync`.
 from .__about__ import __version__
 import logging
 
-log = logging.getLogger("com.remotivelabs.broker")
+log: logging.Logger = logging.getLogger("com.remotivelabs.broker")
 """Package logging interface"""
 
 log.addHandler(logging.NullHandler())
 
-version = __version__
+version: str = __version__
 """Library version"""
