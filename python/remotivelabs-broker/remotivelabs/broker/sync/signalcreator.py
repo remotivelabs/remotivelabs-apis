@@ -216,11 +216,11 @@ class SignalCreator:
         if key not in types:
             raise Exception(f"type must be one of: {types}")
         if key == "raw" and allow_malformed is False:
-            expeceted = meta.getSize()
+            expected = meta.getSize()
             assert (
                 len(value) * 8 == expected
             ), f"payload size missmatch, expected {expected/8} bytes"
-        else:
+        elif key != "raw":
             # Check bounds if any
             checkMin = meta.getMin()
             if (checkMin is not None) and (value < checkMin):
