@@ -29,25 +29,39 @@ message SignalInfo {
 }
 
 /**
+ * Multiplexing infromation.
+ * Some signal databases allow "multiplexing" or "unions" in their frame
+ * information. IF a signal is in `select` mode, the value of the signal will
+ * act as a filter for signals which are in `filter` mode.
+ */
+message Multiplex {
+    oneof mode {
+        Empty none = 1;
+        Empty select = 2;
+        int32 filter = 3;
+    };
+}
+
+/**
  * Collection of all meta data for a signal.
  *
  * RemotiveBroker support several databases. The following attributes are read
  * from the database running on the RemotiveBroker.
  */
 message MetaData {
-  string description = 4;           /// Description for signal.
-  float max = 12;                   /// Maximum allowed value.
-  float min = 13;                   /// Minimum allowed value.
-  string unit = 7;                  /// Unit of the signal value.
-  int32 size = 8;                   /// Size of signal value when packed in frame.
-  bool isRaw = 9;                   /// Is binary data?
-  /// Multiplication faction used for encoding and decoding value in frame.
-  double factor = 10;
-  double offset = 11;               /// Offset used for encoding and decoding value in frame.
-  repeated string sender = 14;      /// List of named senders of signals.
-  repeated string receiver = 15;    /// List of named recievers of signal.
-  float cycleTime = 16;             /// Cadence for sending signal in milliseconds.
-  float startValue = 17;            /// Initial value to use before publishing.
+    string description = 4;             /// Description for signal.
+    float max = 12;                     /// Maximum allowed value.
+    float min = 13;                     /// Minimum allowed value.
+    string unit = 7;                    /// Unit of the signal value.
+    int32 size = 8;                     /// Size of signal value when packed in frame.
+    bool isRaw = 9;                     /// Is binary data?
+    double factor = 10;                 /// Multiplication faction used for encoding and decoding value in frame.
+    double offset = 11;                 /// Offset used for encoding and decoding value in frame.
+    repeated string sender = 14;        /// List of named senders of signals.
+    repeated string receiver = 15;      /// List of named recievers of signal.
+    float cycleTime = 16;               /// Cadence for sending signal in milliseconds.
+    float startValue = 17;              /// Initial value to use before publishing.
+    Multiplex multiplex = 18;           /// Frame multiplexing information.
 }
 
 /// Identifier for a name space
@@ -57,9 +71,9 @@ message NameSpace {
 
 /// Information about network
 message NetworkInfo {
-  NameSpace namespace = 1;          /// Corresponding name space.
-  string type = 2;                  /// Type of network as text. Eg "can", "lin" etc.
-  string description = 3;           /// Description text about network.
+  NameSpace namespace = 1;              /// Corresponding name space.
+  string type = 2;                      /// Type of network as text. Eg "can", "lin" etc.
+  string description = 3;               /// Description text about network.
 }
 
 /// Information about a frame and it's signals.
@@ -70,5 +84,5 @@ message FrameInfo {
 
 /// Collection of information for several frames.
 message Frames {
-  repeated FrameInfo frame = 1;     /// List of information about frames.
+  repeated FrameInfo frame = 1;         /// List of information about frames.
 }
