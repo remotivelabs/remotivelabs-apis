@@ -4,105 +4,143 @@ import "common.proto";
 
 package base;
 
+/// Handle configuration of the RemotiveBroker server.
 service SystemService {
-  rpc GetConfiguration (Empty) returns (Configuration) {}
-  rpc ListSignals (NameSpace) returns (Frames) {}
+    /// Get current configuration of server.
+    rpc GetConfiguration (Empty) returns (Configuration) {}
+    /// Get list of all available frames and signals on server.
+    rpc ListSignals (NameSpace) returns (Frames) {}
 
-  // Upload file using chunks (without streams), specifically useful for gRPC-web which does not support Client-side streaming. 
-  rpc UploadFileChunk (FileUploadChunkRequest) returns (FileUploadResponse) {}
+    /**
+     * Upload file using chunks (without streams), specifically useful for
+     * gRPC-web which does not support Client-side streaming.
+     */
+    rpc UploadFileChunk (FileUploadChunkRequest) returns (FileUploadResponse) {}
 
-  // Upload file using streams, preferred option for client with Client-side streaming.
-  rpc UploadFile (stream FileUploadRequest) returns (FileUploadResponse) {}
+    /**
+     * Upload file using streams, preferred option for client with Client-side
+     * streaming.
+     */
+    rpc UploadFile (stream FileUploadRequest) returns (FileUploadResponse) {}
 
-  // Download file
-  rpc DownloadFile (FileDescription) returns (stream FileDownloadResponse) {}
+    // Download file from server.
+    rpc DownloadFile (FileDescription) returns (stream FileDownloadResponse) {}
 
-  // will not return until new configuration is tested an active, make sure to set timeout to a large value. (fibex on pi > 50s)
-  rpc ReloadConfiguration (Empty) returns (ReloadMessage) {}
+    /**
+     * Will not return until new configuration is tested an active, make sure
+     * to set timeout to a large value. (fibex on pi > 50s).
+     */
+    rpc ReloadConfiguration (Empty) returns (ReloadMessage) {}
 
-  rpc GetLicenseInfo (Empty) returns (LicenseInfo) {}
-  rpc SetLicense (License) returns (LicenseInfo) {}
+    /// Get information about server license.
+    rpc GetLicenseInfo (Empty) returns (LicenseInfo) {}
+
+    /// Set server license.
+    rpc SetLicense (License) returns (LicenseInfo) {}
 }
 
+/// Configuration of server.
 message Configuration {
-  repeated NetworkInfo networkInfo = 1;
-  bytes interfacesJson = 2;
-  string publicAddress = 4;
-  string serverVersion = 5;
+    /// Network information.
+    repeated NetworkInfo networkInfo = 1;
+    /// Server configuration file `interfaces.json`.
+    bytes interfacesJson = 2;
+    /// IP address of server.
+    string publicAddress = 4;
+    /// Version of RemotiveBroker.
+    string serverVersion = 5;
 }
 
-message ReloadMessage{
+/// Response from reload request.
+message ReloadMessage {
+    /// Status of reload operation.
     oneof status {
-      Configuration configuration = 1;
-      string errorMessage = 2;
-    }
-}
-
-message FileDescription{
-    string sha256 = 1; // base16 encoded and not relevant when downloading
-    string path = 2;
-}
-
-/**
- * sha256 which is part of FileDescription only needs to be submitted in the last chunk. 
- */
-message FileUploadRequest{
-    oneof data {
-      FileDescription fileDescription = 1;
-      bytes chunk = 2;
-    }
-}
-
-/**
- * sha256 which is part of FileDescription only needs to be submitted in the last chunk. 
- */
-message FileUploadChunkRequest{
-    FileDescription fileDescription = 1;
-    uint32 chunks = 2;
-    uint32 chunkId = 3;
-    bytes chunk = 4;
-    bool cancelUpload = 5;
-    uint32 uploadTimeout = 6;
-}
-
-message FileUploadResponse{
-    oneof data {
-        bool finished = 1;
-        bool cancelled = 2;
-        string errorMessage = 3;
-    };
-}
-
-message FileDownloadResponse{
-    oneof data {
-        bytes chunk = 1;
+        /// New configuration from successfull reload operation.
+        Configuration configuration = 1;
+        /// Response from failed reload operation.
         string errorMessage = 2;
+    }
+}
+
+/// File information.
+message FileDescription {
+    string sha256 = 1;      /// File checksum.
+    string path = 2;        /// File on server.
+}
+
+/**
+ * Parameters for a file upload.
+ * SHA256 which is part of FileDescription only needs to be submitted in the
+ * last chunk.
+ */
+message FileUploadRequest {
+    /// Data for upload.
+    oneof data {
+      FileDescription fileDescription = 1;      /// Information about file to upload.
+      bytes chunk = 2;                          /// Amount of chunks that will be sent for this file.
+    }
+}
+
+/**
+ * Request for file chunk upload.
+ * Divide file in chunks of 500000 bytes.
+ * SHA256 which is part of FileDescription only needs to be submitted in the
+ * last chunk.
+ */
+message FileUploadChunkRequest {
+    FileDescription fileDescription = 1;        /// What file this chunk is for.
+    uint32 chunks = 2;                          /// Amount of chunks.
+    uint32 chunkId = 3;                         /// Index of this chunk. Start with 0.
+    bytes chunk = 4;                            /// Chunk data.
+    bool cancelUpload = 5;                      /// Cancel upload request.
+    uint32 uploadTimeout = 6;                   /// Server side timeout for processing this chunk.
+}
+
+/// Response from file or file chunk upload.
+message FileUploadResponse {
+    /// Result from upload.
+    oneof data {
+        bool finished = 1;          /// Upload completed.
+        bool cancelled = 2;         /// Upload canceled.
+        string errorMessage = 3;    /// Error with reason.
     };
 }
 
+/// Response from file download request.
+message FileDownloadResponse {
+    /// Result.
+    oneof data {
+        bytes chunk = 1;            /// File content.
+        string errorMessage = 2;    /// Error with reason.
+    };
+}
+
+/// Type for license status.
 enum LicenseStatus {
-  UNSET = 0;
-  VALID = 1;
-  EXPIRED = 2;
-  BADDATE = 3;
-  WRONGMACHINE = 4;
-  INCOMPLETEJSON = 5;
-  INVALIDJSON = 6;
-  BADSIGNATURE = 7;
-  MALFORMED = 8;
-  SERVERERROR = 9;
-  NOTERMSAGREEMENT = 10;
+  UNSET = 0;                /// No license.
+  VALID = 1;                /// Valid license.
+  EXPIRED = 2;              /// Expired.
+  BADDATE = 3;              /// Error, incorrect date.
+  WRONGMACHINE = 4;         /// Error, license not for this machine.
+  INCOMPLETEJSON = 5;       /// Error, Incomplete license file.
+  INVALIDJSON = 6;          /// Error, Incomplete license json file.
+  BADSIGNATURE = 7;         /// Error, Bad signature on license file.
+  MALFORMED = 8;            /// Error, reading license file.
+  SERVERERROR = 9;          /// Error, server side.
+  NOTERMSAGREEMENT = 10;    /// Error, user has not acceptet terms.
 }
 
+/// Server license information.
 message LicenseInfo {
-  LicenseStatus status = 1;
-  bytes json = 2; // verbatim json from the license data (if base64-decodable)
-  string expires = 3; // extracted from json for convenience
-  string requestId = 4; // info to use when requesting a new license
-  bytes requestMachineId = 5;
+  LicenseStatus status = 1;         /// Status of license.
+  bytes json = 2;                   /// Verbatim json from the license data if BASE64-decodable.
+  string expires = 3;               /// Extracted from json for convenience.
+  string requestId = 4;             /// Info to use when requesting a new license.
+  bytes requestMachineId = 5;       /// Identifier for machine running server.
 }
 
+/// License data.
 message License {
-  bytes data = 1;
-  bool termsAgreement = 2;
+  bytes data = 1;                   /// Content of license.
+  bool termsAgreement = 2;          /// Check if user acceptet user agreement.
 }

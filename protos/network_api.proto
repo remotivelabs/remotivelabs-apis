@@ -4,40 +4,58 @@ import "common.proto";
 
 package base;
 
+/// Signal publish, subscribe and read.
 service NetworkService {
+  /// Subscribe to signals.
   rpc SubscribeToSignals (SubscriberConfig) returns (stream Signals) {}
+  /// Publish signals with values.
   rpc PublishSignals (PublisherConfig) returns (Empty) {}
+  /// Read signals from cache.
   rpc ReadSignals (SignalIds) returns (Signals) {}
 }
 
+/// Parameters for subscription.
 message SubscriberConfig {
+  /// Identifier for subscription, will not recieve subscriptions.
   ClientId clientId = 1;
+  /// List of signals in subscription.
   SignalIds signals = 2;
+  /// Only trigger callback on change?
   bool onChange = 3;
 }
 
+/// List of signal identifiers
 message SignalIds {
-  repeated SignalId signalId = 1;
+  repeated SignalId signalId = 1;   /// List of signal identifiers.
 }
 
+/// Signals with values
 message Signals {
-  repeated Signal signal = 1;
+  repeated Signal signal = 1; /// List of signals with values.
 }
 
+/// Parameters for publishing values.
 message PublisherConfig {
-  Signals signals = 1;
+  Signals signals = 1;      /// Signals with values.
+  /**
+   * Identifier of publication.
+   * Subscribers with same identifier will not trigger callback.
+   */
   ClientId clientId = 2;
+  /// Specify frequency of publication. Specify 0 to only publish once.
   int32 frequency = 3;
 }
 
+/// Signal with value.
 message Signal {
-  SignalId id = 1;
+  SignalId id = 1;          /// Identifier of signal to publish.
+  /// Value signal. Union of supported data types.
   oneof payload {
-    int64 integer = 2;
-    double double = 3;
-    bool arbitration = 4;
-    bool empty = 6;
+    int64 integer = 2;      /// Value with integer type (int64).
+    double double = 3;      /// Floating point data type (double).
+    bool arbitration = 4;   /// Is binary type? Complete data stored in field `raw`.
+    bool empty = 6;         /// No data supplied.
   }
-  bytes raw = 5;
-  int64 timestamp = 7; // microseconds
+  bytes raw = 5;            /// Binary data of value.
+  int64 timestamp = 7;      // Publication time stamp in microseconds
 }
