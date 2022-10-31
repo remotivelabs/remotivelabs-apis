@@ -40,6 +40,7 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
+Homepage = "https://remotivelabs.com/"
 Documentation = "https://docs.remotivelabs.com/python/remotivelabs-broker/"
 Issues = "https://github.com/remotivelabs/remotivelabs-apis/issues"
 Source = "https://github.com/remotivelabs/remotivelabs-apis/tree/main/python/remotivelabs-broker"
