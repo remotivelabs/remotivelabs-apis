@@ -61,6 +61,9 @@ no-cov = "cov --no-cov"
 generate_stubs = "sh misc/build_proto.sh"
 generate_doc = "sh misc/build_doc.sh"
 
+[tool.pyright]
+include = ["remotivelabs"]
+
 [[tool.hatch.envs.test.matrix]]
 python = ["37", "38", "39", "310", "311"]
 
