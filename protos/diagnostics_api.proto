@@ -21,8 +21,8 @@ service DiagnosticsService {
 message DiagnosticsRequest {
   SignalId upLink = 1;          /// Signal for setting up link
   SignalId downLink = 2;        /// Signal for closing link
-  bytes serviceId = 3;          /// ?????
-  bytes dataIdentifier = 4;     /// ?????
+  bytes serviceId = 3;          /// service identifier
+  bytes dataIdentifier = 4;     /// data identifier
 }
 
 /// Response from a diagnostics query

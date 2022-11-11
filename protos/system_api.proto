@@ -65,7 +65,7 @@ message ReloadMessage {
 /// File information.
 message FileDescription {
     string sha256 = 1;      /// File checksum.
-    string path = 2;        /// File on server.
+    string path = 2;        /// File (path and filename) on server.
 }
 
 /**
@@ -83,7 +83,7 @@ message FileUploadRequest {
 
 /**
  * Request for file chunk upload.
- * Divide file in chunks of 500000 bytes.
+ * Divide file in chunks of n bytes, where recommened n is 500000 bytes.
  * SHA256 which is part of FileDescription only needs to be submitted in the
  * last chunk.
  */

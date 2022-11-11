@@ -10,7 +10,7 @@ message Empty {
 
 /**
  * Identifier for client. Used in subscribe and publish. Subscriptions will not
- * recieve updates from publish calls with the same ClientId.calls.
+ * recieve updates from publish calls with the same ClientId.
  */
 message ClientId {
   string id = 1; /// Identifier as string
@@ -29,7 +29,7 @@ message SignalInfo {
 }
 
 /**
- * Multiplexing infromation.
+ * Multiplexing information.
  * Some signal databases allow "multiplexing" or "unions" in their frame
  * information. IF a signal is in `select` mode, the value of the signal will
  * act as a filter for signals which are in `filter` mode.
@@ -64,9 +64,9 @@ message MetaData {
     Multiplex multiplex = 18;           /// Frame multiplexing information.
 }
 
-/// Identifier for a name space
+/// Identifier for a name space.
 message NameSpace {
-  string name = 1; /// Name of name space
+  string name = 1; /// Name of name space, which in turn is typically redirected in interfaces.json to an electrical interface.
 }
 
 /// Information about network
