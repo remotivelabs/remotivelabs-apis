@@ -33,16 +33,21 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 COPY --from=builder /usr/local/include /usr/local/include
 
 ## Create the gRPC client
-ENV import_style=commonjs
-ENV grpc_web_import_style=commonjs
+ENV import_style=commonjs,binary
+ENV grpc_web_import_style=commonjs+dts
 ENV mode=grpcwebtext
 VOLUME /protofile
 ENV protofile=echo.proto
 VOLUME /ouput
 #ENV output=/protofile/generated
 
+#protoc  --js_out=import_style=commonjs,binary:. --grpc-web_out=import_style=typescript,mode=grpcweb:.
+
+
 CMD protoc \
   -I=/protofile \
   /protofile/$protofile \
   --js_out=import_style=$import_style:/output \
   --grpc-web_out=import_style=$grpc_web_import_style,mode=$mode:/output
+
+

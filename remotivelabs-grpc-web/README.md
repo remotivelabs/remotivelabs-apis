@@ -1,10 +1,6 @@
 # WEB-GRPC Stubs
 
-# Usage
-
-```
-npm install remotivelabs-grpc-web
-```
+**Important! Code is working but not yet fully packaged or documented**
 
 # Build from source 
 
@@ -18,11 +14,25 @@ docker build -t remotivelabs/grpc-web-generator .
 
 From this directory
 
-```sh
-mkdir generated 
+### Typescript
 
-docker run  \
-  -v $(pwd)/../protos:/protofile \
-  -v $(pwd)/generated:/output \
-  -e "protofile=*.proto" remotivelabs/grpc-web-generator
+```sh
+sh ./generate-ts.sh
 ```
+
+### Javascript
+
+```sh
+sh ./generate-js.sh
+```
+
+## Usage in code
+
+This is not an npm module yet so you will need to copy your generated-ts or generate-js
+directories to your project.
+
+```
+import {SystemServiceClient} from './generated-ts/system_api_grpc_web_pb'
+```
+
+
