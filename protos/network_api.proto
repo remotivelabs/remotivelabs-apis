@@ -24,7 +24,7 @@ message SubscriberConfig {
   ClientId clientId = 1;
   /// List of signals in subscription.
   SignalIds signals = 2;
-  /// Only trigger callback on change?
+  /// Only trigger callback when value changes when set to true. 
   bool onChange = 3;
 }
 
