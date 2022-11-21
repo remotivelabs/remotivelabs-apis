@@ -127,7 +127,7 @@ enum LicenseStatus {
   BADSIGNATURE = 7;         /// Error, Bad signature on license file.
   MALFORMED = 8;            /// Error, reading license file.
   SERVERERROR = 9;          /// Error, server side.
-  NOTERMSAGREEMENT = 10;    /// Error, user has not acceptet terms.
+  NOTERMSAGREEMENT = 10;    /// Error, user has not accepted terms.
 }
 
 /// Server license information.
@@ -142,5 +142,5 @@ message LicenseInfo {
 /// License data.
 message License {
   bytes data = 1;                   /// Content of license.
-  bool termsAgreement = 2;          /// Check if user acceptet user agreement.
+  bool termsAgreement = 2;          /// Check if user accepted user agreement.
 }

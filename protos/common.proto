@@ -10,7 +10,7 @@ message Empty {
 
 /**
  * Identifier for client. Used in subscribe and publish. Subscriptions will not
- * recieve updates from publish calls with the same ClientId.
+ * receive updates from publish calls with the same ClientId.
  */
 message ClientId {
   string id = 1; /// Identifier as string
@@ -58,7 +58,7 @@ message MetaData {
     double factor = 10;                 /// Multiplication faction used for encoding and decoding value in frame.
     double offset = 11;                 /// Offset used for encoding and decoding value in frame.
     repeated string sender = 14;        /// List of named senders of signals.
-    repeated string receiver = 15;      /// List of named recievers of signal.
+    repeated string receiver = 15;      /// List of named receivers of signal.
     float cycleTime = 16;               /// Cadence for sending signal in milliseconds.
     float startValue = 17;              /// Initial value to use before publishing.
     Multiplex multiplex = 18;           /// Frame multiplexing information.
