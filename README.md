@@ -1,4 +1,9 @@
-# RemotiveLabs GRPC API stubs
+# RemotiveLabs APIs
 
-Contains gRPC API stubs and example code for multiple languages.
+This repo contains all public API from [RemotiveLabs](https://remotivelabs.com/).
+
+Links:
+
+- [protos/](protos/): Proto files for working with RemotiveBroker.
+- [python/remotivelabs-broker/](python/remotivelabs-broker/): Python RemotiveBroker API.
 
