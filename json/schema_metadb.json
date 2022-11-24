@@ -1,0 +1,54 @@
+{
+   "description" : "This JSON schema is used for meta databases which works as an extension to conventional databases.\nWorks for `.ldf` and `.dbc`. The meta database is used by the RemotiveBroker to describe functions not available in conventional databases. Such as, E2E and Covesa VCC naming.\nThe RemotiveBroker will read a meta database **IF** the meta database has the same file name as the conventional **AND** the suffix `.meta.json`. For example the DBC database `./my_db.dbc` and the meta database `./my_db.meta.json` will work together.\nThis document is written for format version `0.1.0`",
+   "properties" : {
+      "formatVersion" : {
+         "description" : "File format version. Verifies that the RemotiveBroker can read the file.\nAt the time of writing, use `0.1.0`",
+         "type" : "string"
+      },
+      "signals" : {
+         "description" : "Dictionary with signal names as keys and meta database information as value.",
+         "patternProperties" : {
+            ".+" : {
+               "description" : "Signal names must match those in the parent database.",
+               "properties" : {
+                  "e2e" : {
+                     "description" : "E2E information, different profiles need different fields. Se profile field for more information",
+                     "properties" : {
+                        "counter" : {
+                           "description" : "Name of signal containing the E2E counter.",
+                           "type" : "string"
+                        },
+                        "crc" : {
+                           "description" : "Name of signal containing the E2E checksum.",
+                           "type" : "string"
+                        },
+                        "dataId" : {
+                           "description" : "Data ID to be used in CRC calculation.",
+                           "type" : "integer"
+                        },
+                        "profile" : {
+                           "description" : "Profile to use. Supported profiles and required fields:\n* `PROFILE_AR_01A`, requires `counter`, `crc` and `dataId`.",
+                           "enum" : [
+                              "PROFILE_AR_01A"
+                           ],
+                           "type" : "string"
+                        }
+                     },
+                     "required" : [
+                        "profile"
+                     ],
+                     "type" : "object"
+                  }
+               },
+               "type" : "object"
+            }
+         },
+         "type" : "object"
+      }
+   },
+   "required" : [
+      "formatVersion"
+   ],
+   "title" : "RemotiveBroker meta database json format schema",
+   "type" : "object"
+}
