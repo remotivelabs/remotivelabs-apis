@@ -2,7 +2,10 @@
    "description" : "This JSON schema is used for meta databases which works as an extension to conventional databases.\nWorks for `.ldf` and `.dbc`. The meta database is used by the RemotiveBroker to describe functions not available in conventional databases. Such as, E2E and Covesa VCC naming.\nThe RemotiveBroker will read a meta database **IF** the meta database has the same file name as the conventional **AND** the suffix `.meta.json`. For example the DBC database `./my_db.dbc` and the meta database `./my_db.meta.json` will work together.\nThis document is written for format version `0.1.0`",
    "properties" : {
       "formatVersion" : {
-         "description" : "File format version. Verifies that the RemotiveBroker can read the file.\nAt the time of writing, use `0.1.0`",
+         "description" : "File format version. Verifies that the RemotiveBroker can read the file.",
+         "enum" : [
+            "0.1.0"
+         ],
          "type" : "string"
       },
       "signals" : {
