@@ -316,6 +316,60 @@
             }
          ],
          "type" : "array"
+      },
+      "grpc_server" : {
+         "description" : "Configuration for build in gRPC server. Documentation for available service is available on <https://docs.remotivelabs.com>.",
+         "properties" : {
+            "port" : {
+               "description" : "Server port for gRPC server.",
+               "maximum" : 65535,
+               "minimum" : 0,
+               "type" : "integer"
+            }
+         },
+         "required" : [
+            "port"
+         ],
+         "type" : "object"
+      },
+      "reflectors" : {
+         "description" : "Reflector configuration",
+         "properties" : {
+            "reflect" : {
+               "description" : "Configure reflectors to always bounce trafic.",
+               "items" : {
+                  "description" : "Bounce mechanism, with a _source_ and a _destination_.",
+                  "properties" : {
+                     "dest" : {
+                        "description" : "Name of destination namespace.",
+                        "type" : "string"
+                     },
+                     "exclude" : {
+                        "describe" : "List of frames to exclude in reflector.",
+                        "items" : {
+                           "description" : "Name of frame to exclude",
+                           "type" : "string"
+                        },
+                        "type" : "array"
+                     },
+                     "source" : {
+                        "description" : "Name of source namespace.",
+                        "type" : "string"
+                     }
+                  },
+                  "required" : [
+                     "source",
+                     "dest"
+                  ],
+                  "type" : "object"
+               },
+               "type" : "array"
+            }
+         },
+         "required" : [
+            "reflect"
+         ],
+         "type" : "object"
       }
    },
    "requires" : [
