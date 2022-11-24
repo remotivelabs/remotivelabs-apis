@@ -1,0 +1,326 @@
+{
+   "defs" : {
+      "device_io" : {
+         "description" : "Name of device in OS.",
+         "type" : "string"
+      },
+      "device_virtual" : {
+         "description" : "Arbitrary name of the virtual device.",
+         "type" : "string"
+      },
+      "host" : {
+         "description" : "Network address accepted by the OS. Eg. Ipv4: `\"127.0.0.1\"`.",
+         "type" : "string"
+      },
+      "namespace" : {
+         "description" : "Name assigned to device, used in signal operations.",
+         "type" : "string"
+      },
+      "port" : {
+         "description" : "Networking port",
+         "maximum" : 65535,
+         "minimum" : 0,
+         "type" : "integer"
+      },
+      "short_names" : {
+         "default" : true,
+         "description" : "Have signals addressable in the RemotiveBroker by their name in the database.\nIf `false`, signal names with be generated base on their respective name space.",
+         "type" : "bool"
+      },
+      "signal_db" : {
+         "description" : "Path to signal database.",
+         "type" : "string"
+      }
+   },
+   "description" : "JSON configuration file for RemotiveBroker. Configures all interfaces that the broker will operate on.",
+   "properties" : {
+      "chains" : {
+         "description" : "List of configured interfaces available to RemotiveBroker.",
+         "oneOf" : [
+            {
+               "description" : "Virtual signaling interface. This device doesn't use a database, any published signals will be sent to subscribers of the given signal.",
+               "properties" : {
+                  "device_name" : {
+                     "$ref" : "#/defs/device_virtual"
+                  },
+                  "namespace" : {
+                     "$ref" : "#/defs/namespace"
+                  },
+                  "type" : {
+                     "description" : "Specifies a virtual interface.",
+                     "enum" : [
+                        "virtual"
+                     ]
+                  }
+               },
+               "required" : [
+                  "device_name",
+                  "namespace",
+                  "type"
+               ],
+               "title" : "Virtual"
+            },
+            {
+               "description" : "Either CAN or CAN-FD.",
+               "properties" : {
+                  "dbc_file" : {
+                     "$ref" : "#/defs/signal_db",
+                     "description" : "Path to signal database `.dbc` file."
+                  },
+                  "device_name" : {
+                     "$ref" : "#/defs/device_io"
+                  },
+                  "namespace" : {
+                     "$ref" : "#/defs/namespace"
+                  },
+                  "short_names" : {
+                     "$ref" : "#/defs/short_names"
+                  },
+                  "type" : {
+                     "description" : "What kind of CAN interface.",
+                     "enum" : [
+                        "can",
+                        "canfd"
+                     ]
+                  }
+               },
+               "required" : [
+                  "type",
+                  "namespace",
+                  "device_name",
+                  "dbc_file"
+               ],
+               "title" : "CAN",
+               "type" : "object"
+            },
+            {
+               "description" : "Internal RemotiveLabs protocol for UPD communication over network. Can be used to communicate between RemotiveBrokers.",
+               "properties" : {
+                  "dbc_file" : {
+                     "$ref" : "#/defs/signal_db"
+                  },
+                  "device_name" : {
+                     "$ref" : "#/defs/device_virtual"
+                  },
+                  "fixed_payload_size" : {
+                     "description" : "If set, will use this frame size (bytes) for all packets.",
+                     "minimum" : 0,
+                     "type" : "integer"
+                  },
+                  "namespace" : {
+                     "$ref" : "#/defs/namespace"
+                  },
+                  "server_port" : {
+                     "$ref" : "#/defs/port",
+                     "description" : "UDP port for RemotiveBroker to listen to and receive packets on."
+                  },
+                  "short_names" : {
+                     "$ref" : "#/defs/short_names"
+                  },
+                  "target_host" : {
+                     "$ref" : "#/defs/host"
+                  },
+                  "target_port" : {
+                     "$ref" : "#/defs/port",
+                     "description" : "UDP port for RemotiveBroker to send packets to."
+                  },
+                  "type" : {
+                     "description" : "Sets the device type to UDP",
+                     "enum" : [
+                        "udp"
+                     ]
+                  }
+               },
+               "required" : [
+                  "type",
+                  "namespace",
+                  "device_name",
+                  "dbc_file",
+                  "server_port",
+                  "target_port",
+                  "target_host"
+               ],
+               "title" : "UDP",
+               "type" : "object"
+            },
+            {
+               "description" : "LIN master or slave node interface. Connects to a RemotiveLabs LIN ethernet device.",
+               "properties" : {
+                  "config" : {
+                     "description" : "LIN network configuration for communicating with RemotiveLabs LIN service.",
+                     "properties" : {
+                        "device_identifier" : {
+                           "description" : "LIN node ID.",
+                           "maximum" : 16,
+                           "minimum" : 0,
+                           "type" : "integer"
+                        },
+                        "server_port" : {
+                           "$ref" : "#/defs/port",
+                           "description" : "Port for receiving LIN connection to RemotiveBroker."
+                        },
+                        "target_host" : {
+                           "$ref" : "#/defs/host"
+                        },
+                        "target_port" : {
+                           "$ref" : "#/defs/port"
+                        }
+                     },
+                     "required" : [
+                        "device_identifier",
+                        "server_port",
+                        "target_host",
+                        "target_port"
+                     ],
+                     "type" : "object"
+                  },
+                  "device_name" : {
+                     "$ref" : "#/defs/device_virtual"
+                  },
+                  "ldf_file" : {
+                     "$ref" : "#/defs/signal_db",
+                     "description" : "Path to LIN signal database `.ldf` file."
+                  },
+                  "namespace" : {
+                     "$ref" : "#/defs/namespace"
+                  },
+                  "node_mode" : {
+                     "description" : "Type of LIN node.",
+                     "enum" : [
+                        "master",
+                        "slave"
+                     ]
+                  },
+                  "schedule_autostart" : {
+                     "description" : "Should LIN schedules start at boot? Or paus until user command.",
+                     "type" : "bool"
+                  },
+                  "schedule_file" : {
+                     "description" : "Path to `.ldf` file used for schedules.",
+                     "type" : "string"
+                  },
+                  "schedule_table_name" : {
+                     "description" : "Path to `.ldf` file used for tables. TODO",
+                     "type" : "string"
+                  },
+                  "type" : {
+                     "description" : "Sets the device type to LIN",
+                     "enum" : [
+                        "lin"
+                     ]
+                  }
+               },
+               "required" : [
+                  "namespace",
+                  "type",
+                  "config",
+                  "device_name",
+                  "node_mode",
+                  "ldf_file",
+                  "schedule_file",
+                  "schedule_table_name",
+                  "schedule_autostart"
+               ],
+               "title" : "LIN"
+            },
+            {
+               "description" : "Flexray interface.",
+               "properties" : {
+                  "config" : {
+                     "oneOf" : [
+                        {
+                           "description" : "RemotiveLabs software adapter.",
+                           "properties" : {
+                              "target_host" : {
+                                 "$ref" : "#/defs/host"
+                              },
+                              "target_port" : {
+                                 "$ref" : "#/defs/port"
+                              }
+                           },
+                           "required" : [
+                              "target_host",
+                              "target_port"
+                           ],
+                           "title" : "Software adapter",
+                           "type" : "object"
+                        },
+                        {
+                           "description" : "Technica CAN combo hardware.",
+                           "properties" : {
+                              "hardware" : {
+                                 "description" : "What type of hardware.",
+                                 "enum" : [
+                                    "Technica_CM_CAN_COMBO"
+                                 ]
+                              },
+                              "target_config" : {
+                                 "properties" : {
+                                    "interface" : {
+                                       "describe" : "Network interface to use.\nFor example `\"eth0\"`.",
+                                       "type" : "string"
+                                    },
+                                    "multicast" : {
+                                       "describe" : "MAC address to use for multicast.\nFor example `\"01:00:5e:00:00:00\"`.",
+                                       "type" : "string"
+                                    }
+                                 },
+                                 "required" : [
+                                    "interface",
+                                    "multicast"
+                                 ],
+                                 "type" : "object"
+                              },
+                              "target_host" : {
+                                 "$ref" : "#/defs/host"
+                              },
+                              "target_port" : {
+                                 "$ref" : "#/defs/port"
+                              }
+                           },
+                           "required" : [
+                              "target_host",
+                              "target_port",
+                              "hardware",
+                              "target_config"
+                           ],
+                           "title" : "Technica"
+                        }
+                     ]
+                  },
+                  "device_name" : {
+                     "$ref" : "#/defs/device_virtual"
+                  },
+                  "fibex_file" : {
+                     "$ref" : "#/defs/signal_db",
+                     "description" : "Path to Flexray signal database `.xml` file."
+                  },
+                  "namespace" : {
+                     "$ref" : "#/defs/namespace"
+                  },
+                  "type" : {
+                     "description" : "Sets the device type to Flexray",
+                     "enum" : [
+                        "flexray"
+                     ]
+                  }
+               },
+               "required" : [
+                  "type",
+                  "device_name",
+                  "namespace",
+                  "config",
+                  "fibex_file"
+               ],
+               "title" : "Flexray"
+            }
+         ],
+         "type" : "array"
+      }
+   },
+   "requires" : [
+      "chains"
+   ],
+   "title" : "RemotiveBroker configuration",
+   "type" : "object"
+}
