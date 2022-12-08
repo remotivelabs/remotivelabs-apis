@@ -49,6 +49,7 @@ Source = "https://github.com/remotivelabs/remotivelabs-apis/tree/main/python/rem
 path = "remotivelabs/broker/__about__.py"
 
 [tool.hatch.envs.default]
+python = "python3"
 dependencies = [
   "pytest-cov~=3.0.0",
   "pytest-pep8~=1.0.6",
