@@ -19,6 +19,7 @@ enum Mode {
   PAUSE = 1;        /// Playback is paused.
   STOP = 2;         /// Playback in stopped.
   RECORD = 3;       /// Recording a playback.
+  SEEK = 4;         /// seeks to offestTime where offset time is [0..(endTime-startTime)] only accessible from STOP or PLAY mode. Once SEEK is done PAUSE will be returned.
 }
 
 /// Status of playback.
