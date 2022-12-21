@@ -5,9 +5,5 @@ import remotivelabs.broker.sync as br
 
 
 def test_empty():
-    e = br.common_pb2.Empty
-    assert is_protobuf_type(e)
-
-
-def is_protobuf_type(obj):
-    return isinstance(obj, pb.pyext.cpp_message.GeneratedProtocolMessageType)
+    # Instanciate empty type
+    br.common_pb2.Empty
