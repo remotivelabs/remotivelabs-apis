@@ -82,17 +82,8 @@ message MetaData {
     float cycleTime = 16;               /// Cadence for sending signal in milliseconds.
     float startValue = 17;              /// Initial value to use before publishing.
     Multiplex multiplex = 18;           /// Frame multiplexing information.
-}
-
-/**
- * Collection of all meta data for a frame.
- *
- * RemotiveBroker support several databases. The following attributes are read
- * from the database running on the RemotiveBroker.
- */
-message MetaDataFrame {
-  E2e e2e = 1;                          /// E2e information about frame.
-  repeated Group groups = 2;            /// Groups inside frame.
+    E2e e2e = 19;                       /// E2e information about frame.
+    repeated Group groups = 20;         /// Groups inside frame.
 }
 
 /// Identifier for a name space.
@@ -111,7 +102,6 @@ message NetworkInfo {
 message FrameInfo {
   SignalInfo signalInfo = 1;            /// Information about the frame itself.
   repeated SignalInfo childInfo = 2;    /// Information about signals included in frame.
-  MetaDataFrame metaData = 3;
 }
 
 /// Collection of information for several frames.
