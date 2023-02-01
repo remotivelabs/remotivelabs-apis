@@ -42,6 +42,26 @@ message Multiplex {
     };
 }
 
+/// Supported E2E profiles.
+enum E2eProfile {
+    PROFILE_AR_01A = 0; /// Autosar 1A
+}
+
+/// Information about E2E configuration.
+message E2e {
+    E2eProfile profile = 1;             /// Profile.
+    uint32 dataId = 2;                  /// Data ID for CRC calculation.
+    string signalCrc = 3;               /// Name of signal for CRC field.
+    string signalCounter = 4;           /// Name of signal for counter field.
+}
+
+/// Group inside of frame.
+message Group {
+    uint32 start = 1;                   /// Byte offset in frame for group.
+    uint32 length = 2;                  /// Byte length of group.
+    E2e e2e = 3;                        /// E2E property for group.
+}
+
 /**
  * Collection of all meta data for a signal.
  *
@@ -62,6 +82,8 @@ message MetaData {
     float cycleTime = 16;               /// Cadence for sending signal in milliseconds.
     float startValue = 17;              /// Initial value to use before publishing.
     Multiplex multiplex = 18;           /// Frame multiplexing information.
+    E2e e2e = 19;                       /// E2e information about frame.
+    repeated Group groups = 20;         /// Groups inside frame.
 }
 
 /// Identifier for a name space.
