@@ -84,6 +84,7 @@ message MetaData {
     Multiplex multiplex = 18;           /// Frame multiplexing information.
     E2e e2e = 19;                       /// E2e information about frame.
     repeated Group groups = 20;         /// Groups inside frame.
+    uint32 frameId = 21;                /// Assosiated identification number for frame.
 }
 
 /// Identifier for a name space.
