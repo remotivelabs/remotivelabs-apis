@@ -93,7 +93,7 @@ message FileUploadChunkRequest {
     uint32 chunkId = 3;                         /// Index of this chunk. Start with 0.
     bytes chunk = 4;                            /// Chunk data.
     bool cancelUpload = 5;                      /// Cancel upload request.
-    uint32 uploadTimeout = 6;                   /// Server side timeout for processing this chunk.
+    uint32 uploadTimeout = 6;                   /// Server side timeout (ms) for uploading all chunks which represents full file.
 }
 
 /// Response from file or file chunk upload.
