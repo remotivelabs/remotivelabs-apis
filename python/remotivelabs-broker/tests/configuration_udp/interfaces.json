@@ -7,6 +7,7 @@
     },
     {
       "namespace": "ecu_A",
+      "device_name": "udp1",
       "type": "udp",
       "database": "can/test.dbc",
       "server_port": 2001,
@@ -15,6 +16,7 @@
     },
     {
       "namespace": "ecu_B",
+      "device_name": "udp2",
       "type": "udp",
       "database": "can/test.dbc",
       "server_port": 2000,
