@@ -35,4 +35,8 @@ directories to your project.
 import {SystemServiceClient} from './generated-ts/system_api_grpc_web_pb'
 ```
 
+# TODO
+
+* webpack
+* npm module
 
