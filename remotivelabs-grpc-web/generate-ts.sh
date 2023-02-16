@@ -24,3 +24,5 @@ for filename in *.js; do
 done )
 
 cp $TMP/*.ts $OUTPUT
+
+npx tsc

@@ -1,6 +1,26 @@
-# WEB-GRPC Stubs
+# RemotiveLabs WEB-GRPC Stubs
 
-**Important! Code is working but not yet fully packaged or documented**
+For more info visit https://remotivelabs.com or https://github.com/remotivelabs
+
+These are generated grpc-web stubs to be used in a browser context, not intended
+to bu used with nodejs.
+
+## Usage
+
+### Installation
+```
+npm install remotivelabs-grpc-web
+or
+yarn add remotivelabs-grpc-web
+```
+
+### Import
+```
+import {SystemServiceClient} from 'remotivelabs-grpc-web'
+
+const client = new SystemServiceClient(brokerUrl)
+
+```
 
 # Build from source 
 
@@ -25,18 +45,4 @@ sh ./generate-ts.sh
 ```sh
 sh ./generate-js.sh
 ```
-
-## Usage in code
-
-This is not an npm module yet so you will need to copy your generated-ts or generate-js
-directories to your project.
-
-```
-import {SystemServiceClient} from './generated-ts/system_api_grpc_web_pb'
-```
-
-# TODO
-
-* webpack
-* npm module
 
