@@ -1,0 +1,9 @@
+yarn*
+tsconfig.json
+README.md
+generate-ts.sh
+generate-js.sh
+Dockerfile
+.gitignore
+src
+build
