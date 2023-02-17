@@ -1,7 +1,11 @@
 {
-  "name": "remotivelabs-grpc-web",
+  "name": "remotivelabs-grpc-web-stubs",
   "version": "0.0.1",
-  "description": "**Important! Code is working but not yet fully packaged or documented**",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/remotivelabs/remotivelabs-apis"
+  },
+  "description": "Javascript/Typescript grpc-web stubs for interacting with RemotiveBroker",
   "main": "lib/index.js",
   "directories": {
     "lib": "lib"
@@ -10,11 +14,13 @@
     "google-protobuf": "^3.9.0-rc.1",
     "grpc-web": "^1.2.1"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "johan.rask@remotivelabs.com",
-  "license": "APACHE2"
+  "license": "apache-v2"
 }
