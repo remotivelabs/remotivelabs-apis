@@ -1,14 +1,14 @@
 {
   "name": "remotivelabs-grpc-web-stubs",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/remotivelabs/remotivelabs-apis"
   },
   "description": "Javascript/Typescript grpc-web stubs for interacting with RemotiveBroker",
-  "main": "../lib/index.js",
+  "main": "lib/index.js",
   "directories": {
-    "lib": "../lib"
+    "lib": "lib"
   },
   "dependencies": {
     "google-protobuf": "^3.9.0-rc.1",
