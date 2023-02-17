@@ -11,7 +11,7 @@ mkdir -p $OUTPUT
 
 # Generate js + typescript stubs
 docker run  \
-  -v $(pwd)/../protos:/protofile \
+  -v $(pwd)/../../protos:/protofile \
   -v $(pwd)/$TMP:/output \
   -e "grpc_web_import_style=commonjs+dts" \
   -e "protofile=*.proto" remotivelabs/grpc-web-generator
@@ -24,5 +24,8 @@ for filename in *.js; do
 done )
 
 cp $TMP/*.ts $OUTPUT
+rm -rf $TMP
 
 npx tsc
+
+echo "Stubs successfully generated and npm package ready to publish"

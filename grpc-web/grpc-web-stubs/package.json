@@ -6,16 +6,16 @@
     "url": "https://github.com/remotivelabs/remotivelabs-apis"
   },
   "description": "Javascript/Typescript grpc-web stubs for interacting with RemotiveBroker",
-  "main": "lib/index.js",
+  "main": "../lib/index.js",
   "directories": {
-    "lib": "lib"
+    "lib": "../lib"
   },
   "dependencies": {
     "google-protobuf": "^3.9.0-rc.1",
     "grpc-web": "^1.2.1"
   },
   "devDependencies": {
-    "typescript": "^4.9.5"
+    "typescript": "~4.9.5"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
