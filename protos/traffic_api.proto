@@ -19,6 +19,7 @@ enum Mode {
   PAUSE = 1;        /// Playback is paused.
   STOP = 2;         /// Playback in stopped.
   RECORD = 3;       /// Recording a playback.
+  SEEK = 4;         /// Seek to offset in a playback
 }
 
 /// Status of playback.
