@@ -6,4 +6,4 @@ Links:
 
 - [protos/](protos/): Proto files for working with RemotiveBroker.
 - [python/remotivelabs-broker/](python/remotivelabs-broker/): Python RemotiveBroker API.
-
+- [grpc-web/](grpc-web/): Javascript (grpc-web) API for accessing RemotiveBroker from browser.
