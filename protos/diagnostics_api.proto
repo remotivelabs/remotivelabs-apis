@@ -15,6 +15,19 @@ package base;
 service DiagnosticsService {
   /// Send diagnostics request
   rpc SendDiagnosticsQuery (DiagnosticsRequest) returns (DiagnosticsResponse) {}
+  rpc PublishMultiFrame (MultiFrame) returns (Empty) {}
+  rpc SubscribeMultiFrame (MultiFrame) returns (stream Payload) {}
+}
+
+message Payload {
+  bytes bytes = 1;
+}
+
+message MultiFrame {
+  ClientId clientId = 1;     /// Data identifier
+  SignalId publishSignal = 2;          /// Signal for setting up link
+  SignalId subscribeSignal = 3;        /// Signal for closing link
+  Payload payload = 4;          /// Service identifier
 }
 
 /// Parameters for a diagnostics query
@@ -25,7 +38,7 @@ message DiagnosticsRequest {
   bytes dataIdentifier = 4;     /// Data identifier
 }
 
-/// Response from a diagnostics query
+// /// Response from a diagnostics query
 message DiagnosticsResponse {
   bytes raw = 5; /// Payload
 }
