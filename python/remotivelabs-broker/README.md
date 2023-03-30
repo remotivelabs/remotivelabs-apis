@@ -12,6 +12,7 @@
 
 - [Installation](#installation)
 - [Examples](#examples)
+- [Build and Publish](#build-and-publish)
 - [License](#license)
 
 ## Installation
@@ -29,6 +30,14 @@ This project has a script in the project file for generation. Generate stubs fro
 
 Building the stubs is a requirement before build a python package of the project.
 
+### Build and publish
+
+Make sure to put version in `__about__.py`. Beta versions should be suffixed with `b*`, example `0.2.0b1`
+
+    hatch run generate_stubs
+    hatch build
+    hatch publish
+> find username and password in less secret location ;)
 ## License
 
 `remotivelabs-broker` is distributed under the terms of the [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) license.
