@@ -23,6 +23,9 @@ service SystemService {
      */
     rpc UploadFile (stream FileUploadRequest) returns (FileUploadResponse) {}
 
+    // Delete file from server.
+    rpc DeleteFile (FileDescription) returns (Empty) {}
+
     // Download file from server.
     rpc DownloadFile (FileDescription) returns (stream FileDownloadResponse) {}
 
