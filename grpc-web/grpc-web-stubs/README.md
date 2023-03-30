@@ -29,6 +29,7 @@ const client = new SystemServiceClient(brokerUrl)
 
 ## Build grpc-web-generator
 
+This image is on dockerhub so you do not have to build it
 ```
 docker build -t remotivelabs/grpc-web-generator .
 ```
