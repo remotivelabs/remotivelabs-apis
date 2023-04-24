@@ -26,8 +26,8 @@ service SystemService {
     // Delete file from server.
     rpc DeleteFile (FileDescription) returns (Empty) {}
 
-    // Download file from server.
-    rpc DownloadFile (FileDescription) returns (stream FileDownloadResponse) {}
+    /// Download a single or multiple files from server.
+    rpc BatchDownloadFiles (FileDescriptions) returns (stream FileDownloadResponse) {}
 
     /**
      * Will not return until new configuration is tested an active, make sure
@@ -69,6 +69,10 @@ message ReloadMessage {
 message FileDescription {
     string sha256 = 1;      /// File checksum.
     string path = 2;        /// File (path and filename) on server.
+}
+
+message FileDescriptions {
+  repeated FileDescription fileDescriptions = 1;
 }
 
 /**
