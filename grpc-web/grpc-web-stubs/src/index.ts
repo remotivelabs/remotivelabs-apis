@@ -47,6 +47,7 @@ import {
     ReloadMessage,
     FileUploadChunkRequest,
     FileDescription,
+    FileDescriptions,
     FileDownloadResponse,
     FileUploadResponse,
 } from '../generated-ts/system_api_pb'
@@ -144,6 +145,7 @@ export {
     ReloadMessage,
     FileUploadChunkRequest,
     FileDescription,
+    FileDescriptions,
     FileDownloadResponse,
     FileUploadResponse,
 

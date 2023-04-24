@@ -36,7 +36,7 @@ docker build -t remotivelabs/grpc-web-generator .
 
 ## Generate stubs
 
-From this directory
+From this directory run the following commands and update `src/index.ts` to explicitly export types.
 
 ### Typescript
 

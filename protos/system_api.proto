@@ -23,8 +23,8 @@ service SystemService {
      */
     rpc UploadFile (stream FileUploadRequest) returns (FileUploadResponse) {}
 
-    // Delete file from server.
-    rpc DeleteFile (FileDescription) returns (Empty) {}
+    /// Delete a single or multiple files from server.
+    rpc BatchDeleteFiles (FileDescriptions) returns (Empty) {}
 
     /// Download a single or multiple files from server.
     rpc BatchDownloadFiles (FileDescriptions) returns (stream FileDownloadResponse) {}
