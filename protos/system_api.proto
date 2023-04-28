@@ -28,6 +28,7 @@ service SystemService {
 
     /// Download a single or multiple files from server.
     rpc BatchDownloadFiles (FileDescriptions) returns (stream FileDownloadResponse) {}
+    rpc BatchDownloadFileChunks (BatchDownloadFileChunksRequest) returns (BatchDownloadFileChunksResponse) {}
 
     /**
      * Will not return until new configuration is tested an active, make sure
@@ -122,6 +123,18 @@ message FileDownloadResponse {
         bytes chunk = 1;            /// File content.
         string errorMessage = 2;    /// Error with reason.
     };
+}
+
+message BatchDownloadFileChunksRequest {
+  repeated FileDescription fileDescriptions = 1;
+  uint32 timeout = 6;            /// Server-side timeout (in milliseconds) for downloading a chunk. The timeout is for each chunk, not the entire file. If the timeout is exceeded, the server will cancel the download and return an error.
+}
+
+message BatchDownloadFileChunksResponse {
+  bool lastChunk = 2;                         /// Amount of chunks.
+  uint32 chunkId = 3;                         /// Index of this chunk. Start with 0.
+  bytes chunk = 4;                            /// Chunk data.
+  uint32 estimatedTotalSize = 5;              /// Estimated total size in bytes.
 }
 
 /// Type for license status.
