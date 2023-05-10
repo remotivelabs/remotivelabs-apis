@@ -1,19 +1,18 @@
 # RemotiveLabs WEB-GRPC Stubs
 
+[![npm version](https://img.shields.io/npm/v/remotivelabs-grpc-web-stubs.svg)](https://www.npmjs.com/package/remotivelabs-grpc-web-stubs)
+
 These are generated grpc-web stubs to be used in a browser context, not intended
 to bu used with nodejs, read more here https://github.com/grpc/grpc-web
-
-## RemotiveLabs
-
-For more info visit https://remotivelabs.com or https://github.com/remotivelabs
-
 
 ## Usage
 
 ### Installation
 ```
-npm install remotivelabs-grpc-web-stubs
+npm install --save remotivelabs-grpc-web-stubs
+```
 or
+```
 yarn add remotivelabs-grpc-web-stubs
 ```
 
@@ -22,31 +21,21 @@ yarn add remotivelabs-grpc-web-stubs
 import {SystemServiceClient} from 'remotivelabs-grpc-web-stubs'
 
 const client = new SystemServiceClient(brokerUrl)
-
 ```
 
-# Build from source 
+## Development
 
-## Build grpc-web-generator
+### Build grpc-web-generator
 
 This image is on dockerhub so you do not have to build it
-```
+```sh
 docker build -t remotivelabs/grpc-web-generator .
 ```
 
-## Generate stubs
+### Generate stubs
 
 From this directory run the following commands and update `src/index.ts` to explicitly export types.
-
-### Typescript
 
 ```sh
 sh ./generate-ts.sh
 ```
-
-### Javascript
-
-```sh
-sh ./generate-js.sh
-```
-
