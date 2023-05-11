@@ -1,0 +1,1 @@
+rootProject.name = "remotivebroker-grpc-stubs-kotlin"
