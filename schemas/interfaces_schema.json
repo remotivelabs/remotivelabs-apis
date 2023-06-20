@@ -1,0 +1,371 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "RemotiveBroker configuration",
+  "description": "JSON configuration file for RemotiveBroker. A configuration file must be named `interfaces.json`. Configures all interfaces that the broker will operate on.",
+  "properties": {
+    "node_name": {
+      "description": "Name of the RemotiveBroker node. Required only if the configuration is used in the distributed broker mode.",
+      "type": "string"
+    },
+    "chains": {
+      "description": "List of configured interfaces available to RemotiveBroker.",
+      "items": {
+        "oneOf": [
+          {
+            "description": "Virtual signaling interface. This device doesn't use a database, any published signals will be sent to subscribers of the given signal.",
+            "properties": {
+              "namespace": {
+                "$ref": "#/defs/namespace"
+              },
+              "type": {
+                "description": "Specifies a virtual interface.",
+                "enum": [
+                  "virtual"
+                ]
+              }
+            },
+            "required": [
+              "namespace",
+              "type"
+            ],
+            "title": "Virtual"
+          },
+          {
+            "description": "Either CAN or CAN-FD.",
+            "properties": {
+              "database": {
+                "$ref": "#/defs/signal_db",
+                "description": "Path to signal database file."
+              },
+              "device_name": {
+                "description": "Name of device in OS.",
+                "type": "string"
+              },
+              "namespace": {
+                "$ref": "#/defs/namespace"
+              },
+              "short_names": {
+                "$ref": "#/defs/short_names"
+              },
+              "type": {
+                "description": "What kind of CAN interface.",
+                "enum": [
+                  "can",
+                  "canfd"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "namespace",
+              "device_name",
+              "database"
+            ],
+            "title": "CAN",
+            "type": "object"
+          },
+          {
+            "description": "Internal RemotiveLabs protocol for UPD communication over network. Can be used to communicate between RemotiveBrokers.",
+            "properties": {
+              "database": {
+                "$ref": "#/defs/signal_db"
+              },
+              "fixed_payload_size": {
+                "description": "If set, will use this frame size (bytes) for all packets.",
+                "minimum": 0,
+                "type": "integer"
+              },
+              "namespace": {
+                "$ref": "#/defs/namespace"
+              },
+              "server_port": {
+                "$ref": "#/defs/port",
+                "description": "UDP port for RemotiveBroker to listen to and receive packets on."
+              },
+              "short_names": {
+                "$ref": "#/defs/short_names"
+              },
+              "target_host": {
+                "$ref": "#/defs/host"
+              },
+              "target_port": {
+                "$ref": "#/defs/port",
+                "description": "UDP port for RemotiveBroker to send packets to."
+              },
+              "type": {
+                "description": "Sets the device type to UDP",
+                "enum": [
+                  "udp"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "namespace",
+              "database",
+              "server_port",
+              "target_port",
+              "target_host"
+            ],
+            "title": "UDP",
+            "type": "object"
+          },
+          {
+            "description": "LIN master or slave node interface. Connects to a RemotiveLabs LIN ethernet device.",
+            "properties": {
+              "config": {
+                "description": "LIN network configuration for communicating with RemotiveLabs LIN service.",
+                "properties": {
+                  "device_identifier": {
+                    "description": "LIN node ID.",
+                    "maximum": 16,
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "server_port": {
+                    "$ref": "#/defs/port",
+                    "description": "Port for receiving LIN connection to RemotiveBroker."
+                  },
+                  "target_host": {
+                    "$ref": "#/defs/host"
+                  },
+                  "target_port": {
+                    "$ref": "#/defs/port"
+                  }
+                },
+                "required": [
+                  "device_identifier",
+                  "server_port",
+                  "target_port"
+                ],
+                "type": "object"
+              },
+              "database": {
+                "$ref": "#/defs/signal_db",
+                "description": "Path to LIN signal database `.ldf` file."
+              },
+              "namespace": {
+                "$ref": "#/defs/namespace"
+              },
+              "node_mode": {
+                "description": "Type of LIN node.",
+                "enum": [
+                  "master",
+                  "slave"
+                ]
+              },
+              "schedule_autostart": {
+                "description": "Should LIN schedules start at boot? Or paus until user command.",
+                "type": "boolean"
+              },
+              "schedule_file": {
+                "description": "Path to `.ldf` file used for schedules.",
+                "type": "string"
+              },
+              "schedule_table_name": {
+                "description": "Path to `.ldf` file used for tables. TODO",
+                "type": "string"
+              },
+              "type": {
+                "description": "Sets the device type to LIN",
+                "enum": [
+                  "lin"
+                ]
+              }
+            },
+            "required": [
+              "namespace",
+              "type",
+              "config",
+              "node_mode",
+              "database"
+            ],
+            "if": {
+              "properties": {
+                "node_mode": { "const": "master" }
+              }
+            },
+            "then": {
+              "required": ["schedule_file", "schedule_table_name", "schedule_autostart"]
+            },
+            "title": "LIN"
+          },
+          {
+            "description": "Flexray interface.",
+            "properties": {
+              "config": {
+                "oneOf": [
+                  {
+                    "description": "RemotiveLabs software adapter.",
+                    "properties": {
+                      "target_host": {
+                        "$ref": "#/defs/host"
+                      },
+                      "target_port": {
+                        "$ref": "#/defs/port"
+                      }
+                    },
+                    "required": [
+                      "target_host",
+                      "target_port"
+                    ],
+                    "title": "Software adapter",
+                    "type": "object"
+                  },
+                  {
+                    "description": "Technica CAN combo hardware.",
+                    "properties": {
+                      "hardware": {
+                        "description": "What type of hardware.",
+                        "enum": [
+                          "Technica_CM_CAN_COMBO"
+                        ]
+                      },
+                      "target_config": {
+                        "properties": {
+                          "interface": {
+                            "describe": "Network interface to use.\nFor example `\"eth0\"`.",
+                            "type": "string"
+                          },
+                          "multicast": {
+                            "describe": "MAC address to use for multicast.\nFor example `\"01:00:5e:00:00:00\"`.",
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "interface",
+                          "multicast"
+                        ],
+                        "type": "object"
+                      },
+                      "target_host": {
+                        "$ref": "#/defs/host"
+                      },
+                      "target_port": {
+                        "$ref": "#/defs/port"
+                      }
+                    },
+                    "required": [
+                      "target_host",
+                      "target_port",
+                      "hardware",
+                      "target_config"
+                    ],
+                    "title": "Technica"
+                  }
+                ]
+              },
+              "fibex_file": {
+                "$ref": "#/defs/signal_db",
+                "description": "Path to Flexray signal database `.xml` file."
+              },
+              "namespace": {
+                "$ref": "#/defs/namespace"
+              },
+              "type": {
+                "description": "Sets the device type to Flexray",
+                "enum": [
+                  "flexray"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "namespace",
+              "config",
+              "fibex_file"
+            ],
+            "title": "Flexray"
+          }
+        ]
+      },
+      "type": "array"
+    },
+    "grpc_server": {
+      "description": "Configuration for build in gRPC server. Documentation for available service is available on <https://docs.remotivelabs.com>.",
+      "properties": {
+        "port": {
+          "description": "Server port for gRPC server.",
+          "maximum": 65535,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "port"
+      ],
+      "type": "object"
+    },
+    "reflectors": {
+      "description": "A list of reflector configurations.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "reflect": {
+            "description": "Configure reflectors to always bounce traffic.",
+            "type": "array",
+            "items": {
+              "description": "Bounce mechanism, with a _source_ and a _destination_.",
+              "type": "object",
+              "properties": {
+                "source": {
+                  "description": "Name of source namespace.",
+                  "type": "string"
+                },
+                "dest": {
+                  "description": "Name of destination namespace.",
+                  "type": "string"
+                },
+                "exclude": {
+                  "describe": "List of frames to exclude in reflector.",
+                  "type": "array",
+                  "items": {
+                    "description": "Name of frame to exclude",
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "source",
+                "dest"
+              ]
+            }
+          }
+        },
+        "required": [
+          "reflect"
+        ]
+      }
+    }
+  },
+  "required": [
+    "chains"
+  ],
+  "defs": {
+    "host": {
+      "description": "Network address accepted by the OS. Eg. Ipv4: `\"127.0.0.1\"`.",
+      "type": "string"
+    },
+    "namespace": {
+      "description": "Name assigned to device, used in signal operations.",
+      "type": "string"
+    },
+    "port": {
+      "description": "Networking port",
+      "maximum": 65535,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "short_names": {
+      "default": true,
+      "description": "Have signals addressable in the RemotiveBroker by their name in the database.\nIf `false`, signal names with be generated base on their respective name space.",
+      "type": "boolean"
+    },
+    "signal_db": {
+      "description": "Path to signal database.",
+      "type": "string"
+    }
+  }
+}

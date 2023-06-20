@@ -3,7 +3,7 @@
 This repo contains all public API from [RemotiveLabs](https://remotivelabs.com/) for integrating
 with RemotiveBroker using your favourite programming language.
 
-We currently have pre-built GAPIC (Generated API Client)  for python and grpc-web 
+We currently have pre-built GAPIC (Generated API Client)  for python and grpc-web
 but will add more moving forward.
 
 For other languages visit https://grpc.io/ to read up how to generate code for your
@@ -24,12 +24,16 @@ Pre-built Python GAPIC + some extra helper functions
 - [Code samples](https://github.com/remotivelabs/remotivelabs-samples/tree/main/python)
 
 
-## Grpc-web RemotiveBroker API
+## gRPC-web RemotiveBroker API
 
-Pre-built Grpc-web RemotiveBroker GAPIC. Grpc-web is designed to run in browser and
+Pre-built gRPC-web RemotiveBroker GAPIC. gRPC-web is designed to run in browser and
 not in nodejs. This is Javascipt+Typescript.
 
 - [Documentation and source code](grpc-web/grpc-web-stubs)
+
+## RemotiveBroker configuration schemas
+
+[JSON schemas](schemas) of configuration files used by RemotiveBroker.
 
 ## Coming soon
 
