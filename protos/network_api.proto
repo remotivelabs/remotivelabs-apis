@@ -8,6 +8,8 @@ package base;
 service NetworkService {
   /// Subscribe to signals.
   rpc SubscribeToSignals (SubscriberConfig) returns (stream Signals) {}
+  /// Subscribe to signals with mapping. Not released yet for general availability. Available in limited environments.
+  rpc SubscribeToSignalsWithMapping (SubscriberWithMappingConfig) returns (stream Signals) {}
   /// Publish signals with values.
   rpc PublishSignals (PublisherConfig) returns (Empty) {}
   /// Read signals from cache.
@@ -24,6 +26,19 @@ message SubscriberConfig {
   ClientId clientId = 1;
   /// List of signals in subscription.
   SignalIds signals = 2;
+  /// Only trigger callback when value changes when set to true.
+  bool onChange = 3;
+}
+
+message SubscriberWithMappingConfig {
+  /**
+   * Identifier of subscriber, typically your app identifier. Published signals
+   * with same identifier will not trigger callback.
+   */
+  /// Identifier for subscription, will not receive subscriptions.
+  ClientId clientId = 1;
+  /// Custom Lua mapping code
+  string mappingCode = 2;
   /// Only trigger callback when value changes when set to true.
   bool onChange = 3;
 }
