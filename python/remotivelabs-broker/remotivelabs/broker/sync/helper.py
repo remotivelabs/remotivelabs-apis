@@ -290,3 +290,49 @@ def act_on_signal(
         log.error(err)
     # reload, alternatively non-existing signal
     log.debug("Subscription terminated")
+
+
+def act_on_mapped_signal(
+        client_id: br.common_pb2.ClientId,
+        network_stub: br.network_api_pb2_grpc.NetworkServiceStub,
+        mapping_code: str,
+        on_change: bool,
+        fun: Callable[[Sequence[br.network_api_pb2.Signal]], None],
+        on_subcribed: Optional[Callable[..., None]] = None
+) -> None:
+    """
+    Bind callback to be triggered when receiving any of the specified signals.
+
+    :param ClientId client_id: Named source for listener
+    :param network_stub: Network gRPC channel stub
+    :param mapping_code: Custom Lua mapping code
+    :param on_change: Callback to be triggered
+    :param fun: Callback for receiving signals update
+    :param on_subcribed: Callback for successful subscription
+    """
+
+    log.debug("Subscription with mapping code started...")
+
+    sub_info = network_api_pb2.SubscriberWithMappingConfig(
+        clientId=client_id,
+        mappingCode=mapping_code,
+        onChange=on_change,
+    )
+    try:
+        subscription = network_stub.SubscribeToSignalsWithMapping(sub_info, timeout=None)
+        if on_subcribed:
+            on_subcribed(subscription)
+        log.debug("Waiting for signal...")
+        for subs_counter in subscription:
+            fun(subs_counter.signal)
+
+    except grpc.RpcError as e:
+        try:
+            subscription.cancel()
+        except grpc.RpcError as e2:
+            pass
+
+    except grpc._channel._Rendezvous as err:
+        log.error(err)
+    # reload, alternatively non-existing signal
+    log.debug("Subscription terminated")
