@@ -51,16 +51,16 @@ from .helper import act_on_signal
 from .helper import act_on_mapped_signal
 
 __all__ = [
-    'create_channel',
-    'publish_signals',
-    'printer',
-    'get_sha256',
-    'generate_data',
-    'upload_file',
-    'download_file',
-    'upload_folder',
-    'reload_configuration',
-    'check_license',
-    'act_on_signal',
-    'act_on_mapped_signal',
+    "create_channel",
+    "publish_signals",
+    "printer",
+    "get_sha256",
+    "generate_data",
+    "upload_file",
+    "download_file",
+    "upload_folder",
+    "reload_configuration",
+    "check_license",
+    "act_on_signal",
+    "act_on_mapped_signal",
 ]

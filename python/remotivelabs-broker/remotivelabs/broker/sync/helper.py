@@ -40,9 +40,7 @@ class HeaderInterceptor(ClientInterceptor):
         return method(request_or_iterator, new_details)
 
 
-def create_channel(
-        url: str, x_api_key: Optional[str] = None
-) -> grpc.intercept_channel:
+def create_channel(url: str, x_api_key: Optional[str] = None) -> grpc.intercept_channel:
     """
     Create communication channels for gRPC calls.
 
@@ -65,7 +63,7 @@ def create_channel(
         channel = grpc.insecure_channel(addr)
 
     if x_api_key is None:
-        x_api_key = 'none'
+        x_api_key = "none"
 
     intercept_channel = grpc.intercept_channel(
         channel, HeaderInterceptor({"x-api-key": x_api_key})
@@ -73,9 +71,7 @@ def create_channel(
     return intercept_channel
 
 
-def publish_signals(
-        client_id, stub, signals_with_payload, frequency: int = 0
-) -> None:
+def publish_signals(client_id, stub, signals_with_payload, frequency: int = 0) -> None:
     """
     Publish array of values for signals
 
@@ -127,15 +123,14 @@ def get_sha256(path: str) -> str:
 
 
 def generate_data(
-        file, dest_path, chunk_size, sha256
+    file, dest_path, chunk_size, sha256
 ) -> Generator[system_api_pb2.FileUploadRequest, None, None]:
     for x in itertools.count(start=0):
         if x == 0:
             fileDescription = system_api_pb2.FileDescription(
                 sha256=sha256, path=dest_path
             )
-            yield system_api_pb2.FileUploadRequest(
-                    fileDescription=fileDescription)
+            yield system_api_pb2.FileUploadRequest(fileDescription=fileDescription)
         else:
             buf = file.read(chunk_size)
             if not buf:
@@ -144,8 +139,7 @@ def generate_data(
 
 
 def upload_file(
-        system_stub: br.system_api_pb2_grpc.SystemServiceStub,
-        path: str, dest_path: str
+    system_stub: br.system_api_pb2_grpc.SystemServiceStub, path: str, dest_path: str
 ) -> None:
     """
     Upload single file to internal storage on broker.
@@ -171,8 +165,7 @@ def upload_file(
 
 
 def download_file(
-        system_stub: br.system_api_pb2_grpc.SystemServiceStub,
-        path: str, dest_path: str
+    system_stub: br.system_api_pb2_grpc.SystemServiceStub, path: str, dest_path: str
 ) -> None:
     """
     Download file from Broker remote storage.
@@ -184,8 +177,7 @@ def download_file(
 
     file = open(dest_path, "wb")
     for response in system_stub.DownloadFile(
-        system_api_pb2.FileDescription(path=path.replace(ntpath.sep,
-                                                         posixpath.sep))
+        system_api_pb2.FileDescription(path=path.replace(ntpath.sep, posixpath.sep))
     ):
         assert not response.HasField("errorMessage"), (
             "Error uploading file, message is: %s" % response.errorMessage
@@ -195,8 +187,7 @@ def download_file(
 
 
 def upload_folder(
-        system_stub: br.system_api_pb2_grpc.SystemServiceStub,
-        folder: str
+    system_stub: br.system_api_pb2_grpc.SystemServiceStub, folder: str
 ) -> None:
     """
     Upload directory and its content to Broker remote storage.
@@ -211,15 +202,13 @@ def upload_folder(
         for y in glob(os.path.join(x[0], "*"))
         if not os.path.isdir(y)
     ]
-    assert len(files) != 0, (
-        "Specified upload folder is empty or does not exist"
-    )
+    assert len(files) != 0, "Specified upload folder is empty or does not exist"
     for file in files:
         upload_file(system_stub, file, file.replace(folder, ""))
 
 
 def reload_configuration(
-        system_stub: br.system_api_pb2_grpc.SystemServiceStub,
+    system_stub: br.system_api_pb2_grpc.SystemServiceStub,
 ) -> None:
     """
     Trigger reload of configuration on Broker.
@@ -233,7 +222,7 @@ def reload_configuration(
 
 
 def check_license(
-        system_stub: br.system_api_pb2_grpc.SystemServiceStub,
+    system_stub: br.system_api_pb2_grpc.SystemServiceStub,
 ) -> None:
     """
     Check license to Broker. Throws exception if failure.
@@ -247,12 +236,12 @@ def check_license(
 
 
 def act_on_signal(
-        client_id: br.common_pb2.ClientId,
-        network_stub: br.network_api_pb2_grpc.NetworkServiceStub,
-        sub_signals: Sequence[br.common_pb2.SignalId],
-        on_change: bool,
-        fun: Callable[[Sequence[br.network_api_pb2.Signal]], None],
-        on_subcribed: Optional[Callable[..., None]] = None
+    client_id: br.common_pb2.ClientId,
+    network_stub: br.network_api_pb2_grpc.NetworkServiceStub,
+    sub_signals: Sequence[br.common_pb2.SignalId],
+    on_change: bool,
+    fun: Callable[[Sequence[br.network_api_pb2.Signal]], None],
+    on_subcribed: Optional[Callable[..., None]] = None,
 ) -> None:
     """
     Bind callback to be triggered when receiving any of the specified signals.
@@ -293,12 +282,12 @@ def act_on_signal(
 
 
 def act_on_mapped_signal(
-        client_id: br.common_pb2.ClientId,
-        network_stub: br.network_api_pb2_grpc.NetworkServiceStub,
-        mapping_code: str,
-        on_change: bool,
-        fun: Callable[[Sequence[br.network_api_pb2.Signal]], None],
-        on_subcribed: Optional[Callable[..., None]] = None
+    client_id: br.common_pb2.ClientId,
+    network_stub: br.network_api_pb2_grpc.NetworkServiceStub,
+    mapping_code: str,
+    on_change: bool,
+    fun: Callable[[Sequence[br.network_api_pb2.Signal]], None],
+    on_subcribed: Optional[Callable[..., None]] = None,
 ) -> None:
     """
     Bind callback to be triggered when receiving any of the specified signals.
@@ -319,7 +308,9 @@ def act_on_mapped_signal(
         onChange=on_change,
     )
     try:
-        subscription = network_stub.SubscribeToSignalsWithMapping(sub_info, timeout=None)
+        subscription = network_stub.SubscribeToSignalsWithMapping(
+            sub_info, timeout=None
+        )
         if on_subcribed:
             on_subcribed(subscription)
         log.debug("Waiting for signal...")

@@ -60,15 +60,11 @@ class MetaGetter:
         """Get protobuffer MetaData field offset"""
         return MetaGetter._getDefault(self.meta.offset, default)
 
-    def getSenders(
-            self, default: Optional[Sequence[str]] = None
-    ) -> Sequence[str]:
+    def getSenders(self, default: Optional[Sequence[str]] = None) -> Sequence[str]:
         """Get protobuffer MetaData field sender"""
         return MetaGetter._getDefault(self.meta.sender, default)
 
-    def getReceivers(
-            self, default: Optional[Sequence[str]] = None
-    ) -> Sequence[str]:
+    def getReceivers(self, default: Optional[Sequence[str]] = None) -> Sequence[str]:
         """Get protobuffer MetaData field receiver"""
         return MetaGetter._getDefault(self.meta.receiver, default)
 
@@ -147,8 +143,7 @@ class SignalCreator:
 
         all_frames = []
         for finfo in self._networks[namespace_name].frame:
-            all_frames.append(self.signal(finfo.signalInfo.id.name,
-                                          namespace_name))
+            all_frames.append(self.signal(finfo.signalInfo.id.name, namespace_name))
         return all_frames
 
     def frame_by_signal(
@@ -165,8 +160,7 @@ class SignalCreator:
         for finfo in self._networks[namespace_name].frame:
             for sinfo in finfo.childInfo:
                 if sinfo.id.name == name:
-                    return self.signal(finfo.signalInfo.id.name,
-                                       namespace_name)
+                    return self.signal(finfo.signalInfo.id.name, namespace_name)
         raise Exception(
             f"signal not declared (namespace, signal): {namespace_name} {name}"
         )
@@ -188,16 +182,14 @@ class SignalCreator:
             if finfo.signalInfo.id.name == name:
                 frame = finfo
                 for sinfo in finfo.childInfo:
-                    all_signals.append(self.signal(sinfo.id.name,
-                                                   namespace_name))
+                    all_signals.append(self.signal(sinfo.id.name, namespace_name))
         assert (
             frame is not None
         ), f"frame {name} does not exist in namespace {namespace_name}"
         return all_signals
 
     def signal_with_payload(
-        self, name: str, namespace_name: str, value_pair,
-        allow_malformed: bool = False
+        self, name: str, namespace_name: str, value_pair, allow_malformed: bool = False
     ) -> network_api_pb2.Signal:
         """
         Create value with signal for writing.

@@ -5,17 +5,15 @@ import remotivelabs.broker.sync as br
 
 # Warning these tests require a RemotiveBroker up and running
 # server address:
-_SERVER_URL = 'http://127.0.0.1:50051'
+_SERVER_URL = "http://127.0.0.1:50051"
 _SERVER_APIKEY = None
 
 
 class Connection:
     def __init__(self):
         self.channel = br.create_channel(_SERVER_URL, _SERVER_APIKEY)
-        self.network_stub = br.network_api_pb2_grpc.NetworkServiceStub(
-                self.channel)
-        self.system_stub = br.system_api_pb2_grpc.SystemServiceStub(
-                self.channel)
+        self.network_stub = br.network_api_pb2_grpc.NetworkServiceStub(self.channel)
+        self.system_stub = br.system_api_pb2_grpc.SystemServiceStub(self.channel)
 
 
 # Setup broker with predefined settings
