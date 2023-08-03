@@ -320,6 +320,8 @@ def act_on_mapped_signal(
     except grpc.RpcError as e:
         try:
             subscription.cancel()
+            print("A gRPC error occurred:")
+            print(e)
         except grpc.RpcError as e2:
             pass
 
