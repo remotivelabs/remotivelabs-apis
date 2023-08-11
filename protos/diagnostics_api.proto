@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "common.proto";
 
-package base;
+package diagnostics;
 
 
 /**
@@ -14,8 +14,8 @@ package base;
  */
 service DiagnosticsService {
   /// Send diagnostics request
-  rpc PublishMultiFrame (PublishConfig) returns (Empty) {}
-  rpc SubscribeMultiFrame (SubscribeConfig) returns (stream Payload) {}
+  rpc PublishMultiFrame (PublisherConfig) returns (base.Empty) {}
+  rpc SubscribeMultiFrame (SubscriberConfig) returns (stream Payload) {}
 }
 
 message LinkTimers {
@@ -34,19 +34,19 @@ message LinkTimers {
   int64 delayResponse = 4; 
 }
 
-message PublishConfig {
+message PublisherConfig {
   Link link = 1;
   Payload payload = 2;
   LinkTimers linkTimers = 3;
 }
 
-message SubscribeConfig {
+message SubscriberConfig {
   Link link = 1;
   LinkTimers LinkTimers = 2;
   /**
-  * Specifed weater the payload should be decoded or not. Setting this to false will provide the raw repsonce without stipped headers and counters. Defaults to true.
+  * Specify if the payload should be retured raw or decoded. Setting this to true will provide the raw repsonce without stipped headers and counters. Defaults to false.
   */
-  bool decodePayload = 3;
+  bool rawPayload = 3;
 }
 
 message Payload {
@@ -54,7 +54,7 @@ message Payload {
 }
 
 message Link {
-  ClientId clientId = 1;     /// Data identifier
-  SignalId publishSignal = 2;          /// Signal for setting up link
-  SignalId subscribeSignal = 3;        /// Signal for closing link
+  base.ClientId clientId = 1;               /// Data identifier
+  base.SignalId publishSignal = 2;          /// Signal for setting up link
+  base.SignalId subscribeSignal = 3;        /// Signal for closing link
 }
