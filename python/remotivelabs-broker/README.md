@@ -4,7 +4,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/remotivelabs-broker.svg)](https://pypi.org/project/remotivelabs-broker)
 
 - [Link to **Samples**](https://github.com/remotivelabs/remotivelabs-samples/tree/main/python).
-- [Link to **Documentation**](https://docs.remotivelabs.com/python/remotivelabs-broker/).
+- [Link to **Documentation**](https://docs.remotivelabs.com/apis/python/remotivelabs-broker/).
 
 -----
 
