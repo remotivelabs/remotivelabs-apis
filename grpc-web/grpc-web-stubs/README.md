@@ -39,3 +39,10 @@ From this directory run the following commands and update `src/index.ts` to expl
 ```sh
 sh ./generate-ts.sh
 ```
+
+## Release Instructions
+
+1. Commit changes.
+2. Generate stubs `sh ./generate-ts.sh`.
+3. Update version with `npm version x.y.z` and commit it with `release: Prepare a release for version x.y.z`.
+4. Publish with `npm publish`.
