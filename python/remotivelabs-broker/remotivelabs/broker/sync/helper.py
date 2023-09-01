@@ -272,6 +272,8 @@ def act_on_signal(
     except grpc.RpcError as e:
         try:
             subscripton.cancel()
+            print("A gRPC error occurred:")
+            print(e)
         except grpc.RpcError as e2:
             pass
 
