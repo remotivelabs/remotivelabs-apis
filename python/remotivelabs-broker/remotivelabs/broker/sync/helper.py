@@ -179,7 +179,7 @@ def download_file(
     for response in system_stub.BatchDownloadFiles(
         system_api_pb2.FileDescriptions(
             fileDescriptions=[system_api_pb2.FileDescription(path=path.replace(ntpath.sep,
-                                                         posixpath.sep), sha256="xxx")]
+                                                         posixpath.sep))]
         )
     ):
         assert not response.HasField("errorMessage"), (
