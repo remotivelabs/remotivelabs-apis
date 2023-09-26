@@ -45,7 +45,21 @@ def create_channel(url: str, x_api_key: Optional[str] = None) -> grpc.intercept_
     Create communication channels for gRPC calls.
 
     :param url: URL to broker
-    :param x_api_key: API key used with RemotiveBroker running in cloud.
+    :param x_api_key: API key used with RemotiveBroker running in cloud (deprecated).
+    :param authorization_token: Access token replacing api-keys moving forward.
+    :return: gRPC channel
+    """
+    return create_channel(url, x_api_key, None)
+
+
+def create_channel(url: str, x_api_key: Optional[str] = None,
+                   authorization_token: Optional[str] = None) -> grpc.intercept_channel:
+    """
+    Create communication channels for gRPC calls.
+
+    :param url: URL to broker
+    :param x_api_key: API key used with RemotiveBroker running in cloud (deprecated).
+    :param authorization_token: Access token replacing api-keys moving forward.
     :return: gRPC channel
     """
 
@@ -62,13 +76,18 @@ def create_channel(url: str, x_api_key: Optional[str] = None) -> grpc.intercept_
         addr = url.hostname + ":" + str(url.port or "50051")
         channel = grpc.insecure_channel(addr)
 
-    if x_api_key is None:
-        x_api_key = "none"
-
-    intercept_channel = grpc.intercept_channel(
-        channel, HeaderInterceptor({"x-api-key": x_api_key})
-    )
-    return intercept_channel
+    if x_api_key is None and authorization_token is None:
+        return channel
+    elif x_api_key is not None:
+        return grpc.intercept_channel(
+            channel, HeaderInterceptor({"x-api-key": x_api_key})
+        )
+    else:
+        # Adding both x-api-key (old) and authorization header for compatibility
+        return grpc.intercept_channel(
+            channel, HeaderInterceptor({"x-api-key": authorization_token,
+                                        "authorization": f"Bearer {authorization_token}"})
+        )
 
 
 def publish_signals(client_id, stub, signals_with_payload, frequency: int = 0) -> None:
