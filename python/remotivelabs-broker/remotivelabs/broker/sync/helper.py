@@ -176,8 +176,11 @@ def download_file(
     """
 
     file = open(dest_path, "wb")
-    for response in system_stub.DownloadFile(
-        system_api_pb2.FileDescription(path=path.replace(ntpath.sep, posixpath.sep))
+    for response in system_stub.BatchDownloadFiles(
+        system_api_pb2.FileDescriptions(
+            fileDescriptions=[system_api_pb2.FileDescription(path=path.replace(ntpath.sep,
+                                                         posixpath.sep))]
+        )
     ):
         assert not response.HasField("errorMessage"), (
             "Error uploading file, message is: %s" % response.errorMessage
