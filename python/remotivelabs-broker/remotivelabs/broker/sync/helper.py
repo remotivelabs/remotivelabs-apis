@@ -263,7 +263,7 @@ def act_on_signal(
     sub_signals: Sequence[br.common_pb2.SignalId],
     on_change: bool,
     fun: Callable[[Sequence[br.network_api_pb2.Signal]], None],
-    on_subcribed: Optional[Callable[..., None]] = None,
+    on_subscribed: Optional[Callable[..., None]] = None,
 ) -> None:
     """
     Bind callback to be triggered when receiving any of the specified signals.
@@ -273,7 +273,7 @@ def act_on_signal(
     :param sub_signals: List of signals to listen for
     :param on_change: Callback to be triggered
     :param fun: Callback for receiving signals update
-    :param on_subcribed: Callback for successful subscription
+    :param on_subscribed: Callback for successful subscription
     """
 
     log.debug("Subscription started")
@@ -285,8 +285,8 @@ def act_on_signal(
     )
     try:
         subscripton = network_stub.SubscribeToSignals(sub_info, timeout=None)
-        if on_subcribed:
-            on_subcribed(subscripton)
+        if on_subscribed:
+            on_subscribed(subscripton)
         log.debug("Waiting for signal...")
         for subs_counter in subscripton:
             fun(subs_counter.signal)
@@ -305,38 +305,38 @@ def act_on_signal(
     log.debug("Subscription terminated")
 
 
-def act_on_mapped_signal(
+def act_on_scripted_signal(
     client_id: br.common_pb2.ClientId,
     network_stub: br.network_api_pb2_grpc.NetworkServiceStub,
-    mapping_code: str,
+    script: bytes,
     on_change: bool,
     fun: Callable[[Sequence[br.network_api_pb2.Signal]], None],
-    on_subcribed: Optional[Callable[..., None]] = None,
+    on_subscribed: Optional[Callable[..., None]] = None,
 ) -> None:
     """
     Bind callback to be triggered when receiving any of the specified signals.
 
     :param ClientId client_id: Named source for listener
     :param network_stub: Network gRPC channel stub
-    :param mapping_code: Custom Lua mapping code
+    :param script: Custom Lua mapping code
     :param on_change: Callback to be triggered
     :param fun: Callback for receiving signals update
-    :param on_subcribed: Callback for successful subscription
+    :param on_subscribed: Callback for successful subscription
     """
 
     log.debug("Subscription with mapping code started...")
 
-    sub_info = network_api_pb2.SubscriberWithMappingConfig(
+    sub_info = network_api_pb2.SubscriberWithScriptConfig(
         clientId=client_id,
-        mappingCode=mapping_code,
+        script=script,
         onChange=on_change,
     )
     try:
-        subscription = network_stub.SubscribeToSignalsWithMapping(
+        subscription = network_stub.SubscribeToSignalWithScript(
             sub_info, timeout=None
         )
-        if on_subcribed:
-            on_subcribed(subscription)
+        if on_subscribed:
+            on_subscribed(subscription)
         log.debug("Waiting for signal...")
         for subs_counter in subscription:
             fun(subs_counter.signal)
