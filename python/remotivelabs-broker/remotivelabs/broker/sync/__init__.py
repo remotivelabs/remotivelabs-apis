@@ -48,7 +48,7 @@ from .helper import upload_folder
 from .helper import reload_configuration
 from .helper import check_license
 from .helper import act_on_signal
-from .helper import act_on_mapped_signal
+from .helper import act_on_scripted_signal
 
 __all__ = [
     "create_channel",
@@ -62,5 +62,5 @@ __all__ = [
     "reload_configuration",
     "check_license",
     "act_on_signal",
-    "act_on_mapped_signal",
+    "act_on_scripted_signal",
 ]
