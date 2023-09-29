@@ -30,6 +30,21 @@ This project has a script in the project file for generation. Generate stubs fro
 
 Building the stubs is a requirement before build a python package of the project.
 
+### Develop and test locally
+
+Put version in `__about__.py`. Beta versions should be suffixed with `b*`, example `0.2.0b1`
+
+    hatch run generate_stubs
+    hatch build
+
+above command will output
+
+    [wheel]
+    dist/remotivelabs_broker-0.2.0b12-py3-none-any.whl
+
+You can now install this library version in another terminal by doing 
+
+    pip3 install [your path]/dist/remotivelabs_broker-0.2.0b12-py3-none-any.whl 
 ### Build and publish
 
 Make sure to put version in `__about__.py`. Beta versions should be suffixed with `b*`, example `0.2.0b1`
