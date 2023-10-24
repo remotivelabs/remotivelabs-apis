@@ -8,7 +8,12 @@ description = 'RemotiveLabs Broker gRPC API'
 readme = "README.md"
 requires-python = ">=3.7"
 license = "Apache-2.0"
-keywords = []
+keywords = [
+  "automotive",
+  "autotech",
+  "networking",
+  "CAN",
+]
 authors = [
   { name = "Support", email = "support@remotivelabs.com" },
 ]
@@ -20,7 +25,6 @@ classifiers = [
   "License :: OSI Approved :: Apache Software License",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
@@ -32,10 +36,10 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Information Analysis",
 ]
 dependencies = [
-  "grpc-interceptor~=0.14.1",
+  "grpc-interceptor~=0.14",
   "grpcio~=1.44",
   "grpcio-tools~=1.44",
-  "requests~=2.21.0",
+  "requests~=2.21",
 ]
 dynamic = ["version"]
 
@@ -51,10 +55,10 @@ path = "remotivelabs/broker/__about__.py"
 [tool.hatch.envs.default]
 python = "python3"
 dependencies = [
-  "pytest-cov~=3.0.0",
-  "pytest-pep8~=1.0.6",
-  "pytest~=7.1.3",
-  "pdoc~=12.2.0",
+  "pytest-cov~=3.0",
+  "pytest-pep8~=1.0",
+  "pytest~=7.1",
+  "pdoc~=12.2",
 ]
 [tool.hatch.envs.default.scripts]
 cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=remotivelabs --cov=tests"
