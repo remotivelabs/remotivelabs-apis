@@ -77,7 +77,7 @@ generate_doc = "sh misc/build_doc.sh"
 include = ["remotivelabs"]
 
 [[tool.hatch.envs.test.matrix]]
-python = ["37", "38", "39", "310", "311"]
+python = ["38", "39", "310", "311"]
 
 [tool.coverage.run]
 branch = true
