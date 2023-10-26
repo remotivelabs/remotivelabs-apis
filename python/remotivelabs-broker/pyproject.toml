@@ -38,8 +38,8 @@ classifiers = [
 dependencies = [
   "grpc-interceptor~=0.14",
   "grpcio~=1.44",
-  "grpcio-tools~=1.44",
   "requests~=2.21",
+  "protobuf==3.19.2"
 ]
 dynamic = ["version"]
 
