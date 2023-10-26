@@ -63,7 +63,7 @@ dependencies = [
 [tool.hatch.envs.default.scripts]
 cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=remotivelabs --cov=tests"
 no-cov = "cov --no-cov"
-generate_stubs = "sh misc/build_proto.sh"
+generate_stubs = "sh build_proto.sh"
 generate_doc = "sh misc/build_doc.sh"
 
 [tool.pyright]
