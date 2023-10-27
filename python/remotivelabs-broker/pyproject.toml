@@ -38,8 +38,8 @@ classifiers = [
 dependencies = [
   "grpc-interceptor~=0.14",
   "grpcio~=1.44",
-  "grpcio-tools~=1.44",
   "requests~=2.21",
+  "protobuf>=3.19.0,<=3.20.1"
 ]
 dynamic = ["version"]
 
@@ -63,7 +63,7 @@ dependencies = [
 [tool.hatch.envs.default.scripts]
 cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=remotivelabs --cov=tests"
 no-cov = "cov --no-cov"
-generate_stubs = "sh misc/build_proto.sh"
+generate_stubs = "sh build_proto.sh"
 generate_doc = "sh misc/build_doc.sh"
 
 [tool.pyright]
