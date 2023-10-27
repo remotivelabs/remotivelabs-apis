@@ -9,6 +9,7 @@ OUT=remotivelabs/broker/generated/sync/
 docker build -t remotivelabs/grpcio-tools-protobuf-3.19.2 .
 
 docker run  \
+  --rm \
   --user $(id -u):$(id -g) \
   -v $(pwd)/../../protos:/protofile \
   -v $(pwd)/$OUT:/output \
