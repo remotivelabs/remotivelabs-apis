@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "google-protobuf": "^3.9.0-rc.1",
-    "grpc-web": "1.2.1"
+    "grpc-web": "1.2.1",
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
     "typescript": "~4.9.5"
