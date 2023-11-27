@@ -1,0 +1,10 @@
+{
+  "default_namespace": "VirtualInterface",
+  "chains": [
+    {
+      "type": "virtual",
+      "device_name": "virtual",
+      "namespace": "VirtualInterface"
+    }
+  ]
+}
