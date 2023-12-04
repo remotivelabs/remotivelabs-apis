@@ -32,7 +32,7 @@
             "title": "Virtual"
           },
           {
-            "description": "Either CAN or CAN-FD.",
+            "description": "CAN interface.",
             "properties": {
               "database": {
                 "$ref": "#/defs/signal_db",
@@ -49,11 +49,14 @@
                 "$ref": "#/defs/short_names"
               },
               "type": {
-                "description": "What kind of CAN interface.",
+                "description": "Specifies a CAN interface.",
                 "enum": [
-                  "can",
-                  "canfd"
+                  "can"
                 ]
+              },
+              "baud_rate": {
+                "description": "baud rate to apply to CAN when starting interface.",
+                "type": "integer"
               }
             },
             "required": [
@@ -63,6 +66,61 @@
               "database"
             ],
             "title": "CAN",
+            "type": "object"
+          },
+          {
+            "description": "CAN-FD interface.",
+            "properties": {
+              "database": {
+                "$ref": "#/defs/signal_db",
+                "description": "Path to signal database file."
+              },
+              "device_name": {
+                "description": "Name of device in OS.",
+                "type": "string"
+              },
+              "namespace": {
+                "$ref": "#/defs/namespace"
+              },
+              "short_names": {
+                "$ref": "#/defs/short_names"
+              },
+              "type": {
+                "description": "Specifies a CAN-FD interface.",
+                "enum": [
+                  "canfd"
+                ]
+              },
+              "baud_rate": {
+                "description": "baud rate to apply to CAN when starting interface.",
+                "type": "integer"
+              },
+              "dbaud_rate": {
+                "description": "baud rate to apply to CAN-FD when starting interface.",
+                "type": "integer"
+              }
+            },
+            "dependentSchemas": {
+              "baud_rate": {
+                "required": [
+                  "baud_rate",
+                  "dbaud_rate"
+                ]
+              },
+              "dbaud_rate": {
+                "required": [
+                  "baud_rate",
+                  "dbaud_rate"
+                ]
+              }
+            },
+            "required": [
+              "type",
+              "namespace",
+              "device_name",
+              "database"
+            ],
+            "title": "CAN-FD",
             "type": "object"
           },
           {
