@@ -1,8 +1,11 @@
+#!/usr/bin/env python3
+
 import binascii
 import json
 import queue
+import sys
 from threading import Thread
-from typing import List, Callable, Sequence, Union
+from typing import Union, Callable, List, Iterable
 
 from . import SignalCreator
 from . import helper as br
@@ -111,6 +114,24 @@ class SignalWrapper:
         }
 
 
+class SignalsInFrame(Iterable):
+
+    def __init__(self, signals: list[SignalWrapper]):
+        self.signals = signals
+        self.index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            result = self.signals[self.index]
+        except IndexError:
+            raise StopIteration
+        self.index += 1
+        return result
+
+
 class SignalIdentifier:
     def __init__(self, name: str, namespace: str):
         self.name = name
@@ -121,33 +142,42 @@ class BrokerException(Exception):
     pass
 
 
-class Broker:
-    """
-    High-level API to access a broker using gRPC with python.
-    """
+class Client:
 
-    def __init__(self,
-                 url: str,
-                 api_key: Union[str, None] = None,
-                 client_id: str = "broker_client"):
-        self.url = url
-        self.api_key = api_key
+    def __init__(self, client_id: str = "broker_client"):
+
+        self._signal_creator = None
+        self._traffic_stub = None
+        self._system_stub = None
+        self._network_stub = None
+        self._intercept_channel = None
         self.client_id = client_id
-        self.q = queue.Queue()
+
+        self.url = None
+        self.api_key = None
         """Main function, checking arguments passed to script, setting up stubs, configuration and starting Threads."""
         # Setting up stubs and configuration
+        self.on_connect: Union[Callable[[Client], None], None] = None
+        self.on_signals: Union[Callable[[SignalsInFrame], None], None] = None
 
+    def connect(self,
+                url: str,
+                api_key: Union[str, None] = None, ):
+        self.url = url
+        self.api_key = api_key
         if url.startswith("https"):
             if api_key is None:
                 raise BrokerException("You must supply api-key or access-token to use a cloud broker")
-            self.intercept_channel = br.create_channel(url, self.api_key, None)
+            self._intercept_channel = br.create_channel(url, self.api_key, None)
         else:
-            self.intercept_channel = br.create_channel(url, None, None)
+            self._intercept_channel = br.create_channel(url, None, None)
 
-        self.network_stub = network_api_pb2_grpc.NetworkServiceStub(self.intercept_channel)
-        self.system_stub = system_api_pb2_grpc.SystemServiceStub(self.intercept_channel)
-        self.traffic_stub = traffic_api_pb2_grpc.TrafficServiceStub(self.intercept_channel)
-        self.signal_creator = SignalCreator(self.system_stub)
+        self._network_stub = network_api_pb2_grpc.NetworkServiceStub(self._intercept_channel)
+        self._system_stub = system_api_pb2_grpc.SystemServiceStub(self._intercept_channel)
+        self._traffic_stub = traffic_api_pb2_grpc.TrafficServiceStub(self._intercept_channel)
+        self._signal_creator = SignalCreator(self._system_stub)
+        if self.on_connect is not None:
+            self.on_connect(self)
 
     def _validate_and_get_subscribed_signals(self, subscribed_namespaces: List[str], subscribed_signals: List[str]) \
             -> List[SignalIdentifier]:
@@ -179,8 +209,11 @@ class Broker:
     def subscribe(self,
                   signal_names: list[str],
                   namespaces: list[str],
-                  on_signals_in_frame: Callable[[Sequence[SignalWrapper]], None],
+                  on_signals: Callable[[SignalsInFrame], None] = None,
                   changed_values_only: bool = True):
+
+        if on_signals is None and self.on_signals is None:
+            print("You have not specified global client.on_signals nor client.subscribe(on_signals=callback)", file=sys.stderr)
 
         client_id = br.common_pb2.ClientId(id=self.client_id)
         signals_to_subscribe_to: List[SignalIdentifier] = self._validate_and_get_subscribed_signals(
@@ -188,36 +221,40 @@ class Broker:
             signal_names)
 
         def to_protobuf_signal(s: SignalIdentifier):
-            return self.signal_creator.signal(s.name, s.namespace)
+            return self._signal_creator.signal(s.name, s.namespace)
 
         signals_to_subscribe_on = list(map(to_protobuf_signal, signals_to_subscribe_to))
-
+        wait_for_subscription_queue = queue.Queue()
         Thread(
             target=br.act_on_signal,
             args=(
                 client_id,
-                self.network_stub,
+                self._network_stub,
                 signals_to_subscribe_on,
                 changed_values_only,  # True: only report when signal changes
-                lambda frame: self.__on_signals(frame, on_signals_in_frame),
-                lambda sub: (self.q.put((self.client_id, sub))),
+                lambda frame: self._on_signals(frame, on_signals),
+                lambda sub: (wait_for_subscription_queue.put((self.client_id, sub)))
             ),
         ).start()
-        # Wait for subscription
-        ecu, subscription = self.q.get()
+        client_id, subscription = wait_for_subscription_queue.get()
         return subscription
 
-    @staticmethod
-    def __on_signals(signals_in_frame: network_api.Signals, callback):
-        callback(list(map(lambda s: SignalWrapper(s), signals_in_frame)))
+    def _on_signals(self, signals_in_frame: network_api.Signals, callback):
+        """
+        Updates "local" callback or global on_signals callback if local callback is None
+        """
+        if callback is not None:
+            callback(SignalsInFrame(list(map(lambda s: SignalWrapper(s), signals_in_frame))))
+        elif self.on_signals is not None:
+            self.on_signals(SignalsInFrame(list(map(lambda s: SignalWrapper(s), signals_in_frame))))
 
     def list_signal_names(self) -> list[SignalIdentifier]:
         # Lists available signals
-        configuration = self.system_stub.GetConfiguration(br.common_pb2.Empty())
+        configuration = self._system_stub.GetConfiguration(br.common_pb2.Empty())
 
         signal_names: list[SignalIdentifier] = []
         for networkInfo in configuration.networkInfo:
-            res = self.system_stub.ListSignals(networkInfo.namespace)
+            res = self._system_stub.ListSignals(networkInfo.namespace)
             for finfo in res.frame:
                 # f: br.common_pb2.FrameInfo = finfo
                 signal_names.append(SignalIdentifier(finfo.signalInfo.id.name, networkInfo.namespace.name))
