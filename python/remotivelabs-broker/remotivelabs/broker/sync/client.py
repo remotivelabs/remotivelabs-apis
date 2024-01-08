@@ -3,7 +3,6 @@
 import binascii
 import json
 import queue
-import sys
 from threading import Thread
 from typing import Union, Callable, List, Iterable
 
@@ -152,17 +151,14 @@ class Client:
         self._network_stub = None
         self._intercept_channel = None
         self.client_id = client_id
-
         self.url = None
         self.api_key = None
-        """Main function, checking arguments passed to script, setting up stubs, configuration and starting Threads."""
-        # Setting up stubs and configuration
         self.on_connect: Union[Callable[[Client], None], None] = None
         self.on_signals: Union[Callable[[SignalsInFrame], None], None] = None
 
     def connect(self,
                 url: str,
-                api_key: Union[str, None] = None, ):
+                api_key: Union[str, None] = None):
         self.url = url
         self.api_key = api_key
         if url.startswith("https"):
@@ -213,7 +209,9 @@ class Client:
                   changed_values_only: bool = True):
 
         if on_signals is None and self.on_signals is None:
-            print("You have not specified global client.on_signals nor client.subscribe(on_signals=callback)", file=sys.stderr)
+            raise BrokerException(
+                "You have not specified global client.on_signals nor client.subscribe(on_signals=callback), "
+                "or you are invoking subscribe() before client.on_signals which is not allowed")
 
         client_id = br.common_pb2.ClientId(id=self.client_id)
         signals_to_subscribe_to: List[SignalIdentifier] = self._validate_and_get_subscribed_signals(
