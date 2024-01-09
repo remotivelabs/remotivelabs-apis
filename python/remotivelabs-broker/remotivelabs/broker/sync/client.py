@@ -14,7 +14,7 @@ from ..generated.sync import system_api_pb2_grpc
 from ..generated.sync import traffic_api_pb2_grpc
 
 
-class SignalWrapper:
+class SignalValue:
     """
     Wrapper around protobuf generated class to make it a bit simpler to use
     to make us learn how we want the next version of the API to look like.
@@ -76,33 +76,24 @@ class SignalWrapper:
     def value(self):
         return self.__get_value()
 
-    def float_value(self):
+    def __get_with_ensured_type(self, t: type):
         v = self.__get_value()
-        if isinstance(v, float):
+        if isinstance(v, t):
             return v
         else:
-            raise BrokerException(f"{v} was not expected type float but got {type(v)}")
+            raise BrokerException(f"{v} was not expected type '{t}' but got '{type(v)}'")
+
+    def float_value(self):
+        return self.__get_with_ensured_type(float)
 
     def int_value(self):
-        v = self.__get_value()
-        if isinstance(v, int):
-            return v
-        else:
-            raise BrokerException(f"{v} was not expected type int but got {type(v)}")
+        return self.__get_with_ensured_type(int)
 
     def bool_value(self):
-        v = self.__get_value()
-        if isinstance(v, bool):
-            return v
-        else:
-            raise BrokerException(f"{v} was not expected type bool but got {type(v)}")
+        return self.__get_with_ensured_type(bool)
 
     def bytes_value(self):
-        v = self.__get_value()
-        if isinstance(v, bytes):
-            return v
-        else:
-            raise BrokerException(f"{v} was not expected type bytes but got {type(v)}")
+        return self.__get_with_ensured_type(bytes)
 
     def as_dict(self):
         return {
@@ -115,7 +106,7 @@ class SignalWrapper:
 
 class SignalsInFrame(Iterable):
 
-    def __init__(self, signals: list[SignalWrapper]):
+    def __init__(self, signals: list[SignalValue]):
         self.signals = signals
         self.index = 0
 
@@ -242,9 +233,9 @@ class Client:
         Updates "local" callback or global on_signals callback if local callback is None
         """
         if callback is not None:
-            callback(SignalsInFrame(list(map(lambda s: SignalWrapper(s), signals_in_frame))))
+            callback(SignalsInFrame(list(map(lambda s: SignalValue(s), signals_in_frame))))
         elif self.on_signals is not None:
-            self.on_signals(SignalsInFrame(list(map(lambda s: SignalWrapper(s), signals_in_frame))))
+            self.on_signals(SignalsInFrame(list(map(lambda s: SignalValue(s), signals_in_frame))))
 
     def list_signal_names(self) -> list[SignalIdentifier]:
         # Lists available signals

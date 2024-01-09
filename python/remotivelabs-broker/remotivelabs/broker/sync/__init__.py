@@ -37,7 +37,7 @@ from ..generated.sync import traffic_api_pb2_grpc
 
 from .signalcreator import SignalCreator
 from .client import Client
-from .client import SignalWrapper
+from .client import SignalValue
 from .client import SignalsInFrame
 from .client import SignalIdentifier
 from .client import BrokerException
@@ -60,7 +60,7 @@ __all__ = [
     "SignalsInFrame",
     "Client",
     "SignalIdentifier",
-    "SignalWrapper",
+    "SignalValue",
     "SignalCreator",
     "BrokerException",
     "create_channel",
