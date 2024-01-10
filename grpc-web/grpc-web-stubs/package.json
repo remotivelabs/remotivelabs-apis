@@ -1,6 +1,6 @@
 {
   "name": "remotivelabs-grpc-web-stubs",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "repository": {
     "type": "git",
     "url": "https://github.com/remotivelabs/remotivelabs-apis"
@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "google-protobuf": "^3.9.0-rc.1",
-    "grpc-web": "1.2.1"
+    "grpc-web": "1.2.1",
+    "yarn": "^1.22.19"
   },
   "devDependencies": {
     "typescript": "~4.9.5"
