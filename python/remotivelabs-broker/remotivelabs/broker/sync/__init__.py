@@ -36,7 +36,12 @@ from ..generated.sync import traffic_api_pb2
 from ..generated.sync import traffic_api_pb2_grpc
 
 from .signalcreator import SignalCreator
-
+from .client import Client
+from .client import SignalValue
+from .client import SignalsInFrame
+from .client import SignalIdentifier
+from .client import BrokerException
+from .client import SignalsInFrame
 from .helper import create_channel
 from .helper import publish_signals
 from .helper import printer
@@ -50,7 +55,14 @@ from .helper import check_license
 from .helper import act_on_signal
 from .helper import act_on_scripted_signal
 
+
 __all__ = [
+    "SignalsInFrame",
+    "Client",
+    "SignalIdentifier",
+    "SignalValue",
+    "SignalCreator",
+    "BrokerException",
     "create_channel",
     "publish_signals",
     "printer",

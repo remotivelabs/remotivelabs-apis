@@ -292,12 +292,14 @@ def act_on_signal(
             fun(subs_counter.signal)
 
     except grpc.RpcError as e:
-        try:
-            subscripton.cancel()
-            print("A gRPC error occurred:")
-            print(e)
-        except grpc.RpcError as e2:
-            pass
+        # Only try to cancel if cancel was not already attempted
+        if e.code() != grpc.StatusCode.CANCELLED:
+            try:
+                subscripton.cancel()
+                print("A gRPC error occurred:")
+                print(e)
+            except grpc.RpcError as e2:
+                pass
 
     except grpc._channel._Rendezvous as err:
         log.error(err)
