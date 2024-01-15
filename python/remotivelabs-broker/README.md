@@ -23,18 +23,16 @@ Install into your Python environment with _PIP_:
 ## Examples
 Examples using this library are found in the [Remotive Labs samples repository](https://github.com/remotivelabs/remotivelabs-samples).
 
-### Generate stubs
-This project has a script in the project file for generation. Generate stubs from proto files with:
-
-    hatch run generate_stubs
-
-Building the stubs is a requirement before build a python package of the project.
 
 ### Develop and test locally
 
 Put version in `__about__.py`. Beta versions should be suffixed with `b*`, example `0.2.0b1`
 
-    hatch run generate_stubs
+For initial build and generation of proto stubs, documentation and distribution package,  run  `./docker-build.sh`
+
+
+Once stubs are generated you can use hatch to build distribution package
+
     hatch build
 
 above command will output
@@ -45,12 +43,12 @@ above command will output
 You can now install this library version in another terminal by doing 
 
     pip3 install [your path]/dist/remotivelabs_broker-0.2.0b12-py3-none-any.whl 
+
 ### Build and publish
 
 Make sure to put version in `__about__.py`. Beta versions should be suffixed with `b*`, example `0.2.0b1`
 
-    hatch run generate_stubs
-    hatch build
+    ./docker-build.sh
     hatch publish
 > find username and password in less secret location ;)
 ## License
