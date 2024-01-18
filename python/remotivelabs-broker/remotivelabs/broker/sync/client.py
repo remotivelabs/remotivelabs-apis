@@ -106,7 +106,7 @@ class SignalValue:
 
 class SignalsInFrame(Iterable):
 
-    def __init__(self, signals: list[SignalValue]):
+    def __init__(self, signals: List[SignalValue]):
         self.signals = signals
         self.index = 0
 
@@ -168,7 +168,7 @@ class Client:
 
     def _validate_and_get_subscribed_signals(self, subscribed_namespaces: List[str], subscribed_signals: List[str]) \
             -> List[SignalIdentifier]:
-        # Since we cannot know which list[signals] belongs to which namespace we need to fetch
+        # Since we cannot know which List[signals] belongs to which namespace we need to fetch
         # all signals from the broker and find the proper signal with namespace. Finally,  we
         # also filter out namespaces that we do not need since we might have duplicated signal names
         # over namespaces
@@ -180,8 +180,8 @@ class Client:
         def find_subscribed_signal(available_signal: SignalIdentifier):
             return list(filter(lambda s: available_signal.name == s, subscribed_signals))
 
-        available_signals: list[SignalIdentifier] = list(filter(verify_namespace, self.list_signal_names()))
-        signals_to_subscribe_to: list[SignalIdentifier] = list(filter(find_subscribed_signal, available_signals))
+        available_signals: List[SignalIdentifier] = list(filter(verify_namespace, self.list_signal_names()))
+        signals_to_subscribe_to: List[SignalIdentifier] = list(filter(find_subscribed_signal, available_signals))
 
         # Check if subscription is done on signal that is not in any of these namespaces
         signals_subscribed_to_but_does_not_exist = \
@@ -194,8 +194,8 @@ class Client:
         return list(map(lambda s: SignalIdentifier(s.name, s.namespace), signals_to_subscribe_to))
 
     def subscribe(self,
-                  signal_names: list[str],
-                  namespaces: list[str],
+                  signal_names: List[str],
+                  namespaces: List[str],
                   on_signals: Callable[[SignalsInFrame], None] = None,
                   changed_values_only: bool = True):
 
@@ -237,11 +237,11 @@ class Client:
         elif self.on_signals is not None:
             self.on_signals(SignalsInFrame(list(map(lambda s: SignalValue(s), signals_in_frame))))
 
-    def list_signal_names(self) -> list[SignalIdentifier]:
+    def list_signal_names(self) -> List[SignalIdentifier]:
         # Lists available signals
         configuration = self._system_stub.GetConfiguration(br.common_pb2.Empty())
 
-        signal_names: list[SignalIdentifier] = []
+        signal_names: List[SignalIdentifier] = []
         for networkInfo in configuration.networkInfo:
             res = self._system_stub.ListSignals(networkInfo.namespace)
             for finfo in res.frame:
