@@ -4,13 +4,16 @@ set -e
 
 HOME=/app/python/remotivelabs-broker
 STUBS_OUTPUT=$HOME/remotivelabs/broker/generated/sync
+mkdir -p "${STUBS_OUTPUT}"
+
 #1.1 Generate stubs
 python3  -m grpc_tools.protoc \
  -I /app/protos \
  --python_out=$STUBS_OUTPUT \
  --grpc_python_out=$STUBS_OUTPUT \
+ --mypy_out=$STUBS_OUTPUT \
+ --mypy_grpc_out=$STUBS_OUTPUT \
  /app/protos/*.proto
-
 
 cd $HOME
 #1.2 Fix those imports

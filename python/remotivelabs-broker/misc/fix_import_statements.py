@@ -12,6 +12,7 @@ import re
 import glob
 
 files = glob.glob("remotivelabs/broker/generated/sync/*.py")
+files = files + glob.glob("remotivelabs/broker/generated/sync/*.pyi")
 
 regex_string = r"^import \w+_pb2"
 substitute_string = "from . \\g<0>"

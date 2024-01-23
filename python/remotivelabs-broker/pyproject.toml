@@ -38,8 +38,12 @@ classifiers = [
 dependencies = [
   "grpc-interceptor~=0.14",
   "grpcio~=1.44",
+  "grpc-stubs~=1.53.0.5",
   "requests~=2.21",
-  "protobuf>=3.19.0,<=3.20.1"
+  "protobuf>=3.19.0,<=3.20.1",
+  "mypy-protobuf~=3.3.0",
+  "types-protobuf~=4.24.0.20240106",
+  "grpc-interceptor"
 ]
 dynamic = ["version"]
 
@@ -49,17 +53,20 @@ Documentation = "https://docs.remotivelabs.com/apis/python/remotivelabs-broker/"
 Issues = "https://github.com/remotivelabs/remotivelabs-apis/issues"
 Source = "https://github.com/remotivelabs/remotivelabs-apis/tree/main/python/remotivelabs-broker"
 
-[tool.hatch.version]
-path = "remotivelabs/broker/__about__.py"
-
-[tool.hatch.envs.default]
-python = "python3"
-dependencies = [
+[project.optional-dependencies]
+default = [
   "pytest-cov~=3.0",
   "pytest-pep8~=1.0",
   "pytest~=7.1",
   "pdoc~=12.2",
 ]
+
+[tool.hatch.version]
+path = "remotivelabs/broker/__about__.py"
+
+[tool.hatch.envs.default]
+python = "python3"
+
 [tool.hatch.envs.default.scripts]
 cov = "pytest --cov-report=term-missing --cov-config=pyproject.toml --cov=remotivelabs --cov=tests"
 no-cov = "cov --no-cov"
@@ -93,4 +100,3 @@ exclude_lines = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["remotivelabs"]
-
