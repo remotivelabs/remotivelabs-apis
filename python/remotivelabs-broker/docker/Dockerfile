@@ -11,6 +11,7 @@ RUN pip install hatch json-schema-for-humans
 RUN pip3 install grpcio-tools==1.44.0
 RUN pip3 install hatch
 RUN pip3 install pdoc
+RUN pip3 install mypy-protobuf==3.3.0
 COPY docker/download_protoc.sh .
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 RUN sh download_protoc.sh
@@ -25,4 +26,3 @@ ENV protofile=*.proto
 VOLUME /ouput
 
 CMD ["./python/remotivelabs-broker/docker/build-all-in-docker.sh"]
-
