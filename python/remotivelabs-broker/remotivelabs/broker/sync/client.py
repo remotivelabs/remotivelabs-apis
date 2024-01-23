@@ -1,17 +1,17 @@
-#!/usr/bin/env python3
+from __future__ import annotations
 
 import binascii
 import json
 import queue
 from threading import Thread
-from typing import Union, Callable, List, Iterable
+from typing import Callable, Iterable, List, Optional, Union
 
-from . import SignalCreator
-from . import helper as br
+import grpc
+
 from ..generated.sync import network_api_pb2 as network_api
-from ..generated.sync import network_api_pb2_grpc
-from ..generated.sync import system_api_pb2_grpc
-from ..generated.sync import traffic_api_pb2_grpc
+from ..generated.sync import network_api_pb2_grpc, system_api_pb2_grpc, traffic_api_pb2_grpc
+from . import helper as br
+from .signalcreator import SignalCreator
 
 
 class SignalValue:
@@ -49,20 +49,18 @@ class SignalValue:
     def get_raw(self) -> Union[bytes, None]:
         if self.is_raw():
             return self.signal.raw
-        else:
-            return None
+        return None
 
     def __get_value(self) -> Union[str, int, float, bool, None]:
         if self.signal.raw != b"":
             return "0x" + binascii.hexlify(self.signal.raw).decode("ascii")
-        elif self.signal.HasField("integer"):
+        if self.signal.HasField("integer"):
             return self.signal.integer
-        elif self.signal.HasField("double"):
+        if self.signal.HasField("double"):
             return self.signal.double
-        elif self.signal.HasField("arbitration"):
+        if self.signal.HasField("arbitration"):
             return self.signal.arbitration
-        else:
-            return None
+        return None
 
     def timestamp_us(self):
         return self.signal.timestamp
@@ -80,8 +78,7 @@ class SignalValue:
         v = self.__get_value()
         if isinstance(v, t):
             return v
-        else:
-            raise BrokerException(f"{v} was not expected type '{t}' but got '{type(v)}'")
+        raise BrokerException(f"{v} was not expected type '{t}' but got '{type(v)}'")
 
     def float_value(self):
         return self.__get_with_ensured_type(float)
@@ -97,15 +94,14 @@ class SignalValue:
 
     def as_dict(self):
         return {
-            'timestamp_us': self.timestamp_us(),
-            'name': self.name(),
-            'namespace': self.namespace(),
-            'value': self.value()
+            "timestamp_us": self.timestamp_us(),
+            "name": self.name(),
+            "namespace": self.namespace(),
+            "value": self.value(),
         }
 
 
 class SignalsInFrame(Iterable):
-
     def __init__(self, signals: List[SignalValue]):
         self.signals = signals
         self.index = 0
@@ -116,6 +112,7 @@ class SignalsInFrame(Iterable):
     def __next__(self):
         try:
             result = self.signals[self.index]
+        # pylint: disable=raise-missing-from
         except IndexError:
             raise StopIteration
         self.index += 1
@@ -133,23 +130,19 @@ class BrokerException(Exception):
 
 
 class Client:
-
     def __init__(self, client_id: str = "broker_client"):
-
-        self._signal_creator = None
-        self._traffic_stub = None
-        self._system_stub = None
-        self._network_stub = None
-        self._intercept_channel = None
+        self._signal_creator: SignalCreator
+        self._traffic_stub: traffic_api_pb2_grpc.TrafficServiceStub
+        self._system_stub: system_api_pb2_grpc.SystemServiceStub
+        self._network_stub: network_api_pb2_grpc.NetworkServiceStub
+        self._intercept_channel: grpc.Channel
         self.client_id = client_id
-        self.url = None
-        self.api_key = None
+        self.url: Optional[str] = None
+        self.api_key: Optional[str] = None
         self.on_connect: Union[Callable[[Client], None], None] = None
         self.on_signals: Union[Callable[[SignalsInFrame], None], None] = None
 
-    def connect(self,
-                url: str,
-                api_key: Union[str, None] = None):
+    def connect(self, url: str, api_key: Union[str, None] = None):
         self.url = url
         self.api_key = api_key
         if url.startswith("https"):
@@ -166,8 +159,9 @@ class Client:
         if self.on_connect is not None:
             self.on_connect(self)
 
-    def _validate_and_get_subscribed_signals(self, subscribed_namespaces: List[str], subscribed_signals: List[str]) \
-            -> List[SignalIdentifier]:
+    def _validate_and_get_subscribed_signals(
+        self, subscribed_namespaces: List[str], subscribed_signals: List[str]
+    ) -> List[SignalIdentifier]:
         # Since we cannot know which List[signals] belongs to which namespace we need to fetch
         # all signals from the broker and find the proper signal with namespace. Finally,  we
         # also filter out namespaces that we do not need since we might have duplicated signal names
@@ -175,7 +169,12 @@ class Client:
         # Begin
 
         def verify_namespace(available_signal: SignalIdentifier):
-            return list(filter(lambda namespace: available_signal.namespace == namespace, subscribed_namespaces))
+            return list(
+                filter(
+                    lambda namespace: available_signal.namespace == namespace,
+                    subscribed_namespaces,
+                )
+            )
 
         def find_subscribed_signal(available_signal: SignalIdentifier):
             return list(filter(lambda s: available_signal.name == s, subscribed_signals))
@@ -184,36 +183,34 @@ class Client:
         signals_to_subscribe_to: List[SignalIdentifier] = list(filter(find_subscribed_signal, available_signals))
 
         # Check if subscription is done on signal that is not in any of these namespaces
-        signals_subscribed_to_but_does_not_exist = \
-            set(subscribed_signals) - set(map(lambda s: s.name, signals_to_subscribe_to))
+        signals_subscribed_to_but_does_not_exist = set(subscribed_signals) - set(map(lambda s: s.name, signals_to_subscribe_to))
 
         if len(signals_subscribed_to_but_does_not_exist) > 0:
-            raise BrokerException(f"One or more signals you subscribed to does not exist "
-                                  f", {signals_subscribed_to_but_does_not_exist}")
+            raise BrokerException(f"One or more signals you subscribed to does not exist " f", {signals_subscribed_to_but_does_not_exist}")
 
         return list(map(lambda s: SignalIdentifier(s.name, s.namespace), signals_to_subscribe_to))
 
-    def subscribe(self,
-                  signal_names: List[str],
-                  namespaces: List[str],
-                  on_signals: Callable[[SignalsInFrame], None] = None,
-                  changed_values_only: bool = True):
-
+    def subscribe(
+        self,
+        signal_names: List[str],
+        namespaces: List[str],
+        on_signals: Callable[[SignalsInFrame], None],
+        changed_values_only: bool = True,
+    ):
         if on_signals is None and self.on_signals is None:
             raise BrokerException(
                 "You have not specified global client.on_signals nor client.subscribe(on_signals=callback), "
-                "or you are invoking subscribe() before client.on_signals which is not allowed")
+                "or you are invoking subscribe() before client.on_signals which is not allowed"
+            )
 
         client_id = br.common_pb2.ClientId(id=self.client_id)
-        signals_to_subscribe_to: List[SignalIdentifier] = self._validate_and_get_subscribed_signals(
-            namespaces,
-            signal_names)
+        signals_to_subscribe_to: List[SignalIdentifier] = self._validate_and_get_subscribed_signals(namespaces, signal_names)
 
         def to_protobuf_signal(s: SignalIdentifier):
             return self._signal_creator.signal(s.name, s.namespace)
 
         signals_to_subscribe_on = list(map(to_protobuf_signal, signals_to_subscribe_to))
-        wait_for_subscription_queue = queue.Queue()
+        wait_for_subscription_queue: queue.Queue = queue.Queue()
         Thread(
             target=br.act_on_signal,
             args=(
@@ -222,7 +219,7 @@ class Client:
                 signals_to_subscribe_on,
                 changed_values_only,  # True: only report when signal changes
                 lambda frame: self._on_signals(frame, on_signals),
-                lambda sub: (wait_for_subscription_queue.put((self.client_id, sub)))
+                lambda sub: (wait_for_subscription_queue.put((self.client_id, sub))),
             ),
         ).start()
         client_id, subscription = wait_for_subscription_queue.get()
@@ -233,20 +230,21 @@ class Client:
         Updates "local" callback or global on_signals callback if local callback is None
         """
         if callback is not None:
-            callback(SignalsInFrame(list(map(lambda s: SignalValue(s), signals_in_frame))))
+            # pylint: disable=unnecessary-lambda
+            callback(SignalsInFrame(list(map(lambda s: SignalValue(s), signals_in_frame))))  # type: ignore[call-overload]
         elif self.on_signals is not None:
-            self.on_signals(SignalsInFrame(list(map(lambda s: SignalValue(s), signals_in_frame))))
+            self.on_signals(SignalsInFrame(list(map(SignalValue))))  # type: ignore[call-overload]
 
     def list_signal_names(self) -> List[SignalIdentifier]:
         # Lists available signals
         configuration = self._system_stub.GetConfiguration(br.common_pb2.Empty())
 
         signal_names: List[SignalIdentifier] = []
-        for networkInfo in configuration.networkInfo:
-            res = self._system_stub.ListSignals(networkInfo.namespace)
+        for network_info in configuration.networkInfo:
+            res = self._system_stub.ListSignals(network_info.namespace)
             for finfo in res.frame:
                 # f: br.common_pb2.FrameInfo = finfo
-                signal_names.append(SignalIdentifier(finfo.signalInfo.id.name, networkInfo.namespace.name))
+                signal_names.append(SignalIdentifier(finfo.signalInfo.id.name, network_info.namespace.name))
                 for sinfo in finfo.childInfo:
-                    signal_names.append(SignalIdentifier(sinfo.id.name, networkInfo.namespace.name))
+                    signal_names.append(SignalIdentifier(sinfo.id.name, network_info.namespace.name))
         return signal_names

@@ -1,21 +1,19 @@
-from ..generated.sync import common_pb2
-from ..generated.sync import network_api_pb2
-from ..generated.sync import system_api_pb2
-from .. import log
-import remotivelabs.broker.sync as br
-import os
+from __future__ import annotations
 
-import base64
-import grpc
 import hashlib
 import itertools
 import ntpath
+import os
 import posixpath
-
 from glob import glob
-from grpc_interceptor import ClientCallDetails, ClientInterceptor
-from typing import Any, Callable, Sequence, Generator, Optional
+from typing import Any, Callable, Generator, Optional, Sequence
 from urllib.parse import urlparse
+
+import grpc
+from grpc_interceptor import ClientCallDetails, ClientInterceptor
+
+from .. import log
+from ..generated.sync import common_pb2, network_api_pb2, network_api_pb2_grpc, system_api_pb2, system_api_pb2_grpc
 
 
 class HeaderInterceptor(ClientInterceptor):
@@ -40,20 +38,7 @@ class HeaderInterceptor(ClientInterceptor):
         return method(request_or_iterator, new_details)
 
 
-def create_channel(url: str, x_api_key: Optional[str] = None) -> grpc.intercept_channel:
-    """
-    Create communication channels for gRPC calls.
-
-    :param url: URL to broker
-    :param x_api_key: API key used with RemotiveBroker running in cloud (deprecated).
-    :param authorization_token: Access token replacing api-keys moving forward.
-    :return: gRPC channel
-    """
-    return create_channel(url, x_api_key, None)
-
-
-def create_channel(url: str, x_api_key: Optional[str] = None,
-                   authorization_token: Optional[str] = None) -> grpc.intercept_channel:
+def create_channel(url: str, x_api_key: Optional[str] = None, authorization_token: Optional[str] = None) -> grpc.Channel:
     """
     Create communication channels for gRPC calls.
 
@@ -63,31 +48,34 @@ def create_channel(url: str, x_api_key: Optional[str] = None,
     :return: gRPC channel
     """
 
-    url = urlparse(url)
+    parsed_url = urlparse(url)
+    if parsed_url.hostname is None:
+        msg = f"invalid url {url}, missing hostname"
+        raise ValueError(msg)
 
-    if url.scheme == "https":
-        creds = grpc.ssl_channel_credentials(
-            root_certificates=None, private_key=None, certificate_chain=None
-        )
-        channel = grpc.secure_channel(
-            url.hostname + ":" + str(url.port or "443"), creds
-        )
+    if parsed_url.scheme == "https":
+        creds = grpc.ssl_channel_credentials(root_certificates=None, private_key=None, certificate_chain=None)
+        channel = grpc.secure_channel(parsed_url.hostname + ":" + str(parsed_url.port or "443"), creds)
     else:
-        addr = url.hostname + ":" + str(url.port or "50051")
+        addr = parsed_url.hostname + ":" + str(parsed_url.port or "50051")
         channel = grpc.insecure_channel(addr)
 
     if x_api_key is None and authorization_token is None:
         return channel
-    elif x_api_key is not None:
-        return grpc.intercept_channel(
-            channel, HeaderInterceptor({"x-api-key": x_api_key})
-        )
-    else:
-        # Adding both x-api-key (old) and authorization header for compatibility
-        return grpc.intercept_channel(
-            channel, HeaderInterceptor({"x-api-key": authorization_token,
-                                        "authorization": f"Bearer {authorization_token}"})
-        )
+
+    if x_api_key is not None:
+        return grpc.intercept_channel(channel, HeaderInterceptor({"x-api-key": x_api_key}))
+
+    # Adding both x-api-key (old) and authorization header for compatibility
+    return grpc.intercept_channel(
+        channel,
+        HeaderInterceptor(
+            {
+                "x-api-key": authorization_token,
+                "authorization": f"Bearer {authorization_token}",
+            }
+        ),
+    )
 
 
 def publish_signals(client_id, stub, signals_with_payload, frequency: int = 0) -> None:
@@ -107,7 +95,8 @@ def publish_signals(client_id, stub, signals_with_payload, frequency: int = 0) -
 
     try:
         stub.PublishSignals(publisher_info)
-    except grpc._channel._Rendezvous as err:
+    # pylint: disable=protected-access
+    except grpc._channel._Rendezvous as err:  # type:ignore[attr-defined]
         log.error(err)
 
 
@@ -119,11 +108,7 @@ def printer(signals: Sequence[common_pb2.SignalId]) -> None:
     """
 
     for signal in signals:
-        log.info(
-            "{} {} {}".format(
-                signal.id.name, signal.id.namespace.name, get_value(signal)
-            )
-        )
+        log.info(f"{signal} {signal.namespace.name}")
 
 
 def get_sha256(path: str) -> str:
@@ -134,22 +119,17 @@ def get_sha256(path: str) -> str:
     :rtype int:
     """
 
-    f = open(path, "rb")
-    bytes = f.read()  # read entire file as bytes
-    readable_hash = hashlib.sha256(bytes).hexdigest()
-    f.close()
+    with open(path, "rb") as f:
+        b = f.read()  # read entire file as bytes
+        readable_hash = hashlib.sha256(b).hexdigest()
     return readable_hash
 
 
-def generate_data(
-    file, dest_path, chunk_size, sha256
-) -> Generator[system_api_pb2.FileUploadRequest, None, None]:
+def generate_data(file, dest_path, chunk_size, sha256) -> Generator[system_api_pb2.FileUploadRequest, None, None]:
     for x in itertools.count(start=0):
         if x == 0:
-            fileDescription = system_api_pb2.FileDescription(
-                sha256=sha256, path=dest_path
-            )
-            yield system_api_pb2.FileUploadRequest(fileDescription=fileDescription)
+            file_description = system_api_pb2.FileDescription(sha256=sha256, path=dest_path)
+            yield system_api_pb2.FileUploadRequest(fileDescription=file_description)
         else:
             buf = file.read(chunk_size)
             if not buf:
@@ -157,9 +137,7 @@ def generate_data(
             yield system_api_pb2.FileUploadRequest(chunk=buf)
 
 
-def upload_file(
-    system_stub: br.system_api_pb2_grpc.SystemServiceStub, path: str, dest_path: str
-) -> None:
+def upload_file(system_stub: system_api_pb2_grpc.SystemServiceStub, path: str, dest_path: str) -> None:
     """
     Upload single file to internal storage on broker.
 
@@ -169,23 +147,16 @@ def upload_file(
     """
 
     sha256 = get_sha256(path)
-    log.debug("SHA256 for file {}: {}".format(path, sha256))
-    file = open(path, "rb")
-
-    # make sure path is unix style (necessary for windows, and does no harm om
-    # linux)
-    upload_iterator = generate_data(
-        file, dest_path.replace(ntpath.sep, posixpath.sep), 1000000, sha256
-    )
-    response = system_stub.UploadFile(
-        upload_iterator, compression=grpc.Compression.Gzip
-    )
-    log.debug("Uploaded {} with response {}".format(path, response))
+    log.debug(f"SHA256 for file {path}: {sha256}")
+    with open(path, "rb") as file:
+        # make sure path is unix style (necessary for windows, and does no harm om
+        # linux)
+        upload_iterator = generate_data(file, dest_path.replace(ntpath.sep, posixpath.sep), 1000000, sha256)
+        response = system_stub.UploadFile(upload_iterator, compression=grpc.Compression.Gzip)
+        log.debug(f"Uploaded {path} with response {response}")
 
 
-def download_file(
-    system_stub: br.system_api_pb2_grpc.SystemServiceStub, path: str, dest_path: str
-) -> None:
+def download_file(system_stub: system_api_pb2_grpc.SystemServiceStub, path: str, dest_path: str) -> None:
     """
     Download file from Broker remote storage.
 
@@ -194,23 +165,15 @@ def download_file(
     :param dest_path: Path to file in local file system
     """
 
-    file = open(dest_path, "wb")
-    for response in system_stub.BatchDownloadFiles(
-        system_api_pb2.FileDescriptions(
-            fileDescriptions=[system_api_pb2.FileDescription(path=path.replace(ntpath.sep,
-                                                         posixpath.sep))]
-        )
-    ):
-        assert not response.HasField("errorMessage"), (
-            "Error uploading file, message is: %s" % response.errorMessage
-        )
-        file.write(response.chunk)
-    file.close()
+    with open(dest_path, "wb") as file:
+        for response in system_stub.BatchDownloadFiles(
+            system_api_pb2.FileDescriptions(fileDescriptions=[system_api_pb2.FileDescription(path=path.replace(ntpath.sep, posixpath.sep))])
+        ):
+            assert not response.HasField("errorMessage"), f"Error uploading file, message is: {response.errorMessage}"
+            file.write(response.chunk)
 
 
-def upload_folder(
-    system_stub: br.system_api_pb2_grpc.SystemServiceStub, folder: str
-) -> None:
+def upload_folder(system_stub: system_api_pb2_grpc.SystemServiceStub, folder: str) -> None:
     """
     Upload directory and its content to Broker remote storage.
 
@@ -218,19 +181,14 @@ def upload_folder(
     :param folder: Path to directory in local file storage
     """
 
-    files = [
-        y
-        for x in os.walk(folder)
-        for y in glob(os.path.join(x[0], "*"))
-        if not os.path.isdir(y)
-    ]
+    files = [y for x in os.walk(folder) for y in glob(os.path.join(x[0], "*")) if not os.path.isdir(y)]
     assert len(files) != 0, "Specified upload folder is empty or does not exist"
     for file in files:
         upload_file(system_stub, file, file.replace(folder, ""))
 
 
 def reload_configuration(
-    system_stub: br.system_api_pb2_grpc.SystemServiceStub,
+    system_stub: system_api_pb2_grpc.SystemServiceStub,
 ) -> None:
     """
     Trigger reload of configuration on Broker.
@@ -240,11 +198,11 @@ def reload_configuration(
 
     request = common_pb2.Empty()
     response = system_stub.ReloadConfiguration(request, timeout=60000)
-    log.debug("Reload configuration with response {}".format(response))
+    log.debug(f"Reload configuration with response {response}")
 
 
 def check_license(
-    system_stub: br.system_api_pb2_grpc.SystemServiceStub,
+    system_stub: system_api_pb2_grpc.SystemServiceStub,
 ) -> None:
     """
     Check license to Broker. Throws exception if failure.
@@ -252,17 +210,15 @@ def check_license(
     :param system_stub: System gRPC channel stub
     """
     status = system_stub.GetLicenseInfo(common_pb2.Empty()).status
-    assert status == system_api_pb2.LicenseStatus.VALID, (
-        "Check your license, status is: %d" % status
-    )
+    assert status == system_api_pb2.LicenseStatus.VALID, f"Check your license, status is: {status}"
 
 
 def act_on_signal(
-    client_id: br.common_pb2.ClientId,
-    network_stub: br.network_api_pb2_grpc.NetworkServiceStub,
-    sub_signals: Sequence[br.common_pb2.SignalId],
+    client_id: common_pb2.ClientId,
+    network_stub: network_api_pb2_grpc.NetworkServiceStub,
+    sub_signals: Sequence[common_pb2.SignalId],
     on_change: bool,
-    fun: Callable[[Sequence[br.network_api_pb2.Signal]], None],
+    fun: Callable[[Sequence[network_api_pb2.Signal]], None],
     on_subscribed: Optional[Callable[..., None]] = None,
 ) -> None:
     """
@@ -293,26 +249,27 @@ def act_on_signal(
 
     except grpc.RpcError as e:
         # Only try to cancel if cancel was not already attempted
+        # pylint: disable=no-member
         if e.code() != grpc.StatusCode.CANCELLED:
             try:
                 subscripton.cancel()
                 print("A gRPC error occurred:")
                 print(e)
-            except grpc.RpcError as e2:
+            except grpc.RpcError:
                 pass
-
-    except grpc._channel._Rendezvous as err:
+    # pylint: disable=protected-access, bad-except-order
+    except grpc._channel._Rendezvous as err:  # type:ignore[attr-defined]
         log.error(err)
     # reload, alternatively non-existing signal
     log.debug("Subscription terminated")
 
 
 def act_on_scripted_signal(
-    client_id: br.common_pb2.ClientId,
-    network_stub: br.network_api_pb2_grpc.NetworkServiceStub,
+    client_id: common_pb2.ClientId,
+    network_stub: network_api_pb2_grpc.NetworkServiceStub,
     script: bytes,
     on_change: bool,
-    fun: Callable[[Sequence[br.network_api_pb2.Signal]], None],
+    fun: Callable[[Sequence[network_api_pb2.Signal]], None],
     on_subscribed: Optional[Callable[..., None]] = None,
 ) -> None:
     """
@@ -334,9 +291,7 @@ def act_on_scripted_signal(
         onChange=on_change,
     )
     try:
-        subscription = network_stub.SubscribeToSignalWithScript(
-            sub_info, timeout=None
-        )
+        subscription = network_stub.SubscribeToSignalWithScript(sub_info, timeout=None)
         if on_subscribed:
             on_subscribed(subscription)
         log.debug("Waiting for signal...")
@@ -348,10 +303,11 @@ def act_on_scripted_signal(
             subscription.cancel()
             print("A gRPC error occurred:")
             print(e)
-        except grpc.RpcError as e2:
+        except grpc.RpcError:
             pass
 
-    except grpc._channel._Rendezvous as err:
+    # pylint: disable=protected-access, bad-except-order
+    except grpc._channel._Rendezvous as err:  # type:ignore[attr-defined]
         log.error(err)
     # reload, alternatively non-existing signal
     log.debug("Subscription terminated")

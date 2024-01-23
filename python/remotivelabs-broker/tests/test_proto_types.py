@@ -1,4 +1,3 @@
-import google.protobuf as pb
 import remotivelabs.broker.sync as br
 
 # Tests
@@ -6,4 +5,4 @@ import remotivelabs.broker.sync as br
 
 def test_empty():
     # Instanciate empty type
-    br.common_pb2.Empty
+    _ = br.common_pb2.Empty
