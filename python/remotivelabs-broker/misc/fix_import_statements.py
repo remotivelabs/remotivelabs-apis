@@ -8,21 +8,20 @@
 # This script goes through all the python files in the folder and does the replacement based on the regex pattern
 # `regex_string` defined below.
 
-import re
 import glob
+import re
 
 files = glob.glob("remotivelabs/broker/generated/sync/*.py")
 files = files + glob.glob("remotivelabs/broker/generated/sync/*.pyi")
 
-regex_string = r"^import \w+_pb2"
-substitute_string = "from . \\g<0>"
+REGEX_STRING = r"^import \w+_pb2"
+SUBSTITUTE_STRING = "from . \\g<0>"
 
 # You can manually specify the number of replacements by changing the 4th argument
 for file in files:
-    stream = open(file, "rt")
-    contents = stream.read()
-    result = re.sub(regex_string, substitute_string, contents, 0, re.MULTILINE)
-    stream.close()
-    stream = open(file, "wt")
-    stream.write(result)
-    stream.close()
+    with open(file, encoding="utf-8") as stream:
+        contents = stream.read()
+        result = re.sub(REGEX_STRING, SUBSTITUTE_STRING, contents, count=0, flags=re.MULTILINE)
+
+    with open(file, encoding="utf-8", mode="wt") as stream:
+        stream.write(result)

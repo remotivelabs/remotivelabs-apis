@@ -24,8 +24,9 @@ Use sub module: `remotivelabs.broker.sync`.
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from .__about__ import __version__
 import logging
+
+from .__about__ import __version__
 
 log: logging.Logger = logging.getLogger("com.remotivelabs.broker")
 """Package logging interface"""

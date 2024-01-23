@@ -1,6 +1,7 @@
-import google.protobuf
 import logging
+
 import pytest
+
 import remotivelabs.broker.sync as br
 
 # Warning these tests require a RemotiveBroker up and running
@@ -18,13 +19,15 @@ class Connection:
 
 # Setup broker with predefined settings
 @pytest.fixture
-def broker_connection():
+@pytest.fixture(name="broker_connection")
+def fixture_broker_connection():
     return Connection()
 
 
 # Setup broker configured for testing
 @pytest.fixture
-def broker_configured(broker_connection):
+@pytest.fixture(name="broker_configured")
+def fixture_broker_configured(broker_connection):
     br.upload_folder(broker_connection.system_stub, "tests/configuration_udp")
     br.reload_configuration(broker_connection.system_stub)
     return broker_connection
@@ -40,8 +43,8 @@ def test_meta_fields(broker_configured):
     sc = br.SignalCreator(broker_configured.system_stub)
     meta_speed = sc.get_meta("Speed", "ecu_A")
     parent_frame = sc.frame_by_signal("Speed", "ecu_A")
-    assert parent_frame.name == "PropulsionFrame"
-    meta_parent = sc.get_meta(parent_frame.name, "ecu_A")
+    assert parent_frame.name == "PropulsionFrame"  # pylint: disable=no-member
+    meta_parent = sc.get_meta(parent_frame.name, "ecu_A")  # pylint: disable=no-member
 
     assert meta_speed.getDescription() == "Current velocity"
     assert meta_speed.getMax() == 90.0
@@ -75,17 +78,11 @@ def test_min_max(broker_configured, caplog):
 
         # Publing a value below mininum
         sc.signal_with_payload("Speed", "ecu_A", ("double", -1.0))
-        assert (
-            caplog.records[0].message
-            == 'Value below minimum value of 0.0 for signal "Speed"'
-        )
+        assert caplog.records[0].message == 'Value below minimum value of 0.0 for signal "Speed"'
 
         # Publing a value above maximum
         sc.signal_with_payload("Speed", "ecu_A", ("double", 91.0))
-        assert (
-            caplog.records[1].message
-            == 'Value above maximum value of 90.0 for signal "Speed"'
-        )
+        assert caplog.records[1].message == 'Value above maximum value of 90.0 for signal "Speed"'
 
         assert len(caplog.records) == 2
 
