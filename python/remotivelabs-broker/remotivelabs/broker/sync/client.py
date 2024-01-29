@@ -194,7 +194,7 @@ class Client:
         self,
         signal_names: List[str],
         namespaces: List[str],
-        on_signals: Callable[[SignalsInFrame], None],
+        on_signals: Optional[Callable[[SignalsInFrame], None]] = None,
         changed_values_only: bool = True,
     ):
         if on_signals is None and self.on_signals is None:
