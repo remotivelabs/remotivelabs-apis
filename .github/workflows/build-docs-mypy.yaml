@@ -26,4 +26,5 @@ jobs:
           pip install python/remotivelabs-broker[default]
       - name: Run mypy
         run: |
-          mypy .
+          mypy python/remotivelabs-broker/remotivelabs/
+          mypy . --exclude python/remotivelabs-broker/remotivelabs/
