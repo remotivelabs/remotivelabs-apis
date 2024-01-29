@@ -38,7 +38,7 @@ indent-width = 4
 target-version = "py38"
 
 [lint]
-select = ["C901", "E", "W", "F", "RET505", "I001", "B034", "EXE001", "N806", "UP032"]
+select = ["C901", "E", "W", "F", "RET505", "I001", "B034", "EXE001", "N806", "UP032", "FA100"]
 ignore = []
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
