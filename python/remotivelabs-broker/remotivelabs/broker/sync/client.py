@@ -230,10 +230,9 @@ class Client:
         Updates "local" callback or global on_signals callback if local callback is None
         """
         if callback is not None:
-            # pylint: disable=unnecessary-lambda
-            callback(SignalsInFrame(list(map(lambda s: SignalValue(s), signals_in_frame))))  # type: ignore[call-overload]
+            callback(SignalsInFrame(list(map(SignalValue, signals_in_frame))))  # type: ignore[call-overload]
         elif self.on_signals is not None:
-            self.on_signals(SignalsInFrame(list(map(SignalValue))))  # type: ignore[call-overload]
+            self.on_signals(SignalsInFrame(list(map(SignalValue, signals_in_frame))))  # type: ignore[call-overload]
 
     def list_signal_names(self) -> List[SignalIdentifier]:
         # Lists available signals
