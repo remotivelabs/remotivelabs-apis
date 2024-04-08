@@ -36,13 +36,13 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Information Analysis",
 ]
 dependencies = [
-  "grpc-interceptor~=0.14",
-  "grpcio~=1.44",
-  "grpc-stubs~=1.53.0.5",
-  "requests~=2.21",
+  "grpc-interceptor^=0.14.0",
+  "grpcio^=1.44.0",
+  "grpc-stubs^=1.53.0.5",
+  "requests^=2.21.0",
   "protobuf>=3.19.0,<=3.20.1",
-  "mypy-protobuf~=3.3.0",
-  "types-protobuf~=4.24.0.20240106",
+  "mypy-protobuf^=3.3.0",
+  "types-protobuf^=4.24.0.20240106",
   "grpc-interceptor"
 ]
 dynamic = ["version"]
@@ -55,10 +55,10 @@ Source = "https://github.com/remotivelabs/remotivelabs-apis/tree/main/python/rem
 
 [project.optional-dependencies]
 default = [
-  "pytest-cov~=3.0",
-  "pytest-pep8~=1.0",
-  "pytest~=7.1",
-  "pdoc~=12.2",
+  "pytest-cov^=3.0.0",
+  "pytest-pep8^=1.0.0",
+  "pytest^=7.1.0",
+  "pdoc^=12.2.0",
 ]
 
 [tool.hatch.version]
