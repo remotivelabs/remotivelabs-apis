@@ -15,3 +15,11 @@ walkdir = "2.3.2"
 
 [build-dependencies]
 tonic-build = "0.6.2"
+
+[[example]]
+name = "pub_client"
+path = "examples/pub_client.rs"
+
+[[example]]
+name = "sub_client"
+path = "examples/sub_client.rs"
