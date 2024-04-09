@@ -1,11 +1,12 @@
 use tonic::transport::Channel;
 
-use lib_helper::{
-    beamy_api::base::{
+use remotive_broker::{
+    check_license, reload_configuration,
+    remotive_api::base::{
         network_service_client::NetworkServiceClient, system_service_client::SystemServiceClient,
         ClientId, NameSpace, SignalId, SignalIds, SubscriberConfig,
     },
-    check_license, reload_configuration, upload_folder,
+    upload_folder,
 };
 use std::{thread, time};
 
@@ -18,7 +19,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut network_stub = NetworkServiceClient::new(channel);
 
     check_license(&mut system_stub).await?;
-    upload_folder(&mut system_stub, "configuration").await?;
+    upload_folder(&mut system_stub, "examples/configuration").await?;
     reload_configuration(&mut system_stub).await?;
 
     let client_id = Some(ClientId {
