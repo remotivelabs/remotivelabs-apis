@@ -1,10 +1,8 @@
 [package]
-name = "lib-helper"
+name = "remotive-broker"
 version = "0.1.0"
-authors = ["Lind, Niclas <niclas.lind@volvocars.com>"]
+authors = [ "RemotiveLabs support <support@remotivelabs.com>", "Lind, Niclas <niclas.lind@volvocars.com>"]
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 futures = "0.3.19"

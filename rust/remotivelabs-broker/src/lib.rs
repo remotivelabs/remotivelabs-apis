@@ -1,6 +1,6 @@
 use std::{error::Error, fs, path::Path};
 
-use beamy_api::base::{
+use remotive_api::base::{
     file_upload_request::Data, system_service_client::SystemServiceClient, FileDescription,
     FileUploadRequest,
 };
@@ -10,9 +10,9 @@ use sha2::{Digest, Sha256};
 use tonic::transport::Channel;
 use walkdir::WalkDir;
 
-use crate::beamy_api::base::{Empty, LicenseStatus};
+use crate::remotive_api::base::{Empty, LicenseStatus};
 
-pub mod beamy_api;
+pub mod remotive_api;
 
 /// Generate a sha256 key of the data in the provided file
 pub fn get_sha256(path: &str) -> Result<String, Box<dyn Error>> {
@@ -28,7 +28,7 @@ pub fn get_sha256(path: &str) -> Result<String, Box<dyn Error>> {
     Ok(result)
 }
 
-/// Generate the file description data in the right order that the beamybroker needs
+/// Generate the file description data in the right order that the RemotiveBroker needs
 async fn generate_data(
     path: &str,
     dest_path: String,
@@ -53,7 +53,7 @@ async fn generate_data(
     Ok(stream::iter(vec![file_description, data]))
 }
 
-/// Upload file to BeamyBroker
+/// Upload file to RemotiveBroker
 async fn upload_file(
     system_stub: &mut SystemServiceClient<Channel>,
     path: &str,
@@ -98,7 +98,7 @@ pub async fn upload_folder(
     Ok(())
 }
 
-/// Reload beamybroker configuration
+/// Reload RemotiveBroker configuration
 pub async fn reload_configuration(
     system_stub: &mut SystemServiceClient<Channel>,
 ) -> Result<(), Box<dyn Error>> {
@@ -107,7 +107,7 @@ pub async fn reload_configuration(
     Ok(())
 }
 
-/// Check BeamyBroker license
+/// Check RemotiveBroker license
 pub async fn check_license(
     system_stub: &mut SystemServiceClient<Channel>,
 ) -> Result<(), Box<dyn Error>> {
