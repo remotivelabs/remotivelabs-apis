@@ -140,8 +140,8 @@ class Client:
     def __init__(self, client_id: str = "broker_client"):
         self._signal_creator: SignalCreator
         self._traffic_stub: traffic_api_pb2_grpc.TrafficServiceStub
-        self._system_stub: system_api_pb2_grpc.SystemServiceStub = None
-        self._network_stub: network_api_pb2_grpc.NetworkServiceStub = None
+        self._system_stub: system_api_pb2_grpc.SystemServiceStub
+        self._network_stub: network_api_pb2_grpc.NetworkServiceStub
         self._intercept_channel: grpc.Channel
         self.client_id = client_id
         self.url: Optional[str] = None
@@ -166,10 +166,12 @@ class Client:
         if self.on_connect is not None:
             self.on_connect(self)
 
-    def subscribe(self, signals_to_subscribe_to: Union[List[SignalIdentifier], List[str]],
-                  on_signals: Optional[Callable[[SignalsInFrame], None]] = None,
-                  changed_values_only: bool = True):
-
+    def subscribe(
+        self,
+        signals_to_subscribe_to: Union[List[SignalIdentifier], List[str]],
+        on_signals: Optional[Callable[[SignalsInFrame], None]] = None,
+        changed_values_only: bool = True,
+    ):
         client_id = br.common_pb2.ClientId(id="subscribe-sample")
         if on_signals is None and self.on_signals is None:
             raise BrokerException(
