@@ -36,7 +36,10 @@
             "properties": {
               "database": {
                 "$ref": "#/defs/signal_db",
-                "description": "Path to signal database file."
+                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database one should specify can_physical_channel_name."
+              },
+              "can_physical_channel_name": {
+                "$ref": "#/defs/can_physical_channel_name"
               },
               "device_name": {
                 "description": "Name of device in OS.",
@@ -73,7 +76,10 @@
             "properties": {
               "database": {
                 "$ref": "#/defs/signal_db",
-                "description": "Path to signal database file."
+                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database one should specify can_physical_channel_name."
+              },
+              "can_physical_channel_name": {
+                "$ref": "#/defs/can_physical_channel_name"
               },
               "device_name": {
                 "description": "Name of device in OS.",
@@ -428,6 +434,10 @@
     "signal_db": {
       "description": "Path to signal database.",
       "type": "string"
+    },
+    "can_physical_channel_name": {
+      "type": "string",
+      "description": "This property is required when using an arxml database. Path to the physical channel that should be used. Referenced by SHORT-NAME element, e.g. /Topology/Name/ID"
     }
   }
 }
