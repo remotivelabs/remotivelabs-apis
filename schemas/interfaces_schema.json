@@ -314,9 +314,13 @@
                   }
                 ]
               },
-              "fibex_file": {
+              "database": {
                 "$ref": "#/defs/signal_db",
                 "description": "Path to Flexray signal database `.xml` file."
+              },
+              "fibex_file": {
+                "$ref": "#/defs/signal_db",
+                "description": "This property is deprecated, use database instead."
               },
               "namespace": {
                 "$ref": "#/defs/namespace"
@@ -332,7 +336,7 @@
               "type",
               "namespace",
               "config",
-              "fibex_file"
+              "database"
             ],
             "title": "Flexray"
           }
