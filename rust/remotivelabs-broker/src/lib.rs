@@ -1,11 +1,13 @@
+//! Rust API RemotiveBroker with gRPC bindings.
+
 use std::{error::Error, fs, path::Path};
 
+use futures::{stream, Stream};
+use path_slash::PathExt;
 use remotive_api::base::{
     file_upload_request::Data, system_service_client::SystemServiceClient, FileDescription,
     FileUploadRequest,
 };
-use futures::{stream, Stream};
-use path_slash::PathExt;
 use sha2::{Digest, Sha256};
 use tonic::transport::Channel;
 use walkdir::WalkDir;
