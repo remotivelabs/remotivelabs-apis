@@ -13,6 +13,9 @@ tokio = { version = "1.14.0", features = ["rt-multi-thread", "time", "fs", "macr
 tonic = { version = "0.6.2", features = ["tls", "tls-roots"] }
 walkdir = "2.3.2"
 
+[dev-dependencies]
+clap = { version = "4.5.4", features = ["derive"] }
+
 [build-dependencies]
 tonic-build = "0.6.2"
 
@@ -23,3 +26,7 @@ path = "examples/pub_client.rs"
 [[example]]
 name = "sub_client"
 path = "examples/sub_client.rs"
+
+[[example]]
+name = "subscribe"
+path = "examples/subscribe.rs"
