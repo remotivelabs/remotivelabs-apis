@@ -18,8 +18,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut system_stub = SystemServiceClient::new(channel.clone());
     let mut network_stub = NetworkServiceClient::new(channel);
 
+    println!("Checking license...");
     check_license(&mut system_stub).await?;
+    println!("Uploading configuration...");
     upload_folder(&mut system_stub, "examples/configuration").await?;
+    println!("Reloading configuration...");
     reload_configuration(&mut system_stub).await?;
 
     let client_id = Some(ClientId {
