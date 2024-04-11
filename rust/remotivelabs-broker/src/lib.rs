@@ -70,8 +70,6 @@ async fn upload_file(
     let upload_iterator = generate_data(path, unix_destination_path, chunk_size, sha256).await?;
     let _response = system_stub.upload_file(upload_iterator).await?;
 
-    println!("Uploaded file {}", path);
-
     Ok(())
 }
 
@@ -80,20 +78,15 @@ async fn upload_file(
 /// Then we filter out the folders and just keep the files
 pub async fn upload_folder(
     system_stub: &mut SystemServiceClient<Channel>,
-    path: &str,
+    dir: &str,
 ) -> Result<(), Box<dyn Error>> {
-    for entry in WalkDir::new(path)
-        .into_iter()
-        .filter_map(|e| {
-            if e.is_err() {
-                println!("Error when trying to upload folder: {:#?}", e)
+    for entry_result in WalkDir::new(dir).into_iter() {
+        let entry = entry_result?;
+        let path = entry.path();
+        if path.is_file() {
+            if let Some(path_str) = entry.path().to_str() {
+                upload_file(system_stub, path_str, path_str.replace(dir, "")).await?;
             }
-            e.ok()
-        })
-        .filter(|e| e.path().is_file())
-    {
-        if let Some(entry) = entry.path().to_str() {
-            upload_file(system_stub, entry, entry.replace(path, "")).await?;
         }
     }
 
@@ -105,7 +98,6 @@ pub async fn reload_configuration(
     system_stub: &mut SystemServiceClient<Channel>,
 ) -> Result<(), Box<dyn Error>> {
     let _response = system_stub.reload_configuration(Empty {}).await?;
-    println!("Reload your configuration");
     Ok(())
 }
 
@@ -118,8 +110,6 @@ pub async fn check_license(
         .await?
         .into_inner()
         .status();
-
-    println!("Check your license, status is: {:?}", status);
 
     // Don't continue if the license isn't valid
     assert!(status == LicenseStatus::Valid);
