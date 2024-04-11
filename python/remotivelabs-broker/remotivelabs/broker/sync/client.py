@@ -168,7 +168,7 @@ class Client:
 
     def subscribe(
         self,
-        signals_to_subscribe_to: Union[List[SignalIdentifier], List[str]],
+        signals_to_subscribe_to: List[SignalIdentifier],
         on_signals: Optional[Callable[[SignalsInFrame], None]] = None,
         changed_values_only: bool = True,
     ):
@@ -179,9 +179,7 @@ class Client:
                 "or you are invoking subscribe() before client.on_signals which is not allowed"
             )
 
-        def to_protobuf_signal(s: Union[SignalIdentifier, str]):
-            if isinstance(s, str):
-                s = SignalIdentifier.parse(s)
+        def to_protobuf_signal(s: SignalIdentifier):
             return self._signal_creator.signal(s.name, s.namespace)
 
         _signals_to_subscribe_on = list(map(to_protobuf_signal, signals_to_subscribe_to))
