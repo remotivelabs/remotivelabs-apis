@@ -191,7 +191,7 @@ class Client:
                 self._network_stub,
                 _signals_to_subscribe_on,
                 changed_values_only,  # True: only report when signal changes
-                lambda frame: self._on_signals(frame, self.on_signals),
+                lambda frame: self._on_signals(frame, on_signals),
                 lambda sub: (wait_for_subscription_queue.put((self.client_id, sub))),
             ),
         ).start()
