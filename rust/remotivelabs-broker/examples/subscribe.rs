@@ -1,4 +1,6 @@
 use clap::Parser;
+use std::error::Error;
+use std::fmt;
 use tonic::transport::Channel;
 
 use remotive_broker::{
@@ -13,19 +15,51 @@ use std::vec::Vec;
 
 /// Rust subscribe example
 #[derive(Parser, Debug)]
-#[command(about)]
+#[command(about, version)]
 struct Args {
-    /// Namespace
-    #[arg(short, long, required = true)]
-    namespace: String,
-
+    /// Subscribe to signals. Use syntax [namespace]:[frame.signal or signal].
     #[arg(short, long, required = true)]
     signal: Vec<String>,
 }
 
+#[derive(Debug)]
+struct ParseSignalError {
+    identifier: String,
+}
+
+impl fmt::Display for ParseSignalError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Failed to parse signal '{}'", self.identifier)
+    }
+}
+
+impl Error for ParseSignalError {}
+
+fn parse_signal(identifier: &String) -> Result<SignalId, Box<dyn Error>> {
+    if let Some((namespace, signal)) = identifier.split_once(":") {
+        Ok(SignalId {
+            name: signal.to_string(),
+            namespace: Some(NameSpace {
+                name: namespace.to_string(),
+            }),
+        })
+    } else {
+        let err = ParseSignalError {
+            identifier: identifier.to_string(),
+        };
+        Err(Box::<dyn Error>::from(err))
+    }
+}
+
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), Box<dyn Error>> {
     let args = Args::parse();
+
+    let signal_ids: Vec<SignalId> = args
+        .signal
+        .iter()
+        .map(parse_signal)
+        .collect::<Result<_, _>>()?;
 
     let channel = Channel::from_static("http://localhost:50051")
         .connect()
@@ -36,26 +70,15 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     check_license(&mut system_stub).await?;
 
-    let signals = SignalIds {
-        signal_id: args
-            .signal
-            .iter()
-            .map(|name| SignalId {
-                name: name.to_string(),
-                namespace: Some(NameSpace {
-                    name: args.namespace.to_string(),
-                }),
-            })
-            .collect(),
-    };
-
     let client_id = ClientId {
         id: "rusty_subscrib_example".to_string(),
     };
 
     let subscriber_config = SubscriberConfig {
         client_id: Some(client_id),
-        signals: Some(signals),
+        signals: Some(SignalIds {
+            signal_id: signal_ids,
+        }),
         on_change: false,
     };
 
