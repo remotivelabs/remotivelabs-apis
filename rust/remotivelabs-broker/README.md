@@ -14,7 +14,7 @@ Example:
 
     cargo run --example subscribe -- -s vcan0.MyFrame.MySignal
 
-The sample accepts multiple `-s`/`--signal` argument to subscribe to multiple signals. Identify the signal with the syntax `[namespace].[frame.signal or signal]`.
+The sample accepts multiple `-s`/`--signal` argument to subscribe to multiple signals. Identify the signal with the syntax `[namespace]:[frame.signal or signal]`.
 
 ### Publish / Subscribe example
 See `examples/pub_client.rs` and `examples/sub_client.rs` for a sample on how to use the library.
