@@ -20,6 +20,10 @@ struct Args {
     /// Subscribe to signals. Use syntax [namespace]:[frame.signal or signal].
     #[arg(short, long, required = true)]
     signal: Vec<String>,
+
+    /// RemotiveBroker URL
+    #[arg(short, long, default_value_t = String::from("http://localhost:50051"))]
+    url: String,
 }
 
 #[derive(Debug)]
@@ -61,7 +65,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .map(parse_signal)
         .collect::<Result<_, _>>()?;
 
-    let channel = Channel::from_static("http://localhost:50051")
+    let channel = Channel::from_shared(args.url.to_string())?
         .connect()
         .await?;
 
