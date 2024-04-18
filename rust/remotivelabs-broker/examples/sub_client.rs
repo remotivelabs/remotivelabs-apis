@@ -1,29 +1,19 @@
-use tonic::transport::Channel;
-
 use remotive_broker::{
-    check_license, reload_configuration,
-    remotive_api::base::{
-        network_service_client::NetworkServiceClient, system_service_client::SystemServiceClient,
-        ClientId, NameSpace, SignalId, SignalIds, SubscriberConfig,
-    },
-    upload_folder,
+    remotive_api::base::{ClientId, NameSpace, SignalId, SignalIds, SubscriberConfig},
+    Connection,
 };
 use std::{thread, time};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let channel = Channel::from_static("http://localhost:50051")
-        .connect()
-        .await?;
-    let mut system_stub = SystemServiceClient::new(channel.clone());
-    let mut network_stub = NetworkServiceClient::new(channel);
+    let mut con = Connection::new("http://localhost:50051".to_string(), None).await?;
 
     println!("Checking license...");
-    check_license(&mut system_stub).await?;
+    con.check_license().await?;
     println!("Uploading configuration...");
-    upload_folder(&mut system_stub, "examples/configuration").await?;
+    con.upload_folder("examples/configuration").await?;
     println!("Reloading configuration...");
-    reload_configuration(&mut system_stub).await?;
+    con.reload_configuration().await?;
 
     let client_id = Some(ClientId {
         id: "rusty_subscriber".to_string(),
@@ -39,7 +29,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Read message from stream and print it out
     loop {
-        let mut result = network_stub
+        let mut result = con
+            .network_stub
             .subscribe_to_signals(subscriber_config.clone())
             .await?
             .into_inner();
