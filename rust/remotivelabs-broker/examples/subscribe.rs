@@ -1,14 +1,10 @@
 use clap::Parser;
 use std::error::Error;
 use std::fmt;
-use tonic::transport::Channel;
 
 use remotive_broker::{
-    check_license,
-    remotive_api::base::{
-        network_service_client::NetworkServiceClient, system_service_client::SystemServiceClient,
-        ClientId, NameSpace, SignalId, SignalIds, SubscriberConfig,
-    },
+    remotive_api::base::{ClientId, NameSpace, SignalId, SignalIds, SubscriberConfig},
+    Connection,
 };
 
 use std::vec::Vec;
@@ -24,6 +20,10 @@ struct Args {
     /// RemotiveBroker URL
     #[arg(short, long, default_value_t = String::from("http://localhost:50051"))]
     url: String,
+
+    /// API key is required when accessing brokers running in the cloud
+    #[arg(short, long)]
+    x_api_key: Option<String>,
 }
 
 #[derive(Debug)]
@@ -65,14 +65,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .map(parse_signal)
         .collect::<Result<_, _>>()?;
 
-    let channel = Channel::from_shared(args.url.to_string())?
-        .connect()
-        .await?;
+    let mut con = Connection::new(args.url, args.x_api_key.clone()).await?;
 
-    let mut system_stub = SystemServiceClient::new(channel.clone());
-    let mut network_stub = NetworkServiceClient::new(channel);
-
-    check_license(&mut system_stub).await?;
+    con.check_license().await?;
 
     let client_id = ClientId {
         id: "rusty_subscrib_example".to_string(),
@@ -88,7 +83,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     println!("Waiting for signals...");
 
-    let mut result = network_stub
+    let mut result = con
+        .network_stub
         .subscribe_to_signals(subscriber_config.clone())
         .await?
         .into_inner();
