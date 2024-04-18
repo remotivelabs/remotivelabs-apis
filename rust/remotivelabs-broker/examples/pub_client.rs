@@ -1,31 +1,22 @@
 use std::io::Write;
 
 use remotive_broker::{
-    check_license, reload_configuration,
     remotive_api::base::{
-        network_service_client::NetworkServiceClient, signal::Payload::Integer,
-        system_service_client::SystemServiceClient, ClientId, NameSpace, PublisherConfig, Signal,
-        SignalId, Signals,
+        signal::Payload::Integer, ClientId, NameSpace, PublisherConfig, Signal, SignalId, Signals,
     },
-    upload_folder,
+    Connection,
 };
-use tonic::transport::Channel;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let channel = Channel::from_static("http://localhost:50051")
-        .connect()
-        .await?;
-
-    let mut system_stub = SystemServiceClient::new(channel.clone());
-    let mut network_stub = NetworkServiceClient::new(channel);
+    let mut con = Connection::new("http://localhost:50051".to_string(), None).await?;
 
     println!("Checking license...");
-    check_license(&mut system_stub).await?;
+    con.check_license().await?;
     println!("Uploading configuration...");
-    upload_folder(&mut system_stub, "examples/configuration").await?;
+    con.upload_folder("examples/configuration").await?;
     println!("Reloading configuration...");
-    reload_configuration(&mut system_stub).await?;
+    con.reload_configuration().await?;
 
     // Publish 10 messages
     for _ in 0..=10 {
@@ -50,7 +41,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             frequency: 0,
         };
 
-        let result = network_stub.publish_signals(publisher_config).await?;
+        let result = con.network_stub.publish_signals(publisher_config).await?;
         println!("{:#?}", result.metadata());
     }
 
