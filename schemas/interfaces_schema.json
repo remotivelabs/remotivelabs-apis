@@ -20,6 +20,7 @@
               },
               "type": {
                 "description": "Specifies a virtual interface.",
+                "default": "virtual",
                 "enum": [
                   "virtual"
                 ]
@@ -53,6 +54,7 @@
               },
               "type": {
                 "description": "Specifies a CAN interface.",
+                "default": "can",
                 "enum": [
                   "can"
                 ]
@@ -93,6 +95,7 @@
               },
               "type": {
                 "description": "Specifies a CAN-FD interface.",
+                "default": "canfd",
                 "enum": [
                   "canfd"
                 ]
@@ -159,6 +162,7 @@
               },
               "type": {
                 "description": "Sets the device type to UDP",
+                "default": "udp",
                 "enum": [
                   "udp"
                 ]
@@ -233,6 +237,7 @@
               },
               "type": {
                 "description": "Sets the device type to LIN",
+                "default": "lin",
                 "enum": [
                   "lin"
                 ]
@@ -282,6 +287,7 @@
                     "properties": {
                       "hardware": {
                         "description": "What type of hardware.",
+                        "default": "Technica_CM_CAN_COMBO",
                         "enum": [
                           "Technica_CM_CAN_COMBO"
                         ]
@@ -333,6 +339,7 @@
               },
               "type": {
                 "description": "Sets the device type to Flexray",
+                "default": "flexray",
                 "enum": [
                   "flexray"
                 ]
