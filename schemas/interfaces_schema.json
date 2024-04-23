@@ -253,11 +253,17 @@
             ],
             "if": {
               "properties": {
-                "node_mode": { "const": "master" }
+                "node_mode": {
+                  "const": "master"
+                }
               }
             },
             "then": {
-              "required": ["schedule_file", "schedule_table_name", "schedule_autostart"]
+              "required": [
+                "schedule_file",
+                "schedule_table_name",
+                "schedule_autostart"
+              ]
             },
             "title": "LIN",
             "type": "object"
