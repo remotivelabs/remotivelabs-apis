@@ -2,12 +2,8 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "title": "RemotiveBroker configuration",
-  "description": "JSON configuration file for RemotiveBroker. A configuration file must be named `interfaces.json`. Configures all interfaces that the broker will operate on.",
+  "description": "JSON configuration file for RemotiveBroker. The configuration file must be named `interfaces.json` and all paths in the configuration are relative paths to this file.\nConfigures all interfaces that the broker will operate on.",
   "properties": {
-    "node_name": {
-      "description": "Name of the RemotiveBroker node. Required only if the configuration is used in the distributed broker mode.",
-      "type": "string"
-    },
     "chains": {
       "description": "List of configured interfaces available to RemotiveBroker.",
       "items": {
@@ -134,10 +130,11 @@
             "type": "object"
           },
           {
-            "description": "Internal RemotiveLabs protocol for UPD communication over network. Can be used to communicate between RemotiveBrokers.",
+            "description": "CAN-via-UDP protocol. Can be used to communicate between RemotiveBrokers.",
             "properties": {
               "database": {
-                "$ref": "#/defs/signal_db"
+                "$ref": "#/defs/signal_db",
+                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database one should specify can_physical_channel_name."
               },
               "fixed_payload_size": {
                 "description": "If set, will use this frame size (bytes) for all packets.",
@@ -162,7 +159,7 @@
                 "description": "UDP port for RemotiveBroker to send packets to."
               },
               "type": {
-                "description": "Sets the device type to UDP",
+                "description": "Specifies a CAN-via-UDP interface.",
                 "default": "udp",
                 "enum": [
                   "udp"
@@ -225,7 +222,7 @@
                 ]
               },
               "schedule_autostart": {
-                "description": "Should LIN schedules start at boot? Or paus until user command.",
+                "description": "Should LIN schedules start at boot? Or pause until user command.",
                 "type": "boolean"
               },
               "schedule_file": {
@@ -237,7 +234,7 @@
                 "type": "string"
               },
               "type": {
-                "description": "Sets the device type to LIN",
+                "description": "Specifies a LIN interface.",
                 "default": "lin",
                 "enum": [
                   "lin"
@@ -269,7 +266,7 @@
             "type": "object"
           },
           {
-            "description": "Flexray interface.",
+            "description": "FlexRay interface.",
             "properties": {
               "config": {
                 "oneOf": [
@@ -337,7 +334,7 @@
               },
               "database": {
                 "$ref": "#/defs/signal_db",
-                "description": "Path to Flexray signal database `.xml` file."
+                "description": "Path to FlexRay signal database `.xml` (FIBEX) file."
               },
               "fibex_file": {
                 "$ref": "#/defs/signal_db",
@@ -347,7 +344,7 @@
                 "$ref": "#/defs/namespace"
               },
               "type": {
-                "description": "Sets the device type to Flexray",
+                "description": "Specifies a FlexRay interface.",
                 "default": "flexray",
                 "enum": [
                   "flexray"
@@ -360,12 +357,16 @@
               "config",
               "database"
             ],
-            "title": "Flexray",
+            "title": "FlexRay",
             "type": "object"
           }
         ]
       },
       "type": "array"
+    },
+    "node_name": {
+      "description": "Name of the RemotiveBroker node. Required only if the configuration is used in the distributed broker mode.",
+      "type": "string"
     },
     "grpc_server": {
       "description": "Configuration for build in gRPC server. Documentation for available service is available on <https://docs.remotivelabs.com>.",
