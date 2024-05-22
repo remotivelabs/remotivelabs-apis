@@ -303,11 +303,11 @@
                       "target_config": {
                         "properties": {
                           "interface": {
-                            "describe": "Network interface to use.\nFor example `eth0`.",
+                            "description": "Network interface to use.\nFor example `eth0`.",
                             "type": "string"
                           },
                           "multicast": {
-                            "describe": "MAC address to use for multicast.\nFor example `01:00:5e:00:00:00`.",
+                            "description": "MAC address to use for multicast.\nFor example `01:00:5e:00:00:00`.",
                             "type": "string"
                           }
                         },
@@ -404,7 +404,7 @@
                   "type": "string"
                 },
                 "exclude": {
-                  "describe": "List of frames to exclude in reflector.",
+                  "description": "List of frames to exclude in reflector.",
                   "type": "array",
                   "items": {
                     "description": "Name of frame to exclude",
