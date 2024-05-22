@@ -303,11 +303,11 @@
                       "target_config": {
                         "properties": {
                           "interface": {
-                            "describe": "Network interface to use.\nFor example `\"eth0\"`.",
+                            "describe": "Network interface to use.\nFor example `eth0`.",
                             "type": "string"
                           },
                           "multicast": {
-                            "describe": "MAC address to use for multicast.\nFor example `\"01:00:5e:00:00:00\"`.",
+                            "describe": "MAC address to use for multicast.\nFor example `01:00:5e:00:00:00`.",
                             "type": "string"
                           }
                         },
@@ -430,7 +430,7 @@
   ],
   "defs": {
     "host": {
-      "description": "Network address accepted by the OS. Eg. Ipv4: `\"127.0.0.1\"`.",
+      "description": "Network address accepted by the OS. Eg. Ipv4: `127.0.0.1`.",
       "type": "string"
     },
     "namespace": {
