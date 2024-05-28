@@ -1,0 +1,65 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Scripted database",
+    "type": "object",
+    "properties": {
+        "description": {
+            "type": "string",
+            "description": "Description of the database"
+        },
+        "formatVersion": {
+            "type": "string",
+            "description": "Version of the format",
+            "default": "0.0.1"
+        },
+        "scripts_location": {
+            "type": "string",
+            "description": "Location of the scripts to load"
+        },
+        "simple_mapping": {
+            "type": "object",
+            "description": "Mapping of vehicle signals, maps a Scripted signal name to a namespace + signal name",
+            "patternProperties": {
+                ".{1,}": {
+                    "type": "object",
+                    "description": "All property names must be at least one character long are valid keys.",
+                    "properties": {
+                        "namespace": {
+                            "type": "string",
+                            "description": "Namespace of the signal"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the signal"
+                        }
+                    },
+                    "required": [
+                        "namespace",
+                        "name"
+                    ]
+                }
+            },
+            "examples": [
+                {
+                    "Vehicle.Speed": {
+                        "namespace": "VehicleBus",
+                        "name": "ID32_vehicleSpeed"
+                    }
+                }
+            ]
+        }
+    },
+    "examples": [
+        {
+            "description": "VSS mapping information",
+            "formatVersion": "0.1.0",
+            "scripts_location": "path/scripts",
+            "simple_mapping": {
+                "Vehicle.Speed": {
+                    "namespace": "VehicleBus",
+                    "name": "ID32_vehicleSpeed"
+                }
+            }
+        }
+    ]
+}
