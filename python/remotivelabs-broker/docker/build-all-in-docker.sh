@@ -62,6 +62,7 @@ function generate_json() {
     # Generate
     generate-schema-doc metadb.json $JSON_DOCS
     generate-schema-doc interfaces_schema.json $JSON_DOCS
+    generate-schema-doc scripted_db.json $JSON_DOCS
 }
 
 generate_python_docs

@@ -30,6 +30,34 @@
             "type": "object"
           },
           {
+            "title": "Scripted",
+            "description": "Scripted signals",
+            "type": "object",
+            "properties": {
+              "namespace": {
+                "$ref": "#/defs/namespace"
+              },
+              "type": {
+                "description": "Specifies a scripted interface.",
+                "default": "scripted",
+                "enum": [
+                  "scripted"
+                ]
+              },
+              "database": {
+                "$ref": "#/defs/signal_db",
+                "description": "Path to a scripted database"
+              },
+              "public": {
+                "$ref": "#/defs/public"
+              }
+            },
+            "required": [
+              "namespace",
+              "type"
+            ]
+          },
+          {
             "description": "CAN interface.",
             "properties": {
               "database": {
@@ -59,6 +87,9 @@
               "baud_rate": {
                 "description": "baud rate to apply to CAN when starting interface.",
                 "type": "integer"
+              },
+              "public": {
+                "$ref": "#/defs/public"
               }
             },
             "required": [
@@ -104,6 +135,9 @@
               "dbaud_rate": {
                 "description": "baud rate to apply to CAN-FD when starting interface.",
                 "type": "integer"
+              },
+              "public": {
+                "$ref": "#/defs/public"
               }
             },
             "dependentSchemas": {
@@ -164,6 +198,9 @@
                 "enum": [
                   "udp"
                 ]
+              },
+              "public": {
+                "$ref": "#/defs/public"
               }
             },
             "required": [
@@ -239,6 +276,9 @@
                 "enum": [
                   "lin"
                 ]
+              },
+              "public": {
+                "$ref": "#/defs/public"
               }
             },
             "required": [
@@ -349,6 +389,9 @@
                 "enum": [
                   "flexray"
                 ]
+              },
+              "public": {
+                "$ref": "#/defs/public"
               }
             },
             "required": [
@@ -365,7 +408,7 @@
       "type": "array"
     },
     "node_name": {
-      "description": "Name of the RemotiveBroker node. Required only if the configuration is used in the distributed broker mode.",
+      "description": "Name of the RemotiveBroker node. Required only if the configuration is used in the distributed broker mode. Example `some_node@hostname`",
       "type": "string"
     },
     "grpc_server": {
@@ -456,6 +499,11 @@
     "can_physical_channel_name": {
       "type": "string",
       "description": "This property is required when using an arxml database. Path to the physical channel that should be used. Referenced by SHORT-NAME element, e.g. /Topology/Name/ID"
+    },
+    "public": {
+      "description": "Configure the interface to be public or private, default is public. Private namespaces are not exposed by the broker. This is useful for example when working with for example scripted VSS signals and you don't want the designer to see the internal vehicle signals.",
+      "type": "boolean",
+      "default": true
     }
   }
 }
