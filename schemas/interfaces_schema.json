@@ -92,6 +92,22 @@
                 "$ref": "#/defs/public"
               }
             },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "database": {
+                      "pattern": "\\.arxml$"
+                    }
+                  }
+                },
+                "then": {
+                  "required": [
+                    "can_physical_channel_name"
+                  ]
+                }
+              }
+            ],
             "required": [
               "type",
               "namespace",
@@ -154,6 +170,22 @@
                 ]
               }
             },
+            "allOf": [
+              {
+                "if": {
+                  "properties": {
+                    "database": {
+                      "pattern": "\\.arxml$"
+                    }
+                  }
+                },
+                "then": {
+                  "required": [
+                    "can_physical_channel_name"
+                  ]
+                }
+              }
+            ],
             "required": [
               "type",
               "namespace",
