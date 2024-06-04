@@ -156,19 +156,13 @@
                 "$ref": "#/defs/public"
               }
             },
-            "dependentSchemas": {
-              "baud_rate": {
-                "required": [
-                  "baud_rate",
-                  "dbaud_rate"
-                ]
-              },
-              "dbaud_rate": {
-                "required": [
-                  "baud_rate",
-                  "dbaud_rate"
-                ]
-              }
+            "dependencies": {
+              "baud_rate": [
+                "dbaud_rate"
+              ],
+              "dbaud_rate": [
+                "baud_rate"
+              ]
             },
             "allOf": [
               {
