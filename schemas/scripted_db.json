@@ -5,7 +5,7 @@
     "properties": {
         "description": {
             "type": "string",
-            "description": "Description of the database"
+            "description": "Description of this scripted database"
         },
         "formatVersion": {
             "type": "string",
@@ -18,7 +18,7 @@
         },
         "simple_mapping": {
             "type": "object",
-            "description": "Mapping of vehicle signals, maps a Scripted signal name to a namespace + signal name",
+            "description": "Simple mapping of vehicle signals that do not require a script. Simply maps a Scripted signal name to a namespace + signal name",
             "patternProperties": {
                 ".{1,}": {
                     "type": "object",
@@ -43,7 +43,7 @@
                 {
                     "Vehicle.Speed": {
                         "namespace": "VehicleBus",
-                        "name": "ID32_vehicleSpeed"
+                        "name": "ID257DIspeed.DI_vehicleSpeed"
                     }
                 }
             ]
@@ -57,7 +57,7 @@
             "simple_mapping": {
                 "Vehicle.Speed": {
                     "namespace": "VehicleBus",
-                    "name": "ID32_vehicleSpeed"
+                    "name": "ID257DIspeed.DI_vehicleSpeed"
                 }
             }
         }
