@@ -4,7 +4,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/remotivelabs-broker.svg)](https://pypi.org/project/remotivelabs-broker)
 
 - [Link to **Samples**](https://github.com/remotivelabs/remotivelabs-samples/tree/main/python).
-- [Link to **Documentation**](https://docs.remotivelabs.com/apis/python/remotivelabs-broker/).
+- [Link to **Documentation**](https://docs.remotivelabs.com/apis/python/remotivelabs/broker).
 
 -----
 
@@ -40,9 +40,9 @@ above command will output
     [wheel]
     dist/remotivelabs_broker-0.2.0b12-py3-none-any.whl
 
-You can now install this library version in another terminal by doing 
+You can now install this library version in another terminal by doing
 
-    pip3 install [your path]/dist/remotivelabs_broker-0.2.0b12-py3-none-any.whl 
+    pip3 install [your path]/dist/remotivelabs_broker-0.2.0b12-py3-none-any.whl
 
 ### Build and publish
 
@@ -54,4 +54,3 @@ Make sure to put version in `__about__.py`. Beta versions should be suffixed wit
 ## License
 
 `remotivelabs-broker` is distributed under the terms of the [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) license.
-
