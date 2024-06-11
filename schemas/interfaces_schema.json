@@ -62,7 +62,7 @@
             "properties": {
               "database": {
                 "$ref": "#/defs/signal_db",
-                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database one should specify can_physical_channel_name."
+                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified."
               },
               "can_physical_channel_name": {
                 "$ref": "#/defs/can_physical_channel_name"
@@ -98,22 +98,6 @@
                 "$ref": "#/defs/extended"
               }
             },
-            "allOf": [
-              {
-                "if": {
-                  "properties": {
-                    "database": {
-                      "pattern": "\\.arxml$"
-                    }
-                  }
-                },
-                "then": {
-                  "required": [
-                    "can_physical_channel_name"
-                  ]
-                }
-              }
-            ],
             "required": [
               "type",
               "namespace",
@@ -128,7 +112,7 @@
             "properties": {
               "database": {
                 "$ref": "#/defs/signal_db",
-                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database one should specify can_physical_channel_name."
+                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified."
               },
               "can_physical_channel_name": {
                 "$ref": "#/defs/can_physical_channel_name"
@@ -176,22 +160,6 @@
                 "baud_rate"
               ]
             },
-            "allOf": [
-              {
-                "if": {
-                  "properties": {
-                    "database": {
-                      "pattern": "\\.arxml$"
-                    }
-                  }
-                },
-                "then": {
-                  "required": [
-                    "can_physical_channel_name"
-                  ]
-                }
-              }
-            ],
             "required": [
               "type",
               "namespace",
@@ -206,7 +174,10 @@
             "properties": {
               "database": {
                 "$ref": "#/defs/signal_db",
-                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database one should specify can_physical_channel_name."
+                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified."
+              },
+              "can_physical_channel_name": {
+                "$ref": "#/defs/can_physical_channel_name"
               },
               "fixed_payload_size": {
                 "description": "If set, will use this frame size (bytes) for all packets.",
