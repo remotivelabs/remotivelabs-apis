@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import logging
-from typing import Optional, Sequence, TypeVar
+from typing import Any, Dict, List, Optional, Sequence, TypeVar
 
-from ..generated.sync import common_pb2, network_api_pb2
+from ..generated.sync import common_pb2, network_api_pb2, system_api_pb2_grpc
 
 T = TypeVar("T")
 
@@ -79,17 +79,21 @@ class SignalCreator:
     Class for prepearing and writing signals via gRPC.
     """
 
-    def __init__(self, system_stub):
-        self._sinfos = {}
-        self._virtual = []
-        self._networks = {}
-        namespaces = []
-        conf = system_stub.GetConfiguration(common_pb2.Empty())
-        for ninfo in conf.networkInfo:
-            namespaces.append(ninfo.namespace)
-            if ninfo.type == "virtual":
-                self._virtual.append(ninfo.namespace.name)
-        for namespace in namespaces:
+    def __init__(self, system_stub: system_api_pb2_grpc.SystemServiceStub, namespaces: List[str] | None = None):
+        self._sinfos: Dict[Any, Any] = {}
+        self._virtual: List[Any] = []
+        self._networks: Dict[Any, Any] = {}
+        nss: List[common_pb2.NameSpace] = []
+        if namespaces is None:
+            conf = system_stub.GetConfiguration(common_pb2.Empty())
+            for ninfo in conf.networkInfo:
+                nss.append(ninfo.namespace)
+                if ninfo.type == "virtual":
+                    self._virtual.append(ninfo.namespace.name)
+        else:
+            nss = list(map(lambda namespace: common_pb2.NameSpace(name=namespace), namespaces))
+
+        for namespace in nss:
             res = system_stub.ListSignals(namespace)
             self._addframes(namespace, res)
             for finfo in res.frame:
