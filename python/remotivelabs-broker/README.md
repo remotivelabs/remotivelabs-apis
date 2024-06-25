@@ -48,9 +48,15 @@ You can now install this library version in another terminal by doing
 
 Make sure to put version in `__about__.py`. Beta versions should be suffixed with `b*`, example `0.2.0b1`
 
-    ./docker-build.sh
-    hatch publish
-> find username and password in less secret location ;)
+```
+./docker-build.sh
+hatch publish
+```
+find username and password in less secret location
+or use
+```
+hatch publish --user __token__
+```
 ## License
 
 `remotivelabs-broker` is distributed under the terms of the [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) license.
