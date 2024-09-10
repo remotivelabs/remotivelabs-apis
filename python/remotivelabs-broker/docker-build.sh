@@ -1,21 +1,21 @@
 #!/bin/bash
-
+#
+# Generates code from proto files, builds package and generates documentation
+#
 set -e
 
-# Generates code from proto files, builds package and generates documentation
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+TAG=remotivelabs/python-api-build-image
 
-docker build -t remotivelabs/python-api-build-image -f docker/Dockerfile .
+docker build -t ${TAG} -f ${SCRIPT_DIR}/docker/Dockerfile ${SCRIPT_DIR}
 
+# set args to allow build to run in non-tty shells
 ARGS="-it"
-
-if [ "${NO_TTY}" == "true" ]; then
-    ARGS="-i"
-fi
-
+[ "${NO_TTY}" == "true" ] && ARGS="-i"
 
 docker run \
     -u $(id -u):$(id -g) \
-    -v $(pwd)/../../:/app  \
+    -v ${SCRIPT_DIR}/../../:/app  \
     -e "protofile=*.proto"  \
     -w /app  \
-    ${ARGS} remotivelabs/python-api-build-image
+    ${ARGS} ${TAG}
