@@ -37,7 +37,13 @@ from ..generated.sync import (
     traffic_api_pb2,  # noqa: F401
     traffic_api_pb2_grpc,  # noqa: F401
 )
-from .client import BrokerException, Client, SignalIdentifier, SignalsInFrame, SignalValue
+from .client import (
+    BrokerException,
+    Client,
+    SignalIdentifier,
+    SignalsInFrame,
+    SignalValue,
+)
 from .helper import (
     act_on_scripted_signal,
     act_on_signal,

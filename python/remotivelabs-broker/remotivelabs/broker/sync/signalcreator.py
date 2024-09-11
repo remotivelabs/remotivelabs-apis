@@ -79,7 +79,11 @@ class SignalCreator:
     Class for prepearing and writing signals via gRPC.
     """
 
-    def __init__(self, system_stub: system_api_pb2_grpc.SystemServiceStub, namespaces: List[str] | None = None):
+    def __init__(
+        self,
+        system_stub: system_api_pb2_grpc.SystemServiceStub,
+        namespaces: List[str] | None = None,
+    ):
         self._sinfos: Dict[Any, Any] = {}
         self._virtual: List[Any] = []
         self._networks: Dict[Any, Any] = {}
