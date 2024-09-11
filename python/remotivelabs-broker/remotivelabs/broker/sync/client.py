@@ -9,7 +9,11 @@ from typing import Callable, Iterable, List, Optional, Union
 import grpc
 
 from ..generated.sync import network_api_pb2 as network_api
-from ..generated.sync import network_api_pb2_grpc, system_api_pb2_grpc, traffic_api_pb2_grpc
+from ..generated.sync import (
+    network_api_pb2_grpc,
+    system_api_pb2_grpc,
+    traffic_api_pb2_grpc,
+)
 from . import helper as br
 from .signalcreator import SignalCreator
 

@@ -13,7 +13,13 @@ import grpc
 from grpc_interceptor import ClientCallDetails, ClientInterceptor
 
 from .. import log
-from ..generated.sync import common_pb2, network_api_pb2, network_api_pb2_grpc, system_api_pb2, system_api_pb2_grpc
+from ..generated.sync import (
+    common_pb2,
+    network_api_pb2,
+    network_api_pb2_grpc,
+    system_api_pb2,
+    system_api_pb2_grpc,
+)
 
 
 class HeaderInterceptor(ClientInterceptor):
