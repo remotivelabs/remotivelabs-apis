@@ -9,7 +9,6 @@ but will add more moving forward.
 For other languages visit https://grpc.io/ to read up how to generate code for your
 programming language based on our protocol buffer definition files
 
-
 ## Protocol buffer definitions
 
 Use these to generate GAPIC for your programming language.
@@ -20,9 +19,8 @@ Use these to generate GAPIC for your programming language.
 
 Pre-built Python GAPIC + some extra helper functions
 
-- [Documentation and source code](python/remotivelabs-broker/)
+- [Documentation and source code](./python/remotivelabs-broker/)
 - [Code samples](https://github.com/remotivelabs/remotivelabs-samples/tree/main/python)
-
 
 ## gRPC-web RemotiveBroker API
 
@@ -46,4 +44,3 @@ Pre-built GAPIC for the following languages are coming shortly
 
 Please use our discussion forum/community for any questions you might have <br>
 https://github.com/remotivelabs/remotivelabs-community/discussions
-

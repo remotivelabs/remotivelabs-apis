@@ -16,35 +16,49 @@
 - [License](#license)
 
 ## Installation
+
 Install into your Python environment with _PIP_:
 
     pip install remotivelabs-broker
 
 ## Examples
+
 Examples using this library are found in the [Remotive Labs samples repository](https://github.com/remotivelabs/remotivelabs-samples).
 
 
-### Develop and test locally
+## Develop and test locally
 
 Put version in `__about__.py`. Beta versions should be suffixed with `b*`, example `0.2.0b1`
 
-For initial build and generation of proto stubs, documentation and distribution package,  run  `./docker-build.sh`
+```bash
+# For initial build and generation of proto stubs, documentation and distribution package
+./docker-build.sh
 
+Once stubs are generated you can use `hatch` to (re)-build distribution package. Use e.g. [pipx](https://github.com/pypa/pipx) to install `hatch`.
 
-Once stubs are generated you can use hatch to build distribution package
+```bash
+# install hatch in isolated env
+pipx install hatch
 
-    hatch build
+# rebuild
+hatch build
+> [wheel]
+> dist/remotivelabs_broker-<version>-py3-none-any.whl
 
-above command will output
+# you can now install this library version in a virtualenv by opening a new terminal and doing:
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install --upgrade pip
+pip3 install dist/remotivelabs_broker-<version>-py3-none-any.whl
 
-    [wheel]
-    dist/remotivelabs_broker-0.2.0b12-py3-none-any.whl
+# test that the package is importable
+python -c "import remotivelabs.broker.sync as br; print(dir(br.SignalCreator))"
 
-You can now install this library version in another terminal by doing
+# when you are done, exit the virtualenv
+deactivate
+```
 
-    pip3 install [your path]/dist/remotivelabs_broker-0.2.0b12-py3-none-any.whl
-
-### Build and publish
+## Build and publish
 
 Make sure to put version in `__about__.py`. Beta versions should be suffixed with `b*`, example `0.2.0b1`
 
