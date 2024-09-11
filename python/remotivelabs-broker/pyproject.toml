@@ -1,12 +1,8 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [project]
 name = "remotivelabs-broker"
 description = 'RemotiveLabs Broker gRPC API'
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = "Apache-2.0"
 keywords = [
   "automotive",
@@ -64,6 +60,9 @@ default = [
 [tool.hatch.version]
 path = "remotivelabs/broker/__about__.py"
 
+[tool.hatch.build.targets.wheel]
+packages = ["remotivelabs"]
+
 [tool.hatch.envs.default]
 python = "python3"
 
@@ -73,22 +72,22 @@ no-cov = "cov --no-cov"
 generate_stubs = "sh build_proto.sh"
 generate_doc = "sh misc/build_doc.sh"
 
+[[tool.hatch.envs.test.matrix]]
+python = ["38", "39", "310", "311", "3.12"]
+
 [tool.pyright]
 include = ["remotivelabs"]
 
-[[tool.hatch.envs.test.matrix]]
-python = ["38", "39", "310", "311"]
+[tool.pytest.ini_options]
+markers = [
+    "server: Run test towards a live server.",
+]
 
 [tool.coverage.run]
 branch = true
 parallel = true
 omit = [
   "remotivelabs/broker/__about__.py",
-]
-
-[tool.pytest.ini_options]
-markers = [
-    "server: Run test towards a live server.",
 ]
 
 [tool.coverage.report]
@@ -98,5 +97,6 @@ exclude_lines = [
   "if TYPE_CHECKING:",
 ]
 
-[tool.hatch.build.targets.wheel]
-packages = ["remotivelabs"]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

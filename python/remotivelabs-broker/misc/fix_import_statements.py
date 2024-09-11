@@ -19,6 +19,7 @@ SUBSTITUTE_STRING = "from . \\g<0>"
 
 # You can manually specify the number of replacements by changing the 4th argument
 for file in files:
+    print(f"fixing imports in file {file}")
     with open(file, encoding="utf-8") as stream:
         contents = stream.read()
         result = re.sub(REGEX_STRING, SUBSTITUTE_STRING, contents, count=0, flags=re.MULTILINE)
