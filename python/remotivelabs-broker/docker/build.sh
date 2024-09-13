@@ -32,14 +32,14 @@ function generate_protobuf_files() {
   mkdir -p "${PROTO_STUBS_OUT}"
 
   poetry run python -m grpc_tools.protoc \
-    -I $PROTO_IN \
+    --proto_path=$PROTO_IN \
     --python_out=$PROTO_STUBS_OUT \
     --grpc_python_out=$PROTO_STUBS_OUT \
     --mypy_out=$PROTO_STUBS_OUT \
     --mypy_grpc_out=$PROTO_STUBS_OUT \
     $PROTO_IN/*.proto
 
-  # TODO: fix this
+  # Note: protobuf compiler does not support generating relative or custom absolute imports for python. Use a script to do this manually...
   poetry run python $PROJECT_DIR/misc/fix_import_statements.py
 }
 

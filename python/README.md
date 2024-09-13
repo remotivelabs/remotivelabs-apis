@@ -48,9 +48,7 @@ cd python/remotivelabs-broker
 
 ## Versioning
 
-Update the package version by editing the following files:
-- `pyproject.toml`
-- `remotivelabs/broker/__about__.py`
+Update the package version by editing the following `pyproject.toml` file.
 
 Follow [Semantic versioning](https://semver.org/). Beta versions should be suffixed with `b*`, example `0.2.0b1`.
 

@@ -2,7 +2,8 @@ import logging
 
 import pytest
 
-import remotivelabs.broker.sync as br
+import remotivelabs.broker as br
+import remotivelabs.broker.sync as br_sync
 
 # Warning these tests require a RemotiveBroker up and running
 # server address:
@@ -12,7 +13,7 @@ _SERVER_APIKEY = None
 
 class Connection:
     def __init__(self):
-        self.channel = br.create_channel(_SERVER_URL, _SERVER_APIKEY)
+        self.channel = br_sync.create_channel(_SERVER_URL, _SERVER_APIKEY)
         self.network_stub = br.network_api_pb2_grpc.NetworkServiceStub(self.channel)
         self.system_stub = br.system_api_pb2_grpc.SystemServiceStub(self.channel)
 
@@ -26,19 +27,19 @@ def fixture_broker_connection():
 # Setup broker configured for testing
 @pytest.fixture(name="broker_configured")
 def fixture_broker_configured(broker_connection):
-    br.upload_folder(broker_connection.system_stub, "tests/configuration_udp")
-    br.reload_configuration(broker_connection.system_stub)
+    br_sync.upload_folder(broker_connection.system_stub, "tests/fixtures/configs/udp")
+    br_sync.reload_configuration(broker_connection.system_stub)
     return broker_connection
 
 
 @pytest.mark.server
 def test_check_license(broker_connection):
-    br.check_license(broker_connection.system_stub)
+    br_sync.check_license(broker_connection.system_stub)
 
 
 @pytest.mark.server
 def test_meta_fields(broker_configured):
-    sc = br.SignalCreator(broker_configured.system_stub)
+    sc = br_sync.SignalCreator(broker_configured.system_stub)
     meta_speed = sc.get_meta("Speed", "ecu_A")
     parent_frame = sc.frame_by_signal("Speed", "ecu_A")
     assert parent_frame.name == "PropulsionFrame"  # pylint: disable=no-member
@@ -62,7 +63,7 @@ def test_meta_fields(broker_configured):
 
 @pytest.mark.server
 def test_min_max(broker_configured, caplog):
-    sc = br.SignalCreator(broker_configured.system_stub)
+    sc = br_sync.SignalCreator(broker_configured.system_stub)
 
     # Works
     sc.signal_with_payload("Speed", "ecu_A", ("double", 45.0))

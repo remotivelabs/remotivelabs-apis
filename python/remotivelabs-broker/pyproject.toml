@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "remotivelabs-broker"
 description = 'RemotiveLabs Broker gRPC API'
-version = "0.1.26"
+version = "0.2.0"
 readme = "README.md"
 license = "Apache-2.0"
 homepage = "https://remotivelabs.com/"
@@ -53,7 +53,6 @@ pdoc = "^12.2"
 json-schema-for-humans = "^1.0"
 
 [tool.poe.tasks]
-test-local = "pytest -m 'not server' --cov=remotivelabs.broker"
 test-server = "pytest -m server --cov=remotivelabs.broker"
 test = "pytest --cov=remotivelabs.broker"
 format = [{ cmd = "ruff check --select I --fix" }, { cmd = "ruff format" }]
@@ -62,7 +61,7 @@ format-check = [
   { cmd = "ruff format --check --diff" },
 ]
 mypy-check = [{ cmd = "mypy remotivelabs/broker" }, { cmd = "mypy tests" }]
-check = ["test-local", "format-check", "mypy-check"]
+check = ["test", "format-check", "mypy-check"]
 
 [tool.ruff]
 line-length = 140
@@ -76,7 +75,10 @@ namespace_packages = true
 include = ["remotivelabs"]
 
 [tool.pytest.ini_options]
-markers = ["server: Run test towards a live server."]
+addopts = "-v -m 'not server'"
+markers = [
+    "server: marks tests that require a live server (deselect with '-m \"not server\"')",
+]
 
 [build-system]
 requires = ["poetry-core>=1.6"]

@@ -8,8 +8,8 @@ from typing import Callable, Iterable, List, Optional, Union
 
 import grpc
 
-from ..generated.sync import network_api_pb2 as network_api
-from ..generated.sync import (
+from .. import network_api_pb2 as network_api
+from .. import (
     network_api_pb2_grpc,
     system_api_pb2_grpc,
     traffic_api_pb2_grpc,
@@ -116,7 +116,6 @@ class SignalsInFrame(Iterable):
     def __next__(self):
         try:
             result = self.signals[self.index]
-        # pylint: disable=raise-missing-from
         except IndexError:
             raise StopIteration
         self.index += 1
@@ -199,7 +198,7 @@ class Client:
                 lambda sub: (wait_for_subscription_queue.put((self.client_id, sub))),
             ),
         ).start()
-        # Wait for subscription
+
         client_id, subscription = wait_for_subscription_queue.get()
         return subscription
 
@@ -213,7 +212,6 @@ class Client:
             self.on_signals(SignalsInFrame(list(map(SignalValue, signals_in_frame))))  # type: ignore[call-overload]
 
     def list_signal_names(self) -> List[SignalIdentifier]:
-        # Lists available signals
         configuration = self._system_stub.GetConfiguration(br.common_pb2.Empty())
 
         signal_names: List[SignalIdentifier] = []

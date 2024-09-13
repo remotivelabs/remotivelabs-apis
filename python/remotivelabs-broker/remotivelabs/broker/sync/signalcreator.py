@@ -3,15 +3,15 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, Sequence, TypeVar
 
-from ..generated.sync import common_pb2, network_api_pb2, system_api_pb2_grpc
+from .. import common_pb2, network_api_pb2, system_api_pb2_grpc
+
+_logger = logging.getLogger(__name__)
+
+_MSG_DUPLICATE = "Warning duplicated (namespace.signal): {}, to avoid" + 'ambiguity set "short_names": false in your interfaces.json on {}'
 
 T = TypeVar("T")
 
-_logger = logging.getLogger("remotivelabs.SignalCreator")
-_MSG_DUPLICATE = "Warning duplicated (namespace.signal): {}, to avoid" + 'ambiguity set "short_names": false in your interfaces.json on {}'
 
-
-# pylint: disable=C0103
 class MetaGetter:
     def __init__(self, proto_message):
         self.meta = proto_message
@@ -214,8 +214,3 @@ class SignalCreator:
 
         params = {"id": signal, key: value}
         return network_api_pb2.Signal(**params)
-
-        # Above is simlar as this, but parameterised.
-        # return network_api_pb2.Signal(
-        #     id=signal, value_dict.get_key=value_dict["integer"]
-        # )

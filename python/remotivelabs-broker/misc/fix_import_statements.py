@@ -7,6 +7,11 @@
 #
 # This script goes through all the python files in the folder and does the replacement based on the regex pattern
 # `regex_string` defined below.
+#
+# See also:
+# - https://github.com/grpc/grpc/issues/9575
+# - https://github.com/protocolbuffers/protobuf/issues/1491
+# - https://github.com/protocolbuffers/protobuf/issues/5374
 
 import glob
 import re
