@@ -35,8 +35,7 @@ function generate_protobuf_files() {
     --proto_path=$PROTO_IN \
     --python_out=$PROTO_STUBS_OUT \
     --grpc_python_out=$PROTO_STUBS_OUT \
-    --mypy_out=$PROTO_STUBS_OUT \
-    --mypy_grpc_out=$PROTO_STUBS_OUT \
+    --pyi_out=$PROTO_STUBS_OUT \
     $PROTO_IN/*.proto
 
   # Note: protobuf compiler does not support generating relative or custom absolute imports for python. Use a script to do this manually...

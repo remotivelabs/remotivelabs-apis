@@ -32,17 +32,15 @@ Issues = "https://github.com/remotivelabs/remotivelabs-apis/issues"
 [tool.poetry.dependencies]
 python = "^3.8"
 requests = "^2.32"
-protobuf = ">= 3.19.0, <= 3.20.1"
-grpcio = "1.44.0"
+grpcio = "^1.66"
 grpc-interceptor = "^0.15"
 
 [tool.poetry.group.dev.dependencies]
-grpcio-tools = "1.44.0"
+grpcio-tools = "^1.66"
 grpc-stubs = "^1.53"
-types-protobuf = "^5.27"
 ruff = "^0.6"
 mypy = "^1.11"
-mypy-protobuf = "^3.3"
+types-protobuf = "^5.27"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3"
@@ -57,7 +55,7 @@ test-server = "pytest -m server --cov=remotivelabs.broker"
 test = "pytest --cov=remotivelabs.broker"
 format = [{ cmd = "ruff check --fix ." }, { cmd = "ruff format ." }]
 lint = [{ cmd = "ruff check ." }, { cmd = "ruff format --check --diff ." }]
-mypy-check = [{ cmd = "mypy remotivelabs/broker" }, { cmd = "mypy tests" }]
+mypy-check = [{ cmd = "mypy -p remotivelabs.broker -p misc -p tests" }]
 check = ["test", "lint", "mypy-check"]
 
 [tool.ruff]
@@ -66,7 +64,15 @@ src = ["remotivelabs", "tests"]
 
 [tool.mypy]
 python_version = "3.8"
+mypy_path = "."
 namespace_packages = true
+explicit_package_bases = true
+packages = ["remotivelabs.broker", "misc", "tests"]
+
+[[tool.mypy.overrides]]
+# A field in diagnostics proto file is accidentally named same as the type (bytes bytes), so we need to ignore the type warning.
+module = "remotivelabs.broker.generated.sync.diagnostics_api_pb2"
+disable_error_code = ["valid-type"]
 
 [tool.pyright]
 include = ["remotivelabs"]
@@ -74,7 +80,7 @@ include = ["remotivelabs"]
 [tool.pytest.ini_options]
 addopts = "-v -m 'not server'"
 markers = [
-    "server: marks tests that require a live server (deselect with '-m \"not server\"')",
+  "server: marks tests that require a live server (deselect with '-m \"not server\"')",
 ]
 
 [build-system]
