@@ -29,9 +29,9 @@ jobs:
 
       - run: poetry install
       - name: run pytest
-        run: poetry poe test-local
+        run: poetry poe test
       - name: run ruff
-        run: poetry poe format-check
+        run: poetry poe lint
       - name: run mypy
         run: poetry poe mypy-check
 

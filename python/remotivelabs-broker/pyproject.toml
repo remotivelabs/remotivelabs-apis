@@ -55,13 +55,10 @@ json-schema-for-humans = "^1.0"
 [tool.poe.tasks]
 test-server = "pytest -m server --cov=remotivelabs.broker"
 test = "pytest --cov=remotivelabs.broker"
-format = [{ cmd = "ruff check --select I --fix" }, { cmd = "ruff format" }]
-format-check = [
-  { cmd = "ruff check --select I" },
-  { cmd = "ruff format --check --diff" },
-]
+format = [{ cmd = "ruff check --fix ." }, { cmd = "ruff format ." }]
+lint = [{ cmd = "ruff check ." }, { cmd = "ruff format --check --diff ." }]
 mypy-check = [{ cmd = "mypy remotivelabs/broker" }, { cmd = "mypy tests" }]
-check = ["test", "format-check", "mypy-check"]
+check = ["test", "lint", "mypy-check"]
 
 [tool.ruff]
 line-length = 140

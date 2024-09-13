@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 
 import pytest
@@ -5,26 +7,18 @@ import pytest
 import remotivelabs.broker as br
 import remotivelabs.broker.sync as br_sync
 
-# Warning these tests require a RemotiveBroker up and running
-# server address:
-_SERVER_URL = "http://127.0.0.1:50051"
-_SERVER_APIKEY = None
-
 
 class Connection:
-    def __init__(self):
-        self.channel = br_sync.create_channel(_SERVER_URL, _SERVER_APIKEY)
-        self.network_stub = br.network_api_pb2_grpc.NetworkServiceStub(self.channel)
+    def __init__(self, url: str, api_key: str | None = None):
+        self.channel = br_sync.create_channel(url, api_key)
         self.system_stub = br.system_api_pb2_grpc.SystemServiceStub(self.channel)
 
 
-# Setup broker with predefined settings
 @pytest.fixture(name="broker_connection")
-def fixture_broker_connection():
-    return Connection()
+def fixture_broker_connection(broker_url):
+    return Connection(broker_url)
 
 
-# Setup broker configured for testing
 @pytest.fixture(name="broker_configured")
 def fixture_broker_configured(broker_connection):
     br_sync.upload_folder(broker_connection.system_stub, "tests/fixtures/configs/udp")
@@ -52,6 +46,7 @@ def test_meta_fields(broker_configured):
     assert meta_speed.getSize() == 16
     assert meta_speed.getIsRaw() is False
     assert meta_parent.getIsRaw() is True
+
     assert meta_speed.getFactor() == 1.0
     assert meta_speed.getOffset() == 0.0
     assert meta_speed.getSenders() == ["ECUA"]

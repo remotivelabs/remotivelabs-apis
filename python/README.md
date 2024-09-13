@@ -9,7 +9,7 @@ Published to PyPI on [https://pypi.org/project/remotivelabs-broker/](https://pyp
 Prerequisites:
 
 ```bash
-# Install poetry (and optionally poe plugin)
+# Install poetry (and optionally poe plugin to simplify poetry command execution)
 pipx install poetry
 poetry self add 'poethepoet[poetry_plugin]'
 ```
@@ -25,14 +25,14 @@ poetry install
 # Build the library (output in dist/)
 poetry build
 
-# test local (local test does not require a running broker)
-poetry poe test-local
+# Check (test, lint, check types)
+poetry poe check
 
-# test server (server test requires a running broker)
-poetry poe test-server
+# run standard test suite
+poetry run pytest
 
-# test all
-poetry poe test
+# run tests against running broker
+poetry run pytest -m server --broker <broker url>
 ```
 
 If you need to (re)generate protobuf stubs, see [Building](#building).
@@ -42,8 +42,7 @@ If you need to (re)generate protobuf stubs, see [Building](#building).
 Building the complete package, including protobuf stubs and documentation, is done using a docker container:
 
 ```bash
-cd python/remotivelabs-broker
-./docker-build.sh
+./python/remotivelabs-broker/docker-build.sh
 ```
 
 ## Versioning
