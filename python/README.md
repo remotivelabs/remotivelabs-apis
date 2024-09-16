@@ -1,8 +1,8 @@
-# RemotiveLabs Broker API Python SDK
+# RemotiveBroker Python API
 
-`remotivelabs-broker` - Python SDK for interacting with the RemotiveLabs Broker.
+`remotivelabs-broker` - Python SDK for interacting with the RemotiveBroker API.
 
-Published to PyPI on [https://pypi.org/project/remotivelabs-broker/](https://pypi.org/project/remotivelabs-broker/)
+Published to PyPI on [https://pypi.org/project/remotivelabs-broker/](https://pypi.org/project/remotivelabs-broker/).
 
 ## Getting started
 
@@ -49,7 +49,7 @@ Building the complete package, including protobuf stubs and documentation, is do
 
 Update the package version by editing the following `pyproject.toml` file.
 
-Follow [Semantic versioning](https://semver.org/). Beta versions should be suffixed with `b*`, example `0.2.0b1`.
+Follow [Semantic versioning](https://semver.org/). Beta versions should be suffixed with `-beta*`, example `0.2.0-beta1`.
 
 ## Publishing
 
