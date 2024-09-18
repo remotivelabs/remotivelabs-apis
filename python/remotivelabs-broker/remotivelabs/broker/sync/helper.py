@@ -125,11 +125,9 @@ def get_sha256(path: str) -> str:
     :param path: Path to file
     :rtype int:
     """
-
     with open(path, "rb") as f:
         b = f.read()  # read entire file as bytes
-        readable_hash = hashlib.sha256(b).hexdigest()
-    return readable_hash
+    return hashlib.sha256(b).hexdigest()
 
 
 def generate_data(file, dest_path, chunk_size, sha256) -> Generator[system_api_pb2.FileUploadRequest, None, None]:

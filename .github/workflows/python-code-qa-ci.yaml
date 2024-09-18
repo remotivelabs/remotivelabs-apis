@@ -1,4 +1,4 @@
-name: Code QA CI
+name: Python Code QA CI
 
 on: push
 
@@ -6,7 +6,6 @@ jobs:
   python-ci:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
         python-version: ["3.8", "3.9", "3.10"]
     defaults:
@@ -28,26 +27,15 @@ jobs:
         run: ./docker-build.sh
 
       - run: poetry install
+
       - name: run pytest
         run: poetry poe test
+
       - name: run ruff
         run: poetry poe lint
-      - name: run mypy
-        run: poetry poe mypy-check
 
-  rust-cargo:
-    name: Rust cargo tasks
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Build and run tests
-        run: |
-          pushd rust/remotivelabs-broker
-          cargo test
-          popd
-      - name: Check format
-        run: |
-          pushd rust/remotivelabs-broker
-          cargo fmt --check
-          popd
+      - name: run pylint
+        run: poetry poe pylint
+
+      - name: run mypy
+        run: poetry poe mypy

@@ -135,7 +135,7 @@ class SignalIdentifier:
         return SignalIdentifier(s[1], s[0])
 
 
-class BrokerException(Exception):
+class BrokerException(Exception):  # noqa: N818
     pass
 
 

@@ -8,7 +8,6 @@ homepage = "https://remotivelabs.com/"
 repository = "https://github.com/remotivelabs/remotivelabs-apis"
 documentation = "https://docs.remotivelabs.com/apis/python/remotivelabs/broker"
 authors = ["Support <support@remotivelabs.com>"]
-packages = [{ include = "remotivelabs" }]
 keywords = ["automotive", "autotech", "networking", "CAN"]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -25,6 +24,7 @@ classifiers = [
   "Topic :: Internet",
   "Topic :: Scientific/Engineering :: Information Analysis",
 ]
+packages = [{ include = "remotivelabs" }]
 
 [tool.poetry.urls]
 Issues = "https://github.com/remotivelabs/remotivelabs-apis/issues"
@@ -38,44 +38,30 @@ grpc-interceptor = "^0.15"
 [tool.poetry.group.dev.dependencies]
 grpcio-tools = "^1.66"
 grpc-stubs = "^1.53"
-ruff = "^0.6"
-mypy = "^1.11"
 types-protobuf = "^5.27"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.3"
 pytest-cov = "^5.0"
 
+[tool.poetry.group.lint.dependencies]
+ruff = "^0.6"
+pylint = "^3.2.7"
+pylint-protobuf = "^0.22.0"
+mypy = "^1.11"
+
 [tool.poetry.group.docs.dependencies]
 pdoc = "^12.2"
 json-schema-for-humans = "^1.0"
 
 [tool.poe.tasks]
-test-server = "pytest -m server --cov=remotivelabs.broker"
 test = "pytest --cov=remotivelabs.broker"
-format = [{ cmd = "ruff check --fix ." }, { cmd = "ruff format ." }]
+test-server = "pytest -m server --cov=remotivelabs.broker"
+pylint = [{ cmd = "pylint ." }]
 lint = [{ cmd = "ruff check ." }, { cmd = "ruff format --check --diff ." }]
-mypy-check = [{ cmd = "mypy -p remotivelabs.broker -p misc -p tests" }]
-check = ["test", "lint", "mypy-check"]
-
-[tool.ruff]
-line-length = 140
-src = ["remotivelabs", "tests"]
-
-[tool.mypy]
-python_version = "3.8"
-mypy_path = "."
-namespace_packages = true
-explicit_package_bases = true
-packages = ["remotivelabs.broker", "misc", "tests"]
-
-[[tool.mypy.overrides]]
-# A field in diagnostics proto file is accidentally named same as the type (bytes bytes), so we need to ignore the type warning.
-module = "remotivelabs.broker.generated.sync.diagnostics_api_pb2"
-disable_error_code = ["valid-type"]
-
-[tool.pyright]
-include = ["remotivelabs"]
+format = [{ cmd = "ruff format ." }, { cmd = "ruff check --fix ." }]
+mypy = [{ cmd = "mypy -p remotivelabs.broker -p misc -p tests" }]
+check = ["test", "lint", "pylint", "mypy"]
 
 [tool.pytest.ini_options]
 addopts = "-v -m 'not server'"
@@ -83,6 +69,56 @@ markers = [
   "server: marks tests that require a live server (deselect with '-m \"not server\"')",
 ]
 
+[tool.ruff]
+line-length = 140
+
+[tool.ruff.lint]
+select = [
+  "ARG",
+  "B034",
+  "C901",
+  "E",
+  "EXE",
+  "F",
+  "FA",
+  "I",
+  "N",
+  "UP032",
+  "RET",
+  "W",
+]
+
+[tool.pylint]
+recursive = true
+load-plugins = ["pylint_protobuf"]
+ignore-paths = ['^.venv/.*$', '^remotivelabs/broker/sync.*$']
+
+[tool.pylint.format]
+max-line-length = 140
+max-module-lines = 1000
+
+[tool.pylint.messages_control]
+disable = [
+  'wrong-import-order',
+  'missing-module-docstring',
+  'missing-class-docstring',
+  'missing-function-docstring',
+  'duplicate-code',
+  'logging-fstring-interpolation',
+]
+
+[tool.mypy]
+python_version = "3.8"
+namespace_packages = true
+explicit_package_bases = true
+mypy_path = "."
+packages = ["remotivelabs.broker", "misc", "tests"]
+
+[[tool.mypy.overrides]]
+# A field in diagnostics proto file is accidentally named same as the type (bytes bytes), so we need to ignore the type warning.
+module = "remotivelabs.broker.generated.sync.diagnostics_api_pb2"
+disable_error_code = ["valid-type"]
+
 [build-system]
-requires = ["poetry-core>=1.6"]
+requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

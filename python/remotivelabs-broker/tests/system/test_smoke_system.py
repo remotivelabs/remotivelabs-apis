@@ -8,7 +8,7 @@ import remotivelabs.broker as br
 import remotivelabs.broker.sync as br_sync
 
 
-class Connection:
+class Connection:  # pylint: disable=too-few-public-methods
     def __init__(self, url: str, api_key: str | None = None):
         self.channel = br_sync.create_channel(url, api_key)
         self.system_stub = br.system_api_pb2_grpc.SystemServiceStub(self.channel)
@@ -83,6 +83,6 @@ def test_min_max(broker_configured, caplog):
 
 @pytest.mark.server
 def test_list_signals(broker_configured):
-    namespace = br.common_pb2.NameSpace(name="ecu_A")
+    namespace = br.common_pb2.NameSpace(name="ecu_A")  # pylint: disable=no-member
     signals = broker_configured.system_stub.ListSignals(namespace)
     assert len(signals.frame) == 5
