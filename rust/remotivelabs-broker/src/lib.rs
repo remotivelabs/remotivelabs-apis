@@ -3,12 +3,12 @@
 use std::{error::Error, fs, path::Path};
 
 use futures::{stream, Stream};
-use path_slash::PathExt;
-use remotive_api::base::{
+use generated::base::{
     file_upload_request::Data, functional_service_client::FunctionalServiceClient,
     network_service_client::NetworkServiceClient, system_service_client::SystemServiceClient,
     traffic_service_client::TrafficServiceClient, FileDescription, FileUploadRequest,
 };
+use path_slash::PathExt;
 use sha2::{Digest, Sha256};
 use tonic::{
     metadata::AsciiMetadataValue,
@@ -18,9 +18,9 @@ use tonic::{
 };
 use walkdir::WalkDir;
 
-use crate::remotive_api::base::{Empty, LicenseStatus};
+use crate::generated::base::{Empty, LicenseStatus};
 
-pub mod remotive_api;
+pub mod generated;
 
 #[derive(Clone)]
 pub struct XApiIntercept {

@@ -1,7 +1,7 @@
 use std::io::Write;
 
-use remotive_broker::{
-    remotive_api::base::{
+use remotivelabs_broker::{
+    generated::base::{
         signal::Payload::Integer, ClientId, NameSpace, PublisherConfig, Signal, SignalId, Signals,
     },
     Connection,

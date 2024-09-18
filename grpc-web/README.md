@@ -1,26 +1,57 @@
-# RemotiveLabs WEB-GRPC
+# RemotiveBroker WEB-GRPC API
 
-Web-grpc is javascript to be used in a browser context, not intended
-to bu used with nodejs, read more here https://github.com/grpc/grpc-web
+`remotivelabs-grpc-web-stubs` - Javascript SDK for interacting with the RemotiveBroker API in a browser context. Not intended to be used
+with NodeJS.
 
-## Grpc-web-stubs
+Published to npm on [https://www.npmjs.com/package/remotivelabs-grpc-web-stubs](https://www.npmjs.com/package/remotivelabs-grpc-web-stubs).
 
-[![npm version](https://img.shields.io/npm/v/remotivelabs-grpc-web-stubs.svg)](https://www.npmjs.com/package/remotivelabs-grpc-web-stubs)
+## Getting started
 
-Pre-built GRPC stubs generated from protobuf files
+```bash
+cd grpc-web/grpc-web-stubs
 
+# install dependencies
+yarn install
+
+# TODO
 ```
-npm install --save remotivelabs-grpc-web-stubs
-```
-or
-```
-yarn add remotivelabs-grpc-web-stubs
+
+## Building
+
+```bash
+cd grpc-web/grpc-web-stubs
+
+# Build docker image
+docker build -t remotivelabs/grpc-web-generator .
+
+# Generate typescript
+./generate-ts.sh
+
+# Generate javascript
+./generate-js.sh
 ```
 
-Read more: [grpc-web-stubs/](grpc-web-stubs/)
+## Versioning
 
-## Grpc-web-client
+Versioning is done using `npm version`, see [Publishing](#publishing).
 
-RemotiveBroker high-level client is coming soon. This API will be based on our
-RemotiveBrokerApp that is using the grpc-web-stubs but adds layer on top to make 
-it simpler to use.
+Follow [Semantic versioning](https://semver.org/). Beta versions should be suffixed with `-beta*`, example `0.2.0-beta1`.
+
+## Publishing
+
+Published to npm on [https://www.npmjs.com/package/remotivelabs-grpc-web-stubs](https://www.npmjs.com/package/remotivelabs-grpc-web-stubs).
+
+```bash
+# generate stubs
+./generate-ts.sh
+
+# update version
+npm version x.y.z
+
+# commit version
+git add .
+git commit -m "release: Prepare a release for version x.y.z"
+
+# publish
+npm publish
+```

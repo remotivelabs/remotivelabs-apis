@@ -5,44 +5,35 @@
 These are generated grpc-web stubs to be used in a browser context, not intended
 to bu used with nodejs, read more here https://github.com/grpc/grpc-web
 
-## Usage
+## Installation
 
-### Installation
+```bash
+yarn install --save remotivelabs-grpc-web-stubs
 ```
-npm install --save remotivelabs-grpc-web-stubs
-```
+
 or
-```
+
+```bash
 yarn add remotivelabs-grpc-web-stubs
 ```
 
-### Import
-```
+## Usage
+
+```javascript
 import {SystemServiceClient} from 'remotivelabs-grpc-web-stubs'
 
 const client = new SystemServiceClient(brokerUrl)
 ```
 
-## Development
+## Examples
 
-### Build grpc-web-generator
+See [examples](./examples/README.md)
 
-This image is on dockerhub so you do not have to build it
-```sh
-docker build -t remotivelabs/grpc-web-generator .
-```
+## License
 
-### Generate stubs
+`remotivelabs-grpc-web-stubs` is distributed under the terms of the [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html) license.
 
-From this directory run the following commands and update `src/index.ts` to explicitly export types.
+## Documentation
 
-```sh
-sh ./generate-ts.sh
-```
-
-## Release Instructions
-
-1. Commit changes.
-2. Generate stubs `sh ./generate-ts.sh`.
-3. Update version with `npm version x.y.z` and commit it with `release: Prepare a release for version x.y.z`.
-4. Publish with `npm publish`.
+TODO: We dont have any documentation
+See [https://docs.remotivelabs.com/apis/python/remotivelabs/broker](https://docs.remotivelabs.com/apis/python/remotivelabs/broker).

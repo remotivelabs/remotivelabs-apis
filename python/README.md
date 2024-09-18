@@ -1,60 +1,69 @@
-# RemotiveLabs Python libraries
+# RemotiveBroker Python API
 
-## Usage
+`remotivelabs-broker` - Python SDK for interacting with the RemotiveBroker API.
 
-Python RemotiveBroker API
+Published to PyPI on [https://pypi.org/project/remotivelabs-broker/](https://pypi.org/project/remotivelabs-broker/).
 
-https://pypi.org/project/remotivelabs-broker/
+## Getting started
 
-Published on [PyPi](https://pypi.org/) with the prefix `remotivelabs-` and with the user [remotivelabs](https://pypi.org/user/remotivelabs/).
-All packages use [Hatch](https://hatch.pypa.io/) for packaging and publishing.
+Prerequisites:
 
+```bash
+# Install poetry (and optionally poe plugin to simplify poetry command execution)
+pipx install poetry
+poetry self add 'poethepoet[poetry_plugin]'
+```
 
+Build and run:
 
-## Development
+```bash
+cd python/remotivelabs-broker
 
-Install hatch on your development computer:
+# Install dependencies in a virtualenv
+poetry install
 
-    pip install hatch
+# Build the library (output in dist/)
+poetry build
 
-Any project related information is stored in `pyproject.toml`.
+# Check (test, lint, check types)
+poetry poe check
 
-Hatch supplies a basic set of tools for development.
-All operations should be done in an virtual environment created by hatch.
+# run standard test suite
+poetry run pytest
 
-Go to the directory of the module which you are going to be working on.
-For example:
+# run tests against running broker
+poetry run pytest -m server --broker <broker url>
+```
 
-    cd python/remotivelabs-broker
+If you need to (re)generate protobuf stubs, see [Building](#building).
 
-Create a local environment.
+## Building
 
-    hatch env create
+Building the complete package, including protobuf stubs and documentation, is done using a docker container:
 
-Start a shell in the environment.
+```bash
+./python/remotivelabs-broker/docker-build.sh
+```
 
-    hatch shell
+## Versioning
 
-While in this virtual environment the library is available as a python module without needing to be installed.
+Update the package version by editing the following `pyproject.toml` file.
 
-Build the library:
+Follow [Semantic versioning](https://semver.org/). Beta versions should be suffixed with `-beta*`, example `0.2.0-beta1`.
 
-    hatch build
+## Publishing
 
-Update the package version by editing the file `__about__.py`.
-This version stamp will be used in Pypi.
-Follow [Semantic versioning](https://semver.org/).
+Published to PyPI on [https://pypi.org/project/remotivelabs-broker/](https://pypi.org/project/remotivelabs-broker/):
 
-Testing, with coverage:
+All RemotiveLabs libraries:
+- share the same `remotivelabs` [namespace package](https://peps.python.org/pep-0420/).
+- use the `remotivelabs-` prefix in the library name.
+- are published with the [remotivelabs](https://pypi.org/user/remotivelabs/) user.
 
-    hatch run cov
+```bash
+# Get token from Johan Rask
+poetry config pypi-token.pypi <my-token>
 
-Without coverage:
-
-    hatch run no-cov
-
-While in the hatch virtual environment.
-Run the Python debugger:
-
-    python -m pdb ...
-
+# find username and password in less secret location
+poetry publish
+```
