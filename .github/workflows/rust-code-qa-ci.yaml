@@ -1,0 +1,24 @@
+name: Rust Code QA CI
+
+on: push
+
+jobs:
+  rust-ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Build and run tests
+        run: |
+          pushd rust/remotivelabs-broker
+          cargo test
+          popd
+
+      - name: Check format
+        run: |
+          pushd rust/remotivelabs-broker
+          cargo fmt --check
+          popd

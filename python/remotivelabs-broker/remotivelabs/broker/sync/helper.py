@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import itertools
+import logging
 import ntpath
 import os
 import posixpath
@@ -12,8 +13,19 @@ from urllib.parse import urlparse
 import grpc
 from grpc_interceptor import ClientCallDetails, ClientInterceptor
 
-from .. import log
-from ..generated.sync import common_pb2, network_api_pb2, network_api_pb2_grpc, system_api_pb2, system_api_pb2_grpc
+from .. import (
+    common_pb2,
+    network_api_pb2,
+    network_api_pb2_grpc,
+    system_api_pb2,
+    system_api_pb2_grpc,
+)
+
+_logger = logging.getLogger(__name__)
+
+
+# pylint: disable=protected-access
+# pylint: disable=too-many-arguments
 
 
 class HeaderInterceptor(ClientInterceptor):
@@ -95,9 +107,8 @@ def publish_signals(client_id, stub, signals_with_payload, frequency: int = 0) -
 
     try:
         stub.PublishSignals(publisher_info)
-    # pylint: disable=protected-access
-    except grpc._channel._Rendezvous as err:  # type:ignore[attr-defined]
-        log.error(err)
+    except grpc._channel._Rendezvous:  # type:ignore[attr-defined]
+        _logger.exception("A Rendezvous error occurred")
 
 
 def printer(signals: Sequence[common_pb2.SignalId]) -> None:
@@ -108,7 +119,7 @@ def printer(signals: Sequence[common_pb2.SignalId]) -> None:
     """
 
     for signal in signals:
-        log.info(f"{signal} {signal.namespace.name}")
+        _logger.info(f"{signal} {signal.namespace.name}")
 
 
 def get_sha256(path: str) -> str:
@@ -118,11 +129,9 @@ def get_sha256(path: str) -> str:
     :param path: Path to file
     :rtype int:
     """
-
     with open(path, "rb") as f:
         b = f.read()  # read entire file as bytes
-        readable_hash = hashlib.sha256(b).hexdigest()
-    return readable_hash
+    return hashlib.sha256(b).hexdigest()
 
 
 def generate_data(file, dest_path, chunk_size, sha256) -> Generator[system_api_pb2.FileUploadRequest, None, None]:
@@ -147,13 +156,13 @@ def upload_file(system_stub: system_api_pb2_grpc.SystemServiceStub, path: str, d
     """
 
     sha256 = get_sha256(path)
-    log.debug(f"SHA256 for file {path}: {sha256}")
+    _logger.debug(f"SHA256 for file {path}: {sha256}")
     with open(path, "rb") as file:
         # make sure path is unix style (necessary for windows, and does no harm om
         # linux)
         upload_iterator = generate_data(file, dest_path.replace(ntpath.sep, posixpath.sep), 1000000, sha256)
         response = system_stub.UploadFile(upload_iterator, compression=grpc.Compression.Gzip)
-        log.debug(f"Uploaded {path} with response {response}")
+        _logger.debug(f"Uploaded {path} with response {response}")
 
 
 def download_file(system_stub: system_api_pb2_grpc.SystemServiceStub, path: str, dest_path: str) -> None:
@@ -198,7 +207,7 @@ def reload_configuration(
 
     request = common_pb2.Empty()
     response = system_stub.ReloadConfiguration(request, timeout=60000)
-    log.debug(f"Reload configuration with response {response}")
+    _logger.debug(f"Reload configuration with response {response}")
 
 
 def check_license(
@@ -231,8 +240,7 @@ def act_on_signal(
     :param fun: Callback for receiving signals update
     :param on_subscribed: Callback for successful subscription
     """
-
-    log.debug("Subscription started")
+    _logger.debug("Subscription started")
 
     sub_info = network_api_pb2.SubscriberConfig(
         clientId=client_id,
@@ -243,25 +251,24 @@ def act_on_signal(
         subscripton = network_stub.SubscribeToSignals(sub_info, timeout=None)
         if on_subscribed:
             on_subscribed(subscripton)
-        log.debug("Waiting for signal...")
+
+        _logger.debug("Waiting for signal...")
         for subs_counter in subscripton:
             fun(subs_counter.signal)
+    except grpc._channel._Rendezvous:  # type:ignore[attr-defined]
+        _logger.exception("A Rendezvous error occurred")
 
     except grpc.RpcError as e:
         # Only try to cancel if cancel was not already attempted
-        # pylint: disable=no-member
         if e.code() != grpc.StatusCode.CANCELLED:
             try:
                 subscripton.cancel()
-                print("A gRPC error occurred:")
-                print(e)
+                _logger.exception("A gRPC error occurred")
             except grpc.RpcError:
                 pass
-    # pylint: disable=protected-access, bad-except-order
-    except grpc._channel._Rendezvous as err:  # type:ignore[attr-defined]
-        log.error(err)
+
     # reload, alternatively non-existing signal
-    log.debug("Subscription terminated")
+    _logger.debug("Subscription terminated")
 
 
 def act_on_scripted_signal(
@@ -283,7 +290,7 @@ def act_on_scripted_signal(
     :param on_subscribed: Callback for successful subscription
     """
 
-    log.debug("Subscription with mapping code started...")
+    _logger.debug("Subscription with mapping code started...")
 
     sub_info = network_api_pb2.SubscriberWithScriptConfig(
         clientId=client_id,
@@ -294,20 +301,20 @@ def act_on_scripted_signal(
         subscription = network_stub.SubscribeToSignalWithScript(sub_info, timeout=None)
         if on_subscribed:
             on_subscribed(subscription)
-        log.debug("Waiting for signal...")
+
+        _logger.debug("Waiting for signal...")
         for subs_counter in subscription:
             fun(subs_counter.signal)
 
-    except grpc.RpcError as e:
+    except grpc._channel._Rendezvous:  # type:ignore[attr-defined]
+        _logger.exception("A Rendezvous error occurred")
+
+    except grpc.RpcError:
+        _logger.exception("A gRPC error occurred")
         try:
             subscription.cancel()
-            print("A gRPC error occurred:")
-            print(e)
         except grpc.RpcError:
             pass
 
-    # pylint: disable=protected-access, bad-except-order
-    except grpc._channel._Rendezvous as err:  # type:ignore[attr-defined]
-        log.error(err)
     # reload, alternatively non-existing signal
-    log.debug("Subscription terminated")
+    _logger.debug("Subscription terminated")

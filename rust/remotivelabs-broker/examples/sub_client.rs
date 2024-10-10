@@ -1,5 +1,5 @@
-use remotive_broker::{
-    remotive_api::base::{ClientId, NameSpace, SignalId, SignalIds, SubscriberConfig},
+use remotivelabs_broker::{
+    generated::base::{ClientId, NameSpace, SignalId, SignalIds, SubscriberConfig},
     Connection,
 };
 use std::{thread, time};

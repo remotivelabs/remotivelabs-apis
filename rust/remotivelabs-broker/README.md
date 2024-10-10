@@ -1,9 +1,24 @@
-# RemotiveLabs Broker
+# RemotiveBroker Rust API
+
 Rust library with gRPC-bindings and utility functions.
 
-gRPC bindings are generated from [this source](../../proto/) when compiling the project.
+## Usage
 
-This project is contributed by _Niclas Lind_ (@niclaslind).
+```rust
+use remotive_broker::{
+    Connection,
+};
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let mut con = Connection::new("http://localhost:50051".to_string(), None).await?;
+
+    println!("Checking license...");
+    con.check_license().await?;
+
+    Ok(())
+}
+```
 
 ## Examples
 

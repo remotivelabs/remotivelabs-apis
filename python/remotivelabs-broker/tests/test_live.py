@@ -18,14 +18,12 @@ class Connection:
 
 
 # Setup broker with predefined settings
-@pytest.fixture
 @pytest.fixture(name="broker_connection")
 def fixture_broker_connection():
     return Connection()
 
 
 # Setup broker configured for testing
-@pytest.fixture
 @pytest.fixture(name="broker_configured")
 def fixture_broker_configured(broker_connection):
     br.upload_folder(broker_connection.system_stub, "tests/configuration_udp")

@@ -3,20 +3,24 @@ from __future__ import annotations
 import logging
 from typing import Any, Dict, List, Optional, Sequence, TypeVar
 
-from ..generated.sync import common_pb2, network_api_pb2, system_api_pb2_grpc
+from .. import common_pb2, network_api_pb2, system_api_pb2_grpc
+
+_logger = logging.getLogger(__name__)
+
+_MSG_DUPLICATE = "Warning duplicated (namespace.signal): {}, to avoid" + 'ambiguity set "short_names": false in your interfaces.json on {}'
 
 T = TypeVar("T")
 
-_logger = logging.getLogger("remotivelabs.SignalCreator")
-_MSG_DUPLICATE = "Warning duplicated (namespace.signal): {}, to avoid" + 'ambiguity set "short_names": false in your interfaces.json on {}'
+
+# pylint: disable=invalid-name
+# pylint: disable=broad-exception-raised
 
 
-# pylint: disable=C0103
 class MetaGetter:
     def __init__(self, proto_message):
         self.meta = proto_message
 
-    def _getDefault(self, field: T, default: Optional[T]) -> T:
+    def _getDefault(self, field: T, default: Optional[T]) -> T:  # noqa: N802
         if field is not None:
             return field
 
@@ -25,51 +29,51 @@ class MetaGetter:
 
         raise Exception("Failed to retrieve meta data field")
 
-    def getDescription(self, default: Optional[str] = None) -> str:
+    def getDescription(self, default: Optional[str] = None) -> str:  # noqa: N802
         """Get protobuffer MetaData field description"""
         return self._getDefault(self.meta.description, default)
 
-    def getUnit(self, default: Optional[str] = None) -> str:
+    def getUnit(self, default: Optional[str] = None) -> str:  # noqa: N802
         """Get protobuffer MetaData field unit"""
         return self._getDefault(self.meta.unit, default)
 
-    def getMax(self, default: Optional[float] = None) -> float:
+    def getMax(self, default: Optional[float] = None) -> float:  # noqa: N802
         """Get protobuffer MetaData field max"""
         return self._getDefault(self.meta.max, default)
 
-    def getMin(self, default: Optional[float] = None) -> float:
+    def getMin(self, default: Optional[float] = None) -> float:  # noqa: N802
         """Get protobuffer MetaData field min"""
         return self._getDefault(self.meta.min, default)
 
-    def getSize(self, default: Optional[int] = None) -> int:
+    def getSize(self, default: Optional[int] = None) -> int:  # noqa: N802
         """Get protobuffer MetaData field size"""
         return self._getDefault(self.meta.size, default)
 
-    def getIsRaw(self, default: Optional[bool] = None) -> bool:
+    def getIsRaw(self, default: Optional[bool] = None) -> bool:  # noqa: N802
         """Get protobuffer MetaData field isRaw"""
         return self._getDefault(self.meta.isRaw, default)
 
-    def getFactor(self, default: Optional[float] = None) -> float:
+    def getFactor(self, default: Optional[float] = None) -> float:  # noqa: N802
         """Get protobuffer MetaData field factor"""
         return self._getDefault(self.meta.factor, default)
 
-    def getOffset(self, default: Optional[float] = None) -> float:
+    def getOffset(self, default: Optional[float] = None) -> float:  # noqa: N802
         """Get protobuffer MetaData field offset"""
         return self._getDefault(self.meta.offset, default)
 
-    def getSenders(self, default: Optional[Sequence[str]] = None) -> Sequence[str]:
+    def getSenders(self, default: Optional[Sequence[str]] = None) -> Sequence[str]:  # noqa: N802
         """Get protobuffer MetaData field sender"""
         return self._getDefault(self.meta.sender, default)
 
-    def getReceivers(self, default: Optional[Sequence[str]] = None) -> Sequence[str]:
+    def getReceivers(self, default: Optional[Sequence[str]] = None) -> Sequence[str]:  # noqa: N802
         """Get protobuffer MetaData field receiver"""
         return self._getDefault(self.meta.receiver, default)
 
-    def getCycleTime(self, default: Optional[float] = None) -> float:
+    def getCycleTime(self, default: Optional[float] = None) -> float:  # noqa: N802
         """Get protobuffer MetaData field cycleTime"""
         return self._getDefault(self.meta.cycleTime, default)
 
-    def getStartValue(self, default: Optional[float] = None) -> float:
+    def getStartValue(self, default: Optional[float] = None) -> float:  # noqa: N802
         """Get protobuffer MetaData field startValue"""
         return self._getDefault(self.meta.startValue, default)
 
@@ -79,7 +83,11 @@ class SignalCreator:
     Class for prepearing and writing signals via gRPC.
     """
 
-    def __init__(self, system_stub: system_api_pb2_grpc.SystemServiceStub, namespaces: List[str] | None = None):
+    def __init__(
+        self,
+        system_stub: system_api_pb2_grpc.SystemServiceStub,
+        namespaces: List[str] | None = None,
+    ):
         self._sinfos: Dict[Any, Any] = {}
         self._virtual: List[Any] = []
         self._networks: Dict[Any, Any] = {}
@@ -210,8 +218,3 @@ class SignalCreator:
 
         params = {"id": signal, key: value}
         return network_api_pb2.Signal(**params)
-
-        # Above is simlar as this, but parameterised.
-        # return network_api_pb2.Signal(
-        #     id=signal, value_dict.get_key=value_dict["integer"]
-        # )

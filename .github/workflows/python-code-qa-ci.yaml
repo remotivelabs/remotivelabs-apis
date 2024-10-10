@@ -1,0 +1,41 @@
+name: Python Code QA CI
+
+on: push
+
+jobs:
+  python-ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10"]
+    defaults:
+      run:
+        working-directory: ./python/remotivelabs-broker
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: abatilo/actions-poetry@v2
+      - run: poetry self add 'poethepoet[poetry_plugin]'
+
+      - name: Generate stubs (and build package)
+        env:
+          NO_TTY: true
+        run: ./docker-build.sh
+
+      - run: poetry install
+
+      - name: run pytest
+        run: poetry poe test
+
+      - name: run ruff
+        run: poetry poe lint
+
+      - name: run pylint
+        run: poetry poe pylint
+
+      - name: run mypy
+        run: poetry poe mypy
