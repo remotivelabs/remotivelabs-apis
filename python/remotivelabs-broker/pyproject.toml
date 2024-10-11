@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "remotivelabs-broker"
 description = 'RemotiveLabs Broker gRPC API'
-version = "0.3.0-beta1"
+version = "0.3.0-beta2"
 readme = "README.md"
 license = "Apache-2.0"
 homepage = "https://remotivelabs.com/"
@@ -25,6 +25,14 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Information Analysis",
 ]
 packages = [{ include = "remotivelabs" }]
+# specify what files should be included when packaging/publishing the library
+include = [
+  "README.md",
+  "LICENSE.txt",
+  "remotivelabs/broker/py.typed",
+  "remotivelabs/broker/**/*.py",
+  "remotivelabs/broker/**/*.pyi",
+]
 
 [tool.poetry.urls]
 Issues = "https://github.com/remotivelabs/remotivelabs-apis/issues"
