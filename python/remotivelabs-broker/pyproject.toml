@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "remotivelabs-broker"
 description = 'RemotiveLabs Broker gRPC API'
-version = "0.3.0-beta2"
+version = "0.3.0-beta3"
 readme = "README.md"
 license = "Apache-2.0"
 homepage = "https://remotivelabs.com/"
