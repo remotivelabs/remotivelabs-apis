@@ -6,8 +6,6 @@ This API uses protobuffer and gRPC stubs directly, available in the submodules:
 - `remotivelabs.broker.common_pb2_grpc`.
 - `remotivelabs.broker.diagnostics_api_pb2`.
 - `remotivelabs.broker.diagnostics_api_pb2_grpc`.
-- `remotivelabs.broker.functional_api_pb2`.
-- `remotivelabs.broker.functional_api_pb2_grpc`.
 - `remotivelabs.broker.network_api_pb2`.
 - `remotivelabs.broker.network_api_pb2_grpc`.
 - `remotivelabs.broker.system_api_pb2`.
@@ -35,8 +33,6 @@ from .generated.sync import (
     common_pb2_grpc,  # noqa: F401
     diagnostics_api_pb2,  # noqa: F401
     diagnostics_api_pb2_grpc,  # noqa: F401
-    functional_api_pb2,  # noqa: F401
-    functional_api_pb2_grpc,  # noqa: F401
     network_api_pb2,  # noqa: F401
     network_api_pb2_grpc,  # noqa: F401
     system_api_pb2,  # noqa: F401

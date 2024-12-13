@@ -15,8 +15,6 @@ from ..generated.sync import (
     common_pb2_grpc,  # noqa: F401
     diagnostics_api_pb2,  # noqa: F401
     diagnostics_api_pb2_grpc,  # noqa: F401
-    functional_api_pb2,  # noqa: F401
-    functional_api_pb2_grpc,  # noqa: F401
     network_api_pb2,  # noqa: F401
     network_api_pb2_grpc,  # noqa: F401
     system_api_pb2,  # noqa: F401
@@ -70,8 +68,6 @@ __all__ = [
     "common_pb2_grpc",
     "diagnostics_api_pb2",
     "diagnostics_api_pb2_grpc",
-    "functional_api_pb2",
-    "functional_api_pb2_grpc",
     "network_api_pb2",
     "network_api_pb2_grpc",
     "system_api_pb2",
