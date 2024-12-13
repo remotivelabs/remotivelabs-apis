@@ -22,7 +22,7 @@ RUN apt-get update && \
 
 # See https://python-poetry.org/docs/#ci-recommendations
 RUN pip install "poetry==$POETRY_VERSION"
-RUN poetry self add 'poethepoet[poetry_plugin]'
+RUN poetry self add 'poethepoet[poetry_plugin]==0.30.0'
 
 # install the protobuf compiler
 COPY --chmod=0755 docker/download_protoc.sh /tmp/download_protoc.sh

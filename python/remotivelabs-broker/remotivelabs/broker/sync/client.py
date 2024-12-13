@@ -153,15 +153,15 @@ class Client:
         self.on_connect: Union[Callable[[Client], None], None] = None
         self.on_signals: Union[Callable[[SignalsInFrame], None], None] = None
 
-    def connect(self, url: str, api_key: Union[str, None] = None):
+    def connect(self, url: str, api_key: Union[str, None] = None, max_message_length: Union[int, None] = None):
         self.url = url
         self.api_key = api_key
         if url.startswith("https"):
             if api_key is None:
                 raise BrokerException("You must supply api-key or access-token to use a cloud broker")
-            self._intercept_channel = br.create_channel(url, self.api_key, None)
+            self._intercept_channel = br.create_channel(url, self.api_key, None, max_message_length)
         else:
-            self._intercept_channel = br.create_channel(url, None, None)
+            self._intercept_channel = br.create_channel(url, None, None, max_message_length)
 
         self._network_stub = network_api_pb2_grpc.NetworkServiceStub(self._intercept_channel)
         self._system_stub = system_api_pb2_grpc.SystemServiceStub(self._intercept_channel)
