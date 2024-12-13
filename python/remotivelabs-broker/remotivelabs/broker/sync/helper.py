@@ -50,13 +50,22 @@ class HeaderInterceptor(ClientInterceptor):
         return method(request_or_iterator, new_details)
 
 
-def create_channel(url: str, x_api_key: Optional[str] = None, authorization_token: Optional[str] = None) -> grpc.Channel:
+DEFAULT_MAX_MESSAGE_LENGTH = -1
+
+
+def create_channel(
+    url: str,
+    x_api_key: Optional[str] = None,
+    authorization_token: Optional[str] = None,
+    max_message_length: int = DEFAULT_MAX_MESSAGE_LENGTH,
+) -> grpc.Channel:
     """
     Create communication channels for gRPC calls.
 
     :param url: URL to broker
     :param x_api_key: API key used with RemotiveBroker running in cloud (deprecated).
     :param authorization_token: Access token replacing api-keys moving forward.
+    :param max_message_size: Maximum length of received messages. -1 means unlimited. (Default: -1)
     :return: gRPC channel
     """
 
@@ -65,12 +74,19 @@ def create_channel(url: str, x_api_key: Optional[str] = None, authorization_toke
         msg = f"invalid url {url}, missing hostname"
         raise ValueError(msg)
 
+    options = [
+        # For future readers: We should not set the send_message_length,
+        # because it's already maxed out.
+        # ("grpc.max_send_message_length", max_message_length),
+        ("grpc.max_receive_message_length", max_message_length),
+    ]
+
     if parsed_url.scheme == "https":
         creds = grpc.ssl_channel_credentials(root_certificates=None, private_key=None, certificate_chain=None)
-        channel = grpc.secure_channel(parsed_url.hostname + ":" + str(parsed_url.port or "443"), creds)
+        channel = grpc.secure_channel(parsed_url.hostname + ":" + str(parsed_url.port or "443"), creds, options)
     else:
         addr = parsed_url.hostname + ":" + str(parsed_url.port or "50051")
-        channel = grpc.insecure_channel(addr)
+        channel = grpc.insecure_channel(addr, options)
 
     if x_api_key is None and authorization_token is None:
         return channel

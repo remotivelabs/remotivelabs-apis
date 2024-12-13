@@ -90,3 +90,35 @@ def test_list_signals(broker_configured):
     namespace = br.common_pb2.NameSpace(name="ecu_A")
     signals = broker_configured.system_stub.ListSignals(namespace)
     assert len(signals.frame) == 5
+
+
+@pytest.mark.server
+def test_send_huge_signal(broker_configured):
+    """
+    Tests that we can send a signal that is larger than the default max (4Mb)
+    """
+    namespace = br.common_pb2.NameSpace(name="VirtualInterface")
+    signal_id = br.common_pb2.SignalId(name="test-signal", namespace=namespace)
+
+    # Set up a subscription
+    subscribing_client = br.common_pb2.ClientId(id="subscriber-client")
+    sub_info = br.network_api_pb2.SubscriberConfig(
+        clientId=subscribing_client,
+        signals=br.network_api_pb2.SignalIds(signalId=[signal_id]),
+        onChange=False,
+    )
+    sub = broker_configured.network_stub.SubscribeToSignals(sub_info, timeout=5)
+
+    # Send a large message
+    sending_client = br.common_pb2.ClientId(id="sender-client")
+    raw = b"a" * 9 * 1024 * 1024  # 9Mb of data
+    signal = br.network_api_pb2.Signal(id=signal_id, raw=raw)
+    br.publish_signals(sending_client, broker_configured.network_stub, list([signal]))
+
+    # Check that it was received
+    try:
+        signals = next(iter(sub))
+        content = signals.signal[0].raw
+        assert content == raw
+    finally:
+        sub.cancel()
