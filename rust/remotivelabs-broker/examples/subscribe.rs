@@ -79,6 +79,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
             signal_id: signal_ids,
         }),
         on_change: false,
+        initial_empty: false,
     };
 
     println!("Waiting for signals...");

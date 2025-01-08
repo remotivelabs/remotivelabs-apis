@@ -5,7 +5,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .compile(
             &[
                 "common.proto",
-                "functional_api.proto",
                 "network_api.proto",
                 "system_api.proto",
                 "traffic_api.proto",
