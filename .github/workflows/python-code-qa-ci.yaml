@@ -19,6 +19,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 1.8.5
       - run: poetry self add 'poethepoet[poetry_plugin]==0.30.0'
 
       - name: Generate stubs (and build package)
