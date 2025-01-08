@@ -25,6 +25,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         client_id,
         signals,
         on_change: true,
+        initial_empty: false,
     };
 
     // Read message from stream and print it out

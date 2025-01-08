@@ -4,9 +4,9 @@ use std::{error::Error, fs, path::Path};
 
 use futures::{stream, Stream};
 use generated::base::{
-    file_upload_request::Data, functional_service_client::FunctionalServiceClient,
-    network_service_client::NetworkServiceClient, system_service_client::SystemServiceClient,
-    traffic_service_client::TrafficServiceClient, FileDescription, FileUploadRequest,
+    file_upload_request::Data, network_service_client::NetworkServiceClient,
+    system_service_client::SystemServiceClient, traffic_service_client::TrafficServiceClient,
+    FileDescription, FileUploadRequest,
 };
 use path_slash::PathExt;
 use sha2::{Digest, Sha256};
@@ -82,7 +82,6 @@ pub struct Connection {
     pub system_stub: SystemServiceClient<InterceptedService<Channel, XApiIntercept>>,
     pub network_stub: NetworkServiceClient<InterceptedService<Channel, XApiIntercept>>,
     pub traffic_stub: TrafficServiceClient<InterceptedService<Channel, XApiIntercept>>,
-    pub functional_stub: FunctionalServiceClient<InterceptedService<Channel, XApiIntercept>>,
 }
 
 /// Generate a sha256 key of the data in the provided file
@@ -112,10 +111,6 @@ impl Connection {
                 x_api_key_intercept.clone(),
             ),
             network_stub: NetworkServiceClient::with_interceptor(
-                channel.clone(),
-                x_api_key_intercept.clone(),
-            ),
-            functional_stub: FunctionalServiceClient::with_interceptor(
                 channel.clone(),
                 x_api_key_intercept.clone(),
             ),
