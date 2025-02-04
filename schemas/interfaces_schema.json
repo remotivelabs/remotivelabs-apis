@@ -48,10 +48,22 @@
                 "$ref": "#/defs/signal_db",
                 "description": "Path to a scripted database"
               },
+              "databases": {
+                "description": "Path to a scripted database",
+                "type": "array",
+                "items": {
+                  "$ref": "#/defs/signal_db"
+                }
+              },
               "public": {
                 "$ref": "#/defs/public"
               }
             },
+            "allOf": [
+              {
+                "$ref": "#/defs/database_restrictions"
+              }
+            ],
             "required": [
               "namespace",
               "type"
@@ -63,6 +75,13 @@
               "database": {
                 "$ref": "#/defs/signal_db",
                 "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified."
+              },
+              "databases": {
+                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/defs/signal_db"
+                }
               },
               "can_physical_channel_name": {
                 "$ref": "#/defs/can_physical_channel_name"
@@ -98,11 +117,15 @@
                 "$ref": "#/defs/extended"
               }
             },
+            "allOf": [
+              {
+                "$ref": "#/defs/database_restrictions"
+              }
+            ],
             "required": [
               "type",
               "namespace",
-              "device_name",
-              "database"
+              "device_name"
             ],
             "title": "CAN",
             "type": "object"
@@ -113,6 +136,13 @@
               "database": {
                 "$ref": "#/defs/signal_db",
                 "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified."
+              },
+              "databases": {
+                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/defs/signal_db"
+                }
               },
               "can_physical_channel_name": {
                 "$ref": "#/defs/can_physical_channel_name"
@@ -160,11 +190,15 @@
                 "baud_rate"
               ]
             },
+            "allOf": [
+              {
+                "$ref": "#/defs/database_restrictions"
+              }
+            ],
             "required": [
               "type",
               "namespace",
-              "device_name",
-              "database"
+              "device_name"
             ],
             "title": "CAN-FD",
             "type": "object"
@@ -175,6 +209,13 @@
               "database": {
                 "$ref": "#/defs/signal_db",
                 "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified."
+              },
+              "databases": {
+                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/defs/signal_db"
+                }
               },
               "can_physical_channel_name": {
                 "$ref": "#/defs/can_physical_channel_name"
@@ -217,10 +258,14 @@
                 "$ref": "#/defs/public"
               }
             },
+            "allOf": [
+              {
+                "$ref": "#/defs/database_restrictions"
+              }
+            ],
             "required": [
               "type",
               "namespace",
-              "database",
               "server_port",
               "target_port",
               "target_host"
@@ -262,6 +307,13 @@
                 "$ref": "#/defs/signal_db",
                 "description": "Path to LIN signal database `.ldf` file."
               },
+              "databases": {
+                "description": "Path to LIN signal database `.ldf` file.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/defs/signal_db"
+                }
+              },
               "namespace": {
                 "$ref": "#/defs/namespace"
               },
@@ -295,12 +347,16 @@
                 "$ref": "#/defs/public"
               }
             },
+            "allOf": [
+              {
+                "$ref": "#/defs/database_restrictions"
+              }
+            ],
             "required": [
               "namespace",
               "type",
               "config",
-              "node_mode",
-              "database"
+              "node_mode"
             ],
             "if": {
               "properties": {
@@ -390,6 +446,13 @@
                 "$ref": "#/defs/signal_db",
                 "description": "Path to FlexRay signal database `.xml` (FIBEX) file."
               },
+              "databases": {
+                "description": "Path to FlexRay signal database `.xml` (FIBEX) file.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/defs/signal_db"
+                }
+              },
               "fibex_file": {
                 "$ref": "#/defs/signal_db",
                 "description": "This property is deprecated, use database instead."
@@ -408,11 +471,15 @@
                 "$ref": "#/defs/public"
               }
             },
+            "allOf": [
+              {
+                "$ref": "#/defs/database_restrictions"
+              }
+            ],
             "required": [
               "type",
               "namespace",
-              "config",
-              "database"
+              "config"
             ],
             "title": "FlexRay",
             "type": "object"
@@ -528,6 +595,30 @@
       "description": "Configure the interface to be public or private, default is public. Private namespaces are not exposed by the broker. This is useful for example when working with for example scripted VSS signals and you don't want the designer to see the internal vehicle signals.",
       "type": "boolean",
       "default": true
+    },
+    "database_restrictions": {
+      "oneOf": [
+        {
+          "required": [
+            "database"
+          ],
+          "not": {
+            "required": [
+              "databases"
+            ]
+          }
+        },
+        {
+          "required": [
+            "databases"
+          ],
+          "not": {
+            "required": [
+              "database"
+            ]
+          }
+        }
+      ]
     }
   }
 }
