@@ -566,6 +566,7 @@
     },
     "host": {
       "description": "Network address accepted by the OS. Eg. Ipv4: `127.0.0.1`.",
+      "format": "ipv4",
       "type": "string"
     },
     "namespace": {
