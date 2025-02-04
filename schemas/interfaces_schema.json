@@ -187,6 +187,10 @@
               "namespace": {
                 "$ref": "#/defs/namespace"
               },
+              "server_host": {
+                "description": "Required when using multicast to select the correct interface.",
+                "$ref": "#/defs/host"
+              },
               "server_port": {
                 "$ref": "#/defs/port",
                 "description": "UDP port for RemotiveBroker to listen to and receive packets on."
@@ -195,6 +199,7 @@
                 "$ref": "#/defs/short_names"
               },
               "target_host": {
+                "description": "For multicast use, addresses in the range `224.0.0.1` to `239.255.255.255` are supported.",
                 "$ref": "#/defs/host"
               },
               "target_port": {
