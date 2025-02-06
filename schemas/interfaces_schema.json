@@ -274,6 +274,142 @@
             "type": "object"
           },
           {
+            "description": "SOME/IP interface configuration.",
+            "title": "SOME/IP",
+            "type": "object",
+            "properties": {
+              "namespace": {
+                "$ref": "#/defs/namespace"
+              },
+              "database": {
+                "$ref": "#/defs/signal_db",
+                "description": "Path to signal database file. Supporting .xml and .arxml. When using an arxml database"
+              },
+              "databases": {
+                "description": "Path to signal database file. Supporting .xml and .arxml. When using an arxml database",
+                "type": "array",
+                "items": {
+                  "$ref": "#/defs/signal_db"
+                }
+              },
+              "type": {
+                "description": "Specifies a SOME/IP interface.",
+                "default": "someip",
+                "enum": [
+                  "someip"
+                ]
+              },
+              "services": {
+                "description": "List of to include from the provided database, can be used to speed up database parsing.",
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "maximum": 65535,
+                  "minimum": 0
+                }
+              },
+              "service_discovery": {
+                "description": "Configuration for SOME/IP service discovery.",
+                "type": "object",
+                "properties": {
+                  "multicast_group_ip": {
+                    "description": "Multicast group IP for discovery.",
+                    "$ref": "#/defs/host"
+                  },
+                  "server_host": {
+                    "$ref": "#/defs/host",
+                    "default": "0.0.0.0"
+                  },
+                  "server_port": {
+                    "description": "Port number for discovery.",
+                    "$ref": "#/defs/port",
+                    "default": 30490
+                  }
+                },
+                "default": {
+                  "multicast_group_ip": "224.0.55.55",
+                  "server_host": "0.0.0.0",
+                  "server_port": 30490
+                }
+              },
+              "endpoints": {
+                "description": "List of SOME/IP endpoints.",
+                "type": "array",
+                "items": {
+                  "description": "SOME/IP endpoint configuration.",
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "description": "Transport protocol",
+                      "default": "udp",
+                      "enum": [
+                        "udp"
+                      ]
+                    },
+                    "server_host": {
+                      "default": "0.0.0.0",
+                      "$ref": "#/defs/host"
+                    },
+                    "server_port": {
+                      "$ref": "#/defs/port"
+                    },
+                    "service_ids": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/defs/some_ip_service"
+                      }
+                    },
+                    "static_remotes": {
+                      "description": "List of static remote services that this endpoint consumes.",
+                      "type": "array",
+                      "items": {
+                        "description": "Static remote configuration for SOME/IP services.",
+                        "type": "object",
+                        "properties": {
+                          "host": {
+                            "$ref": "#/defs/host"
+                          },
+                          "port": {
+                            "$ref": "#/defs/port"
+                          },
+                          "service_ids": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/defs/some_ip_service"
+                            }
+                          },
+                          "discovery_port": {
+                            "description": "Discovery port.",
+                            "default": 30490,
+                            "$ref": "#/defs/port"
+                          }
+                        },
+                        "required": [
+                          "host",
+                          "port"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "mode",
+                    "server_port"
+                  ]
+                }
+              }
+            },
+            "allOf": [
+              {
+                "$ref": "#/defs/database_restrictions"
+              }
+            ],
+            "required": [
+              "namespace",
+              "type",
+              "endpoints"
+            ]
+          },
+          {
             "description": "LIN master or slave node interface. Connects to a RemotiveLabs LIN ethernet device.",
             "properties": {
               "config": {
@@ -596,6 +732,35 @@
       "description": "Configure the interface to be public or private, default is public. Private namespaces are not exposed by the broker. This is useful for example when working with for example scripted VSS signals and you don't want the designer to see the internal vehicle signals.",
       "type": "boolean",
       "default": true
+    },
+    "some_ip_service": {
+      "description": "Service definition for SOME/IP.",
+      "type": "object",
+      "properties": {
+        "service_id": {
+          "description": "Unique service identifier.",
+          "type": "integer",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "instance_id": {
+          "description": "Service instance identifier.",
+          "type": "integer",
+          "maximum": 65535,
+          "minimum": 0
+        },
+        "version_major": {
+          "description": "Major version number.",
+          "type": "integer",
+          "maximum": 255,
+          "minimum": 0
+        }
+      },
+      "required": [
+        "service_id",
+        "instance_id",
+        "version_major"
+      ]
     },
     "database_restrictions": {
       "oneOf": [
