@@ -112,9 +112,6 @@
               },
               "auto_recover": {
                 "$ref": "#/defs/auto_recover"
-              },
-              "extended": {
-                "$ref": "#/defs/extended"
               }
             },
             "allOf": [
@@ -177,9 +174,6 @@
               },
               "auto_recover": {
                 "$ref": "#/defs/auto_recover"
-              },
-              "extended": {
-                "$ref": "#/defs/extended"
               }
             },
             "dependencies": {
@@ -694,11 +688,6 @@
       "default": true,
       "description": "Monitor CAN interfaces for state changes to error passive and reset upon detection. Note: Using virtual CAN devices will not support the built-in automatic recovery for CAN devices that enter passive mode. If automatic recovery mode is enabled for a virtual device, the server will issue a warning each time it attempts to retrieve the device's state.",
       "type": "boolean"
-    },
-    "extended": {
-      "description": "Indicate that frames use an extended frame format (EFF) with a 29-bit identifier, as opposed to the standard frame format (SFF) which uses an 11-bit identifier.",
-      "type": "boolean",
-      "default": false
     },
     "host": {
       "description": "Network address accepted by the OS. Eg. Ipv4: `127.0.0.1`.",
