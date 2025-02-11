@@ -61,7 +61,28 @@
             },
             "allOf": [
               {
-                "$ref": "#/defs/database_restrictions"
+                "oneOf": [
+                  {
+                    "required": [
+                      "database"
+                    ],
+                    "not": {
+                      "required": [
+                        "databases"
+                      ]
+                    }
+                  },
+                  {
+                    "required": [
+                      "databases"
+                    ],
+                    "not": {
+                      "required": [
+                        "database"
+                      ]
+                    }
+                  }
+                ]
               }
             ],
             "required": [
@@ -116,7 +137,28 @@
             },
             "allOf": [
               {
-                "$ref": "#/defs/database_restrictions"
+                "oneOf": [
+                  {
+                    "required": [
+                      "database"
+                    ],
+                    "not": {
+                      "required": [
+                        "databases"
+                      ]
+                    }
+                  },
+                  {
+                    "required": [
+                      "databases"
+                    ],
+                    "not": {
+                      "required": [
+                        "database"
+                      ]
+                    }
+                  }
+                ]
               }
             ],
             "required": [
@@ -186,7 +228,28 @@
             },
             "allOf": [
               {
-                "$ref": "#/defs/database_restrictions"
+                "oneOf": [
+                  {
+                    "required": [
+                      "database"
+                    ],
+                    "not": {
+                      "required": [
+                        "databases"
+                      ]
+                    }
+                  },
+                  {
+                    "required": [
+                      "databases"
+                    ],
+                    "not": {
+                      "required": [
+                        "database"
+                      ]
+                    }
+                  }
+                ]
               }
             ],
             "required": [
@@ -254,7 +317,28 @@
             },
             "allOf": [
               {
-                "$ref": "#/defs/database_restrictions"
+                "oneOf": [
+                  {
+                    "required": [
+                      "database"
+                    ],
+                    "not": {
+                      "required": [
+                        "databases"
+                      ]
+                    }
+                  },
+                  {
+                    "required": [
+                      "databases"
+                    ],
+                    "not": {
+                      "required": [
+                        "database"
+                      ]
+                    }
+                  }
+                ]
               }
             ],
             "required": [
@@ -394,7 +478,28 @@
             },
             "allOf": [
               {
-                "$ref": "#/defs/database_restrictions"
+                "oneOf": [
+                  {
+                    "required": [
+                      "database"
+                    ],
+                    "not": {
+                      "required": [
+                        "databases"
+                      ]
+                    }
+                  },
+                  {
+                    "required": [
+                      "databases"
+                    ],
+                    "not": {
+                      "required": [
+                        "database"
+                      ]
+                    }
+                  }
+                ]
               }
             ],
             "required": [
@@ -479,7 +584,28 @@
             },
             "allOf": [
               {
-                "$ref": "#/defs/database_restrictions"
+                "oneOf": [
+                  {
+                    "required": [
+                      "database"
+                    ],
+                    "not": {
+                      "required": [
+                        "databases"
+                      ]
+                    }
+                  },
+                  {
+                    "required": [
+                      "databases"
+                    ],
+                    "not": {
+                      "required": [
+                        "database"
+                      ]
+                    }
+                  }
+                ]
               }
             ],
             "required": [
@@ -603,7 +729,28 @@
             },
             "allOf": [
               {
-                "$ref": "#/defs/database_restrictions"
+                "oneOf": [
+                  {
+                    "required": [
+                      "database"
+                    ],
+                    "not": {
+                      "required": [
+                        "databases"
+                      ]
+                    }
+                  },
+                  {
+                    "required": [
+                      "databases"
+                    ],
+                    "not": {
+                      "required": [
+                        "database"
+                      ]
+                    }
+                  }
+                ]
               }
             ],
             "required": [
@@ -749,30 +896,6 @@
         "service_id",
         "instance_id",
         "version_major"
-      ]
-    },
-    "database_restrictions": {
-      "oneOf": [
-        {
-          "required": [
-            "database"
-          ],
-          "not": {
-            "required": [
-              "databases"
-            ]
-          }
-        },
-        {
-          "required": [
-            "databases"
-          ],
-          "not": {
-            "required": [
-              "database"
-            ]
-          }
-        }
       ]
     }
   }
