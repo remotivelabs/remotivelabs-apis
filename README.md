@@ -1,28 +1,22 @@
 # RemotiveLabs RemotiveBroker GRPC APIs
 
-This repo contains all public API from [RemotiveLabs](https://remotivelabs.com/) for integrating with RemotiveBroker using your favourite
+This repo contains all public API from [RemotiveLabs](https://remotivelabs.com/) for integrating with RemotiveBroker using your favorite
 programming language.
 
-We currently have pre-built GAPIC (Generated API Client) for a few languages, but will add more moving forward.
-
-For other languages visit https://grpc.io/ to read up how to generate code for your programming language based on our protocol buffer
-definition files.
+[Documentation](https://docs.remotivelabs.com/)
 
 ## Protocol buffer definitions
 
-Use these to generate GAPIC for your programming language.
-
-[Protobuf files](./protos/README.md)
-
-## Language specific APIs
-
-- [Python](./python/remotivelabs-broker/)
-- [gRPC-web](./grpc-web/README.md)
-- [Rust](./rust/README.md)
+[Protobuf files](/protos/)
 
 ## RemotiveBroker configuration schemas
 
-[JSON schemas](schemas) of configuration files used by RemotiveBroker.
+[JSON schemas](/schemas/) of configuration files used by RemotiveBroker.
+
+## Language specific APIs
+
+- [gRPC-web](./grpc-web/README.md)
+- [Rust](./rust/README.md)
 
 ## Questions
 
