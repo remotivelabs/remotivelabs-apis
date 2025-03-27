@@ -38,16 +38,16 @@ ENV grpc_web_import_style=commonjs+dts
 ENV mode=grpcwebtext
 VOLUME /protofile
 ENV protofile=echo.proto
-VOLUME /ouput
+VOLUME /output
 #ENV output=/protofile/generated
 
 #protoc  --js_out=import_style=commonjs,binary:. --grpc-web_out=import_style=typescript,mode=grpcweb:.
 
 
-CMD protoc \
+CMD find /protofile -type f -name "*.proto" -exec protoc \
   -I=/protofile \
-  /protofile/$protofile \
+  {} \
   --js_out=import_style=$import_style:/output \
-  --grpc-web_out=import_style=$grpc_web_import_style,mode=$mode:/output
+  --grpc-web_out=import_style=$grpc_web_import_style,mode=$mode:/output \;
 
 
