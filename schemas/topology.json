@@ -2,13 +2,14 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Remotive Topology 0.5",
   "oneOf": [
-    { "$ref": "#/definitions/instance_schema" },
-    { "$ref": "#/definitions/platform_schema" }
+    { "$ref": "#/definitions/platform_schema" },
+    { "$ref": "#/definitions/instance_schema" }
   ],
   "definitions": {
     "platform_schema": {
       "type": "object",
       "additionalProperties": false,
+      "description": "The platform describes which ECUs and services that exist and how they communicate, see [docs](https://docs.remotivelabs.com/docs/remotive-topology/usage/platform)",
       "properties": {
         "schema": { "type": "string", "enum": ["remotive-topology-platform:0.4", "remotive-topology-platform:0.5"] },
         "includes": {
@@ -18,12 +19,14 @@
         },
         "channels": {
           "type": "object",
+          "description": "Defines the channels that are available in the platform. This is a map of channel names to channel definitions.",
           "additionalProperties": {
             "$ref": "#/definitions/platform_channel"
           }
         },
         "ecus": {
           "type": "object",
+          "description": "Defines the ECUs that are available in the platform. This is a map of ecu names to ECU definitions.",
           "additionalProperties": {
             "$ref": "#/definitions/platform_ecu"
           }
@@ -33,6 +36,7 @@
     "instance_schema": {
       "type": "object",
       "additionalProperties": false,
+      "description": "In order to run a topology you need create an instance that describes what parts of the platform you want to run in your virtual environment, see [docs](https://docs.remotivelabs.com/docs/remotive-topology/usage/instance)",
       "properties": {
         "schema": { "type": "string", "enum": ["remotive-topology-instance:0.5"] },
         "name": { "type": "string", "description": "Optional name of the topology instance" },
@@ -43,28 +47,31 @@
         },
         "containers": {
           "type": "object",
+          "description": "Custom containers that are part of the topology and have access to RemotiveBroker and can therefore interact with ECUs in the topology. A common usecase is to run testcase.",
           "additionalProperties": {
             "$ref": "#/definitions/container"
           }
         },
         "channels": {
           "type": "object",
-          "description": "Which channels to instantiate and how",
+          "description": "Which channels to instantiate and how. This is a map of channel names to channel instantiations.",
           "additionalProperties": {
             "$ref": "#/definitions/instance_channel"
           }
         },
         "ecus": {
           "type": "object",
-          "description": "Which ECUs to instantiate and how",
+          "description": "Which ECUs to instantiate and how. This is a map of ECU names to ECU instantiations.",
           "additionalProperties": {
             "$ref": "#/definitions/instance_ecu"
           }
         },
         "platform": {
-          "$ref": "#/definitions/platform"
+          "description": "The platform that this instance is based on.",
+          "$ref": "#/definitions/platform_schema"
         },
         "settings": {
+          "description": "Global settings for the instance",
           "$ref": "#/definitions/settings"
         }
       }
@@ -153,6 +160,7 @@
     },
     "someip": {
       "type": "object",
+      "description": "Defines which SOME/IP service instances are available. This is a map of service instance names to service instance definitions.",
       "additionalProperties": false,
       "properties": {
         "services": {
@@ -180,7 +188,7 @@
         "alias_for" : { "type": "string", "description": "Use this to combine ECUs with different names into a single ECU" },
         "channels": {
           "type": "object",
-          "description": "Describes what channels the ECU is connected to and details about that connection",
+          "description": "Describes which channels the ECU is connected to and details about those connections. This is a map of channel names to channel definitions.",
           "additionalProperties": {
             "oneOf": [
               { "$ref": "#/definitions/platform_ecu_channel" },
@@ -232,29 +240,6 @@
         "host": { "type": "string", "description": "IP address for the ECU" }
       }
     },
-    "platform": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "includes": {
-          "type": "array",
-          "description": "Platform files to include (.platform.yaml or .arxml)",
-          "items": { "type": "string" }
-        },
-        "channels": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/platform_channel"
-          }
-        },
-        "ecus": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/platform_ecu"
-          }
-        }
-      }
-    },
     "settings": {
       "type": "object",
       "additionalProperties": false,
@@ -291,6 +276,7 @@
           "properties": {
             "channels": {
               "type": "object",
+              "description": "Channels configuration for the TopologyBroker to override defaults. This is a map of channel names to channel definitions.",
               "additionalProperties": {
                 "type": "object",
                 "additionalProperties": false,
@@ -310,10 +296,11 @@
         "container": { "$ref": "#/definitions/container" },
         "channels": {
           "type": "object",
+          "description": "Describes which channels should be instantiated for the ECU and details about those connections. By default all channels are instantiated. This is a map of channel names to channel definitions.",
           "additionalProperties": {
             "oneOf": [
               { "$ref": "#/definitions/instance_ecu_channel" },
-              { "type": "null" }
+              { "type": "null", "description": "Use null to indicate that the channel should be instantiated without any specific configuration." }
             ]
           }
         },
@@ -324,7 +311,7 @@
           "properties": {
             "channels": {
               "type": "object",
-              "description": "Channels that should be included in the mock",
+              "description": "Channels that should be included in the mock. By default all channels are included. This is a map of channel names to null. This allows the mock defintion to be very similar to a model defintion.",
               "additionalProperties": {
                 "oneOf": [
                   { "type": "null" }
@@ -335,11 +322,11 @@
         },
         "models": {
           "type": "object",
-          "description": "Models that implement ECU behavior",
+          "description": "Models that implement ECU behavior. This is a map of model names to model definitions.",
           "additionalProperties": {
             "oneOf": [
-              { "$ref": "#/definitions/python_behavioral_model" },
-              { "$ref": "#/definitions/container_behavioral_model" }
+              { "$ref": "#/definitions/container_behavioral_model" },
+              { "$ref": "#/definitions/python_behavioral_model" }
             ]
           }
         }
@@ -603,6 +590,7 @@
     "python_behavioral_model": {
       "type": "object",
       "additionalProperties": false,
+      "description": "[Deprecated] Python behavioral model, use container instead.",
       "properties": {
         "type": { "const": "python" },
         "container": { "$ref": "#/definitions/container" },
@@ -614,6 +602,7 @@
     "container_behavioral_model": {
       "type": "object",
       "additionalProperties": false,
+      "description": "Behavioral model using a container. This is the preferred way to define a model.",
       "properties": {
         "type": { "const": "container" },
         "container": { "$ref": "#/definitions/container" }
