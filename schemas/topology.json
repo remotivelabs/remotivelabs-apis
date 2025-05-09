@@ -252,13 +252,17 @@
           "additionalProperties": false,
           "properties": {
             "license_file": { "type": "string", "description": "Optional path to the LICENSE_FILE" },
-            "version": { "type": "string", "description": "RemotiveBroker version" }
+            "image": { "type": "string", "description": "Optional dockerimage to use, will override version. Use this if you have a custom build of RemotiveBroker or want to specify a custom docker registry or mirror." },
+            "dockerfile": { "type": "string", "description": "Optional path to dockerfile, will override image and version. This is intended for RemotiveLabs debugging and development." },
+            "version": { "type": "string", "description": "Optional RemotiveBroker version, but recommended to specify to ensure consistent behavior." }
           }
         },
         "ui": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
+            "image": { "type": "string", "description": "Optional dockerimage to use, will override version. Use this if you have a custom build or want to specify a custom docker registry or mirror." },
+            "version": { "type": "string", "description": "Optional RemotiveWebapp version" },
             "port": { "type": "integer", "description": "Port number forwarded from host to UI" },
             "profile": { "type": "string", "description": "Docker profile to use for the UI" }
           }
@@ -482,7 +486,9 @@
       "properties": {
         "type": { "const": "dockercan", "description": "Use socketcan with RemotiveLabs dockercan driver" },
         "device_name": { "type": "string", "pattern": "^[a-z0-9-]{1,14}$", "description": "Physical hardware device name on the host" },
-        "peer": { "type": "string", "pattern": "^[a-z0-9-]{1,13}$", "description": "Optional name of the device inside the docker container" }
+        "peer": { "type": "string", "pattern": "^[a-z0-9-]{1,13}$", "description": "Optional name of the device inside the docker container" },
+        "baudrate": { "type": "integer", "description": "CAN baudrate" },
+        "baudrate_fd": { "type": "integer", "description": "CAN baudrate" }
       },
       "required": ["type", "device_name"]
     },
