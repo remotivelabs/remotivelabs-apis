@@ -216,6 +216,9 @@
               },
               "auto_recover": {
                 "$ref": "#/defs/auto_recover"
+              },
+              "brs": {
+                "$ref": "#/defs/brs"
               }
             },
             "dependencies": {
@@ -834,6 +837,11 @@
     "auto_recover": {
       "default": true,
       "description": "Monitor CAN interfaces for state changes to error passive and reset upon detection. Note: Using virtual CAN devices will not support the built-in automatic recovery for CAN devices that enter passive mode. If automatic recovery mode is enabled for a virtual device, the server will issue a warning each time it attempts to retrieve the device's state.",
+      "type": "boolean"
+    },
+    "brs": {
+      "default": false,
+      "description": "CAN FD BRS (Bit Rate Switching)",
       "type": "boolean"
     },
     "host": {
