@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Remotive Topology 0.5",
+  "title": "Remotive Topology 0.8",
   "oneOf": [
     { "$ref": "#/definitions/platform_schema" },
     { "$ref": "#/definitions/instance_schema" }
@@ -11,7 +11,7 @@
       "additionalProperties": false,
       "description": "The platform describes which ECUs and services that exist and how they communicate, see [docs](https://docs.remotivelabs.com/docs/remotive-topology/usage/platform)",
       "properties": {
-        "schema": { "type": "string", "enum": ["remotive-topology-platform:0.4", "remotive-topology-platform:0.5"] },
+        "schema": { "type": "string", "enum": ["remotive-topology-platform:0.4", "remotive-topology-platform:0.5", "remotive-topology-platform:0.6", "remotive-topology-platform:0.7", "remotive-topology-platform:0.8"] },
         "includes": {
           "type": "array",
           "description": "Platform files to include (.platform.yaml or .arxml)",
@@ -38,7 +38,7 @@
       "additionalProperties": false,
       "description": "In order to run a topology you need create an instance that describes what parts of the platform you want to run in your virtual environment, see [docs](https://docs.remotivelabs.com/docs/remotive-topology/usage/instance)",
       "properties": {
-        "schema": { "type": "string", "enum": ["remotive-topology-instance:0.5"] },
+        "schema": { "type": "string", "enum": ["remotive-topology-instance:0.6", "remotive-topology-instance:0.7", "remotive-topology-instance:0.8"] },
         "name": { "type": "string", "description": "Optional name of the topology instance" },
         "includes": {
           "type": "array",
@@ -95,6 +95,8 @@
       "properties": {
         "type": { "const": "can" },
         "baudrate": { "type": "integer" },
+        "baudrate_fd": { "type": "integer" },
+        "brs": { "type": "boolean", "description": "CANFD Bit Rate Switching"},
         "database": { "type": "string", "description": "Signal database for this channel" },
         "can_cluster": { "type": "string" },
         "can_physical_channel_name": { "type": "string" }
@@ -105,7 +107,9 @@
       "additionalProperties": false,
       "properties": {
         "type": { "const": "lin" },
-        "database": { "type": "string", "description": "Signal database for this channel" }
+        "database": { "type": "string", "description": "Signal database for this channel" },
+        "lin_cluster": { "type": "string" },
+        "lin_physical_channel_name": { "type": "string" }
       }
     },
     "platform_channel_ethernet": {
@@ -244,6 +248,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "recordings": { "type": "string", "description": "Path to recordings" },
         "docker": {
           "$ref": "#/definitions/settings_docker"
         },
@@ -253,7 +258,7 @@
           "properties": {
             "license_file": { "type": "string", "description": "Optional path to the LICENSE_FILE" },
             "image": { "type": "string", "description": "Optional dockerimage to use, will override version. Use this if you have a custom build of RemotiveBroker or want to specify a custom docker registry or mirror." },
-            "dockerfile": { "type": "string", "description": "Optional path to dockerfile, will override image and version. This is intended for RemotiveLabs debugging and development." },
+            "build": { "$ref": "#/definitions/container_build", "description": "This is intended for RemotiveLabs debugging and development." },
             "version": { "type": "string", "description": "Optional RemotiveBroker version, but recommended to specify to ensure consistent behavior." }
           }
         },
@@ -339,22 +344,21 @@
     "container": {
       "additionalProperties": false,
       "properties": {
+        "build": { "$ref": "#/definitions/container_build" },
         "profiles": { "type": "array", "description": "Docker profiles", "items": { "type": "string" } },
-        "dockerfile": { "type": "string", "description": "Path to dockerfile" },
         "image": { "type": "string", "description": "Docker image to use" },
         "working_dir": { "type": "string", "description": "Working directory inside container" },
         "command": { "type": "string", "description": "Command to execute in container" },
         "platform": { "type": "string", "description": "Force a specific platform, eg linux/amd64" },
-        "target": { "type": "string", "description": "Target stage in multi-stage Dockerfile (only used with dockerfile)" },
         "control_network": { "type": "boolean", "description": "Whether to include the control network in the container configuration, defaults to true" },
         "ports": {
           "type": "array",
           "description": "List of port mappings",
           "items": { "type": "string" }
         },
-        "args": {
+        "extra_hosts": {
           "type": "array",
-          "description": "Optional build arguments for docker container",
+          "description": "Extra hosts to add to the container, in the format 'host:ip'",
           "items": { "type": "string" }
         },
         "environment": {
@@ -384,6 +388,19 @@
         }
       }
     },
+    "container_build": {
+      "additionalProperties": false,
+      "properties": {
+        "dockerfile": { "type": "string", "description": "Path to dockerfile" },
+        "context": { "type": "string", "description": "Path to context for building dockerfile" },
+        "target": { "type": "string", "description": "Target stage in multi-stage Dockerfile (only used with dockerfile)" },
+        "args": {
+          "type": "array",
+          "description": "Optional build arguments for docker container",
+          "items": { "type": "string" }
+        }
+      }
+    },
     "instance_ecu_channel": {
       "type": "object",
       "additionalProperties": false,
@@ -392,12 +409,13 @@
           "type": "object",
           "description": "Optionally restrict what channels the instantiated ECU should be connected to",
           "properties": {
-            "type": { "enum": ["ethernet", "can"] }
+            "type": { "enum": ["ethernet", "can", "lin"] }
           },
           "required": ["type"],
           "oneOf": [
             { "$ref": "#/definitions/instance_ecu_channel_config_can" },
-            { "$ref": "#/definitions/instance_ecu_channel_config_ethernet" }
+            { "$ref": "#/definitions/instance_ecu_channel_config_ethernet" },
+            { "$ref": "#/definitions/instance_ecu_channel_config_lin" }
           ]
         }
       }
@@ -407,6 +425,15 @@
       "additionalProperties": false,
       "properties": {
         "type": { "const": "can" }
+      }
+    },
+    "instance_ecu_channel_config_lin": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "lin" },
+        "schedule_autostart": { "type": "boolean" },
+        "schedule_table_name": { "type": "string" }
       }
     },
     "instance_ecu_channel_config_ethernet": {
@@ -539,8 +566,6 @@
       "additionalProperties": false,
       "properties": {
         "type": { "const": "lin" },
-        "schedule_autostart": { "type": "boolean" },
-        "schedule_table_name": { "type": "string" },
         "config": { "$ref": "#/definitions/instance_channel_lin_config" }
       }
     },
