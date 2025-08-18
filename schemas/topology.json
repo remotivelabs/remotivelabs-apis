@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Remotive Topology 0.8",
+  "title": "Remotive Topology 0.10",
   "oneOf": [
     { "$ref": "#/definitions/platform_schema" },
     { "$ref": "#/definitions/instance_schema" }
@@ -11,7 +11,7 @@
       "additionalProperties": false,
       "description": "The platform describes which ECUs and services that exist and how they communicate, see [docs](https://docs.remotivelabs.com/docs/remotive-topology/usage/platform)",
       "properties": {
-        "schema": { "type": "string", "enum": ["remotive-topology-platform:0.4", "remotive-topology-platform:0.5", "remotive-topology-platform:0.6", "remotive-topology-platform:0.7", "remotive-topology-platform:0.8"] },
+        "schema": { "type": "string", "enum": ["remotive-topology-platform:0.4", "remotive-topology-platform:0.5", "remotive-topology-platform:0.6", "remotive-topology-platform:0.7", "remotive-topology-platform:0.8", "remotive-topology-platform:0.10"] },
         "includes": {
           "type": "array",
           "description": "Platform files to include (.platform.yaml or .arxml)",
@@ -38,7 +38,7 @@
       "additionalProperties": false,
       "description": "In order to run a topology you need create an instance that describes what parts of the platform you want to run in your virtual environment, see [docs](https://docs.remotivelabs.com/docs/remotive-topology/usage/instance)",
       "properties": {
-        "schema": { "type": "string", "enum": ["remotive-topology-instance:0.6", "remotive-topology-instance:0.7", "remotive-topology-instance:0.8"] },
+        "schema": { "type": "string", "enum": ["remotive-topology-instance:0.6", "remotive-topology-instance:0.7", "remotive-topology-instance:0.8", "remotive-topology-instance:0.10"] },
         "name": { "type": "string", "description": "Optional name of the topology instance" },
         "includes": {
           "type": "array",
@@ -257,6 +257,7 @@
           "additionalProperties": false,
           "properties": {
             "license_file": { "type": "string", "description": "Optional path to the LICENSE_FILE" },
+            "start_timeout": { "type": "integer", "description": "Time in seconds to wait for broker to start", "default": 60 },
             "image": { "type": "string", "description": "Optional dockerimage to use, will override version. Use this if you have a custom build of RemotiveBroker or want to specify a custom docker registry or mirror." },
             "build": { "$ref": "#/definitions/container_build", "description": "This is intended for RemotiveLabs debugging and development." },
             "version": { "type": "string", "description": "Optional RemotiveBroker version, but recommended to specify to ensure consistent behavior." }
