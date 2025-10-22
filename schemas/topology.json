@@ -677,12 +677,53 @@
         "driver": { "$ref": "#/definitions/instance_channel_can_driver" }
       }
     },
+    "instance_channel_lin_config_remotivelabs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "remotivelabs_lin",
+          "description": "Use RemotiveLabs lin protocol"
+        },
+        "device_identifier": {
+          "type": "integer",
+          "description": "Lin device identifier"
+        },
+        "server_port": {
+          "type": "integer",
+          "description": "Server port used by host"
+        },
+        "target_host": {
+          "type": "string",
+          "description": "Lin device IP number"
+        },
+        "target_port": {
+          "type": "integer",
+          "description": "Lin device port number"
+        },
+        "auto_config_boot_server": {
+          "type": "integer",
+          "description": "Config server port number, must be the same for all LIN channels on the same ECU"
+        }
+      },
+      "required": ["type"]
+    },
+    "instance_channel_lin_config": {
+      "type": "object",
+      "properties": {
+        "type": { "enum": ["remotivelabs_lin"] }
+      },
+      "required": ["type"],
+      "oneOf": [
+        { "$ref": "#/definitions/instance_channel_lin_config_remotivelabs" }
+      ]
+    },
     "instance_channel_lin": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "type": { "const": "lin" },
-        "driver": { "$ref": "#/definitions/instance_channel_can_driver" }
+        "config": { "$ref": "#/definitions/instance_channel_lin_config" }
       }
     },
     "instance_channel_driver_ethernet": {
