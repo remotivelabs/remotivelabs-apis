@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Remotive Topology 0.12",
+  "title": "Remotive Topology 0.13",
   "oneOf": [
     { "$ref": "#/definitions/platform_schema" },
     { "$ref": "#/definitions/instance_schema" }
@@ -22,7 +22,8 @@
             "remotive-topology-platform:0.9",
             "remotive-topology-platform:0.10",
             "remotive-topology-platform:0.11",
-            "remotive-topology-platform:0.12"
+            "remotive-topology-platform:0.12",
+            "remotive-topology-platform:0.13"
           ]
         },
         "includes": {
@@ -60,7 +61,8 @@
             "remotive-topology-instance:0.9",
             "remotive-topology-instance:0.10",
             "remotive-topology-instance:0.11",
-            "remotive-topology-instance:0.12"
+            "remotive-topology-instance:0.12",
+            "remotive-topology-instance:0.13"
           ]
         },
         "name": {
@@ -375,6 +377,14 @@
             "default_driver": { "enum": ["udp", "dockercan"] }
           }
         },
+        "lin": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Settings for experimental LIN support",
+          "properties": {
+            "default_driver": { "enum": ["udp", "dockercan"] }
+          }
+        },
         "topology_broker": {
           "type": "object",
           "additionalProperties": false,
@@ -677,53 +687,12 @@
         "driver": { "$ref": "#/definitions/instance_channel_can_driver" }
       }
     },
-    "instance_channel_lin_config_remotivelabs": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "type": {
-          "const": "remotivelabs_lin",
-          "description": "Use RemotiveLabs lin protocol"
-        },
-        "device_identifier": {
-          "type": "integer",
-          "description": "Lin device identifier"
-        },
-        "server_port": {
-          "type": "integer",
-          "description": "Server port used by host"
-        },
-        "target_host": {
-          "type": "string",
-          "description": "Lin device IP number"
-        },
-        "target_port": {
-          "type": "integer",
-          "description": "Lin device port number"
-        },
-        "auto_config_boot_server": {
-          "type": "integer",
-          "description": "Config server port number, must be the same for all LIN channels on the same ECU"
-        }
-      },
-      "required": ["type"]
-    },
-    "instance_channel_lin_config": {
-      "type": "object",
-      "properties": {
-        "type": { "enum": ["remotivelabs_lin"] }
-      },
-      "required": ["type"],
-      "oneOf": [
-        { "$ref": "#/definitions/instance_channel_lin_config_remotivelabs" }
-      ]
-    },
     "instance_channel_lin": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "type": { "const": "lin" },
-        "config": { "$ref": "#/definitions/instance_channel_lin_config" }
+        "type": { "const": "lin", "description": "Experimental LIN support" },
+        "driver": { "$ref": "#/definitions/instance_channel_can_driver" }
       }
     },
     "instance_channel_driver_ethernet": {
