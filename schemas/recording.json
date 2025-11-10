@@ -1,0 +1,170 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Remotive Recording Session 0.1",
+  "oneOf": [
+    { "$ref": "#/definitions/session_schema" },
+    { "$ref": "#/definitions/mapping_schema" }
+  ],
+  "required": ["schema"],
+  "definitions": {
+    "session_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Describes a recording session that includes one or more recording files and how they are mapping to a platform.",
+      "properties": {
+        "schema": {
+          "type": "string",
+          "enum": ["remotive-recording-session:0.1"]
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the recording session"
+        },
+        "start_time": {
+          "type": "string",
+          "description": "Start time of the recording session. All other timestamps must be offset relative to this. Formated as either RFC 3339 or unixtimestamp in seconds(s), milliseconds(ms), or microseconds(us)."
+        },
+        "end_time": {
+          "type": "string",
+          "description": "End time of the recording session. Formated as either RFC 3339 date-time or unixtimestamp in seconds(s), milliseconds(ms), or microseconds(us)."
+        },
+        "files": {
+          "type": "array",
+          "description": "Files that are part of the recording session. This is a list of recording files.",
+          "items": {
+            "$ref": "#/definitions/file"
+          }
+        },
+        "mapping": { "$ref": "#/definitions/session_mapping" }
+      }
+    },
+    "mapping_schema": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "type": "string",
+          "enum": ["remotive-recording-mapping:0.1"]
+        },
+        "includes": {
+          "type": "array",
+          "description": "Mapping files that this mapping includes. This is a list of mapping files.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "platform": {
+          "type": "array",
+          "description": "Platform files that this mapping applies to. This is a list of platform files.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "devices": {
+          "type": "object",
+          "description": "Mapping from hardware device name to channel. By default the device name is the same as the channel name.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "session_mapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "How a recording session maps to a platform. This describes how the recording equipment was connected to the platform.",
+      "properties": {
+        "includes": {
+          "type": "array",
+          "description": "Mapping files that this mapping includes. This is a list of mapping files.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "platform": {
+          "type": "array",
+          "description": "Platform files that this mapping applies to. This is a list of platform files.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "devices": {
+          "type": "object",
+          "description": "Mapping from hardware device name to channel. By default the device name is the same as the channel name.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "recording_file_mapping": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "How a recording file maps to a platform. This describes how the recording equipment was connected to the platform. By default every channel has a device with the same name.",
+      "properties": {
+        "devices": {
+          "type": "object",
+          "description": "Mapping from hardware device name to channel. By default the device name is the same as the channel name.",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "file": {
+      "type": "object",
+      "properties": {
+        "type": { "enum": ["recording", "video"] },
+        "location": {
+          "type": "string",
+          "description": "Path to the file relative to the recording session file."
+        }
+      },
+      "required": ["type", "location"],
+      "oneOf": [
+        { "$ref": "#/definitions/recording_file" },
+        { "$ref": "#/definitions/video_file" }
+      ]
+    },
+    "recording_file": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "recording" },
+        "location": {
+          "type": "string",
+          "description": "Path to the file relative to the recording session file."
+        },
+        "format": { "enum": ["asc", "candump", "csv"] },
+        "default_device": {
+          "type": "string",
+          "description": "Default device for the recording file. Must be specified if file does not contain device."
+        },
+        "offset": {
+          "type": "string",
+          "description": "Optional clock offset compared to recording session. Useful if the recording equipment has unsynchronized clocks. Specified in seconds(s), milliseconds(ms), or microseconds(us)."
+        },
+        "mapping": { "$ref": "#/definitions/recording_file_mapping" }
+      }
+    },
+    "video_file": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "video" },
+        "location": {
+          "type": "string",
+          "description": "Path to the file relative to the recording session file."
+        },
+        "start_time": {
+          "type": "string",
+          "description": "Optional timestamp to indicate when the video was recorded. By default set to start_time of the recording session. Formated as either RFC 3339 or unixtimestamp in seconds(s), milliseconds(ms), or microseconds(us)."
+        },
+        "offset": {
+          "type": "string",
+          "description": "Optional clock offset compared to recording session. Specified in seconds(s), milliseconds(ms), or microseconds(us)."
+        }
+      }
+    }
+  }
+}
