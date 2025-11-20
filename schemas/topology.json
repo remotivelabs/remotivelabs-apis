@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Remotive Topology 0.13",
+  "title": "Remotive Topology 0.14",
   "oneOf": [
     { "$ref": "#/definitions/platform_schema" },
     { "$ref": "#/definitions/instance_schema" }
@@ -23,7 +23,8 @@
             "remotive-topology-platform:0.10",
             "remotive-topology-platform:0.11",
             "remotive-topology-platform:0.12",
-            "remotive-topology-platform:0.13"
+            "remotive-topology-platform:0.13",
+            "remotive-topology-platform:0.14"
           ]
         },
         "includes": {
@@ -62,7 +63,8 @@
             "remotive-topology-instance:0.10",
             "remotive-topology-instance:0.11",
             "remotive-topology-instance:0.12",
-            "remotive-topology-instance:0.13"
+            "remotive-topology-instance:0.13",
+            "remotive-topology-instance:0.14"
           ]
         },
         "name": {
@@ -219,6 +221,7 @@
       "description": "Defines which SOME/IP service instances are available. This is a map of service instance names to service instance definitions.",
       "additionalProperties": false,
       "properties": {
+        "service_discovery_socket": {"type": "string", "description": "Multicast socket for SOME/IP-SD communication" },
         "services": {
           "type": "object",
           "additionalProperties": {
@@ -233,7 +236,8 @@
       "properties": {
         "service_id": { "type": "integer" },
         "instance_id": { "type": "integer" },
-        "version_major": { "type": "integer" }
+        "version_major": { "type": "integer" },
+        "version_minor": { "type": "integer" }
       }
     },
     "platform_ecu": {
@@ -345,6 +349,16 @@
             "version": {
               "type": "string",
               "description": "Optional RemotiveBroker version, but recommended to specify to ensure consistent behavior."
+            }
+          }
+        },
+        "api": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "port": {
+              "type": "integer",
+              "description": "Port number forwarded from host to API"
             }
           }
         },
