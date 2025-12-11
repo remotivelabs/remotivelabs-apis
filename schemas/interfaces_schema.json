@@ -582,7 +582,10 @@
             "required": [
               "namespace",
               "type",
-              "node_mode"
+              "node_mode",
+              "server_port",
+              "target_host",
+              "target_port"
             ],
             "if": {
               "properties": {
