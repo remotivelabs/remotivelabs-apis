@@ -61,28 +61,7 @@
             },
             "allOf": [
               {
-                "oneOf": [
-                  {
-                    "required": [
-                      "database"
-                    ],
-                    "not": {
-                      "required": [
-                        "databases"
-                      ]
-                    }
-                  },
-                  {
-                    "required": [
-                      "databases"
-                    ],
-                    "not": {
-                      "required": [
-                        "database"
-                      ]
-                    }
-                  }
-                ]
+                "$ref": "#/defs/database_restrictions"
               }
             ],
             "required": [
@@ -137,28 +116,7 @@
             },
             "allOf": [
               {
-                "oneOf": [
-                  {
-                    "required": [
-                      "database"
-                    ],
-                    "not": {
-                      "required": [
-                        "databases"
-                      ]
-                    }
-                  },
-                  {
-                    "required": [
-                      "databases"
-                    ],
-                    "not": {
-                      "required": [
-                        "database"
-                      ]
-                    }
-                  }
-                ]
+                "$ref": "#/defs/database_restrictions"
               }
             ],
             "required": [
@@ -231,28 +189,7 @@
             },
             "allOf": [
               {
-                "oneOf": [
-                  {
-                    "required": [
-                      "database"
-                    ],
-                    "not": {
-                      "required": [
-                        "databases"
-                      ]
-                    }
-                  },
-                  {
-                    "required": [
-                      "databases"
-                    ],
-                    "not": {
-                      "required": [
-                        "database"
-                      ]
-                    }
-                  }
-                ]
+                "$ref": "#/defs/database_restrictions"
               }
             ],
             "required": [
@@ -320,28 +257,7 @@
             },
             "allOf": [
               {
-                "oneOf": [
-                  {
-                    "required": [
-                      "database"
-                    ],
-                    "not": {
-                      "required": [
-                        "databases"
-                      ]
-                    }
-                  },
-                  {
-                    "required": [
-                      "databases"
-                    ],
-                    "not": {
-                      "required": [
-                        "database"
-                      ]
-                    }
-                  }
-                ]
+                "$ref": "#/defs/database_restrictions"
               }
             ],
             "required": [
@@ -481,28 +397,7 @@
             },
             "allOf": [
               {
-                "oneOf": [
-                  {
-                    "required": [
-                      "database"
-                    ],
-                    "not": {
-                      "required": [
-                        "databases"
-                      ]
-                    }
-                  },
-                  {
-                    "required": [
-                      "databases"
-                    ],
-                    "not": {
-                      "required": [
-                        "database"
-                      ]
-                    }
-                  }
-                ]
+                "$ref": "#/defs/database_restrictions"
               }
             ],
             "required": [
@@ -587,28 +482,7 @@
             },
             "allOf": [
               {
-                "oneOf": [
-                  {
-                    "required": [
-                      "database"
-                    ],
-                    "not": {
-                      "required": [
-                        "databases"
-                      ]
-                    }
-                  },
-                  {
-                    "required": [
-                      "databases"
-                    ],
-                    "not": {
-                      "required": [
-                        "database"
-                      ]
-                    }
-                  }
-                ]
+                "$ref": "#/defs/database_restrictions"
               }
             ],
             "required": [
@@ -632,6 +506,99 @@
               ]
             },
             "title": "LIN",
+            "type": "object"
+          },
+          {
+            "description": "LIN-via-UDP protocol. Can be used to communicate between RemotiveBrokers.",
+            "properties": {
+              "database": {
+                "$ref": "#/defs/signal_db",
+                "description": "Path to LIN signal database `.ldf` file."
+              },
+              "databases": {
+                "description": "Path to LIN signal database `.ldf` file.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/defs/signal_db"
+                }
+              },
+              "namespace": {
+                "$ref": "#/defs/namespace"
+              },
+              "server_host": {
+                "$ref": "#/defs/host",
+                "description": "Required when using multicast to select the correct interface."
+              },
+              "server_port": {
+                "$ref": "#/defs/port",
+                "description": "Port for receiving LIN connection to RemotiveBroker."
+              },
+              "target_host": {
+                "$ref": "#/defs/host",
+                "description": "For multicast use, addresses in the range `224.0.0.1` to `239.255.255.255` are supported."
+              },
+              "target_port": {
+                "$ref": "#/defs/port",
+                "description": "UDP port for RemotiveBroker to send packets to."
+              },
+              "node_mode": {
+                "description": "Type of LIN node.",
+                "enum": [
+                  "master",
+                  "slave"
+                ]
+              },
+              "short_names": {
+                "$ref": "#/defs/short_names"
+              },
+              "schedule_autostart": {
+                "description": "Should LIN schedules start at boot? Or pause until user command.",
+                "type": "boolean"
+              },
+              "schedule_file": {
+                "description": "Path to `.ldf` file used for schedules.",
+                "type": "string"
+              },
+              "schedule_table_name": {
+                "description": "Path to `.ldf` file used for tables. TODO",
+                "type": "string"
+              },
+              "type": {
+                "description": "Specifies a LIN-via-UDP interface.",
+                "default": "udp-lin",
+                "enum": [
+                  "udp-lin"
+                ]
+              },
+              "public": {
+                "$ref": "#/defs/public"
+              }
+            },
+            "allOf": [
+              {
+                "$ref": "#/defs/database_restrictions"
+              }
+            ],
+            "required": [
+              "namespace",
+              "type",
+              "node_mode"
+            ],
+            "if": {
+              "properties": {
+                "node_mode": {
+                  "const": "master"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "schedule_file",
+                "schedule_table_name",
+                "schedule_autostart"
+              ]
+            },
+            "title": "LIN over UDP",
             "type": "object"
           },
           {
@@ -732,28 +699,7 @@
             },
             "allOf": [
               {
-                "oneOf": [
-                  {
-                    "required": [
-                      "database"
-                    ],
-                    "not": {
-                      "required": [
-                        "databases"
-                      ]
-                    }
-                  },
-                  {
-                    "required": [
-                      "databases"
-                    ],
-                    "not": {
-                      "required": [
-                        "database"
-                      ]
-                    }
-                  }
-                ]
+                "$ref": "#/defs/database_restrictions"
               }
             ],
             "required": [
@@ -843,6 +789,30 @@
       "default": false,
       "description": "CAN FD BRS (Bit Rate Switching)",
       "type": "boolean"
+    },
+    "database_restrictions": {
+      "oneOf": [
+        {
+          "required": [
+            "database"
+          ],
+          "not": {
+            "required": [
+              "databases"
+            ]
+          }
+        },
+        {
+          "required": [
+            "databases"
+          ],
+          "not": {
+            "required": [
+              "database"
+            ]
+          }
+        }
+      ]
     },
     "host": {
       "description": "Network address accepted by the OS. Eg. Ipv4: `127.0.0.1`.",
