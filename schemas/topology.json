@@ -24,7 +24,8 @@
             "remotive-topology-platform:0.11",
             "remotive-topology-platform:0.12",
             "remotive-topology-platform:0.13",
-            "remotive-topology-platform:0.14"
+            "remotive-topology-platform:0.14",
+            "remotive-topology-platform:0.15"
           ]
         },
         "includes": {
@@ -64,7 +65,8 @@
             "remotive-topology-instance:0.11",
             "remotive-topology-instance:0.12",
             "remotive-topology-instance:0.13",
-            "remotive-topology-instance:0.14"
+            "remotive-topology-instance:0.14",
+            "remotive-topology-instance:0.15"
           ]
         },
         "name": {
@@ -149,7 +151,8 @@
           "description": "Signal database for this channel"
         },
         "lin_cluster": { "type": "string" },
-        "lin_physical_channel_name": { "type": "string" }
+        "lin_physical_channel_name": { "type": "string" },
+        "baudrate": { "type": "integer" }
       }
     },
     "platform_channel_ethernet": {
@@ -388,7 +391,7 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "default_driver": { "enum": ["udp", "dockercan"] }
+            "default_driver": { "enum": ["udp", "dockercan", "remotivebus"] }
           }
         },
         "lin": {
@@ -396,7 +399,7 @@
           "additionalProperties": false,
           "description": "Settings for experimental LIN support",
           "properties": {
-            "default_driver": { "enum": ["udp", "dockercan"] }
+            "default_driver": { "enum": ["udp", "dockercan", "remotivebus"] }
           }
         },
         "topology_broker": {
@@ -676,19 +679,85 @@
           "type": "string",
           "pattern": "^[a-z0-9-]{1,13}$",
           "description": "Optional name of the device inside the docker container"
-        },
-        "baudrate": { "type": "integer", "description": "CAN baudrate" },
-        "baudrate_fd": { "type": "integer", "description": "CAN baudrate" }
+        }
       },
       "required": ["type", "device_name"]
+    },
+    "instance_channel_driver_remotivebus_can": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "remotivebus",
+          "description": "Use RemotiveBus driver for CAN traffic"
+        },
+        "config": {
+          "oneOf": [
+            {
+              "description": "Socketcan to map to physical device on host",
+              "properties": {
+                "type": {
+                  "const": "can",
+                  "description": "Run socketcan connected to a hardware interface"
+                },
+                "device": {
+                  "pattern": "^[a-z0-9-]{1,13}$",
+                  "description": "Name inside of the docker container. Will be suffixed with a \"0\""
+                },
+                "host_device": {
+                  "pattern": "^[a-z0-9-]{1,14}$",
+                  "description": "Optional name of host interface to connect to. Will default to {device}."
+                }
+              },
+              "required": ["type", "device"],
+              "additionalProperties": false
+            },
+            {
+              "description": "Virtual CAN for container<->container and container<->host communication",
+              "properties": {
+                "type": {
+                  "const": "vcan",
+                  "description": "Run virtual can"
+                },
+                "device": {
+                  "pattern": "^[a-z0-9-]{1,13}$",
+                  "description": "Name inside of the docker container. Will be suffixed with a \"0\""
+                },
+                "host_device": {
+                  "pattern": "^[a-z0-9-]{1,14}$",
+                  "description": "Optional name of host interface to connect to. Will default to {device}."
+                },
+                "plugin": {
+                  "description": "Optional RemotiveBus plugin section",
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": ["string", "number", "boolean"]
+                  },
+                  "required": ["driver"],
+                  "properties": {
+                    "driver": {
+                      "description": "The name of the RemotiveBus plugin driver",
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "required": ["type", "device"],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": ["type"]
     },
     "instance_channel_can_driver": {
       "type": "object",
       "properties": {
-        "type": { "enum": ["dockercan", "udp"] }
+        "type": { "enum": ["dockercan", "udp", "remotivebus"] }
       },
       "required": ["type"],
       "oneOf": [
+        { "$ref": "#/definitions/instance_channel_driver_remotivebus_can" },
         { "$ref": "#/definitions/instance_channel_driver_docker_can" },
         { "$ref": "#/definitions/instance_channel_driver_can_over_udp" }
       ]
