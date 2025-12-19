@@ -338,9 +338,9 @@
                   "properties": {
                     "mode": {
                       "description": "Transport protocol",
-                      "default": "udp",
                       "enum": [
-                        "udp"
+                        "udp",
+                        "tcp"
                       ]
                     },
                     "server_host": {
