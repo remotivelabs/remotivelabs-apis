@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Remotive Recording Session 0.1",
+  "title": "Remotive Recording Session 0.2",
   "oneOf": [
     { "$ref": "#/definitions/session_schema" },
     { "$ref": "#/definitions/mapping_schema" }
@@ -14,7 +14,7 @@
       "properties": {
         "schema": {
           "type": "string",
-          "enum": ["remotive-recording-session:0.1"]
+          "enum": ["remotive-recording-session:0.2"]
         },
         "name": {
           "type": "string",
@@ -156,6 +156,10 @@
           "type": "string",
           "description": "Path to the file relative to the recording session file."
         },
+        "name": {
+          "type": "string",
+          "description": "Name of the video stream, for example front, rear, or left."
+        },
         "start_time": {
           "type": "string",
           "description": "Optional timestamp to indicate when the video was recorded. By default set to start_time of the recording session. Formated as either RFC 3339 or unixtimestamp in seconds(s), milliseconds(ms), or microseconds(us)."
@@ -164,7 +168,8 @@
           "type": "string",
           "description": "Optional clock offset compared to recording session. Specified in seconds(s), milliseconds(ms), or microseconds(us)."
         }
-      }
+      },
+      "required": ["location", "name"]
     }
   }
 }
