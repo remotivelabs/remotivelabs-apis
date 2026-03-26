@@ -595,7 +595,8 @@
           "type": "array",
           "description": "Optionally specify what socket endpoints to instantiate",
           "items": { "type": "string" }
-        }
+        },
+        "create_vlan_interface": { "type": "boolean" }
       }
     },
     "someip_channel": {
@@ -785,15 +786,45 @@
     "instance_channel_driver_ethernet": {
       "type": "object",
       "properties": {
-        "type": { "enum": ["macvlan", "ipvlan", "bridge", "external"] }
+        "type": { "enum": ["macvlan", "ipvlan", "bridge", "external", "remotivebus"] }
       },
       "required": ["type"],
       "oneOf": [
         { "$ref": "#/definitions/instance_channel_driver_macvlan" },
+        { "$ref": "#/definitions/instance_channel_driver_remotivebus" },
         { "$ref": "#/definitions/instance_channel_driver_ipvlan" },
         { "$ref": "#/definitions/instance_channel_driver_bridge" },
         { "$ref": "#/definitions/instance_channel_driver_external" }
       ]
+    },
+    "instance_channel_driver_remotivebus": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "remotivebus",
+          "description": "Use remotivebus to connect physical ethernet device"
+        },
+        "device": {
+          "pattern": "^[a-z0-9-]{1,14}$",
+          "description": "Name inside of the docker container. Will be suffixed with a \"0\""
+        },
+        "host_bridge_device": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]{1,15}$",
+          "description": "The name of the bridge device on the host, will default to the cluster name."
+        },
+        "host_physical_devices": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]{1,15}$"
+          },
+          "minItems": 1,
+          "description": "Optional list of physical ethernet devices to connect the vlan to"
+        }
+      },
+      "required": ["type"]
     },
     "instance_channel_driver_macvlan": {
       "type": "object",
