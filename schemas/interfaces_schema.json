@@ -9,709 +9,31 @@
       "items": {
         "oneOf": [
           {
-            "description": "Virtual signaling interface. This device doesn't use a database, any published signals will be sent to subscribers of the given signal.",
-            "properties": {
-              "namespace": {
-                "$ref": "#/defs/namespace"
-              },
-              "type": {
-                "description": "Specifies a virtual interface.",
-                "default": "virtual",
-                "enum": [
-                  "virtual"
-                ]
-              }
-            },
-            "required": [
-              "namespace",
-              "type"
-            ],
-            "title": "Virtual",
-            "type": "object"
+            "$ref": "#/defs/namespaces/virtual"
           },
           {
-            "title": "Scripted",
-            "description": "Scripted signals",
-            "type": "object",
-            "properties": {
-              "namespace": {
-                "$ref": "#/defs/namespace"
-              },
-              "type": {
-                "description": "Specifies a scripted interface.",
-                "default": "scripted",
-                "enum": [
-                  "scripted"
-                ]
-              },
-              "database": {
-                "$ref": "#/defs/signal_db",
-                "description": "Path to a scripted database"
-              },
-              "databases": {
-                "description": "Path to a scripted database",
-                "type": "array",
-                "items": {
-                  "$ref": "#/defs/signal_db"
-                }
-              },
-              "public": {
-                "$ref": "#/defs/public"
-              }
-            },
-            "allOf": [
-              {
-                "$ref": "#/defs/database_restrictions"
-              }
-            ],
-            "required": [
-              "namespace",
-              "type"
-            ]
+            "$ref": "#/defs/namespaces/scripted"
           },
           {
-            "description": "CAN interface.",
-            "properties": {
-              "database": {
-                "$ref": "#/defs/signal_db",
-                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified."
-              },
-              "databases": {
-                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified.",
-                "type": "array",
-                "items": {
-                  "$ref": "#/defs/signal_db"
-                }
-              },
-              "can_physical_channel_name": {
-                "$ref": "#/defs/can_physical_channel_name"
-              },
-              "device_name": {
-                "description": "Name of device in OS.",
-                "type": "string"
-              },
-              "namespace": {
-                "$ref": "#/defs/namespace"
-              },
-              "short_names": {
-                "$ref": "#/defs/short_names"
-              },
-              "type": {
-                "description": "Specifies a CAN interface.",
-                "default": "can",
-                "enum": [
-                  "can"
-                ]
-              },
-              "baud_rate": {
-                "description": "baud rate to apply to CAN when starting interface.",
-                "type": "integer"
-              },
-              "public": {
-                "$ref": "#/defs/public"
-              },
-              "auto_recover": {
-                "$ref": "#/defs/auto_recover"
-              }
-            },
-            "allOf": [
-              {
-                "$ref": "#/defs/database_restrictions"
-              }
-            ],
-            "required": [
-              "type",
-              "namespace",
-              "device_name"
-            ],
-            "title": "CAN",
-            "type": "object"
+            "$ref": "#/defs/namespaces/can"
           },
           {
-            "description": "CAN-FD interface.",
-            "properties": {
-              "database": {
-                "$ref": "#/defs/signal_db",
-                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified."
-              },
-              "databases": {
-                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified.",
-                "type": "array",
-                "items": {
-                  "$ref": "#/defs/signal_db"
-                }
-              },
-              "can_physical_channel_name": {
-                "$ref": "#/defs/can_physical_channel_name"
-              },
-              "device_name": {
-                "description": "Name of device in OS.",
-                "type": "string"
-              },
-              "namespace": {
-                "$ref": "#/defs/namespace"
-              },
-              "short_names": {
-                "$ref": "#/defs/short_names"
-              },
-              "type": {
-                "description": "Specifies a CAN-FD interface.",
-                "default": "canfd",
-                "enum": [
-                  "canfd"
-                ]
-              },
-              "baud_rate": {
-                "description": "baud rate to apply to CAN when starting interface.",
-                "type": "integer"
-              },
-              "dbaud_rate": {
-                "description": "baud rate to apply to CAN-FD when starting interface.",
-                "type": "integer"
-              },
-              "public": {
-                "$ref": "#/defs/public"
-              },
-              "auto_recover": {
-                "$ref": "#/defs/auto_recover"
-              },
-              "brs": {
-                "$ref": "#/defs/brs"
-              }
-            },
-            "dependencies": {
-              "baud_rate": [
-                "dbaud_rate"
-              ],
-              "dbaud_rate": [
-                "baud_rate"
-              ]
-            },
-            "allOf": [
-              {
-                "$ref": "#/defs/database_restrictions"
-              }
-            ],
-            "required": [
-              "type",
-              "namespace",
-              "device_name"
-            ],
-            "title": "CAN-FD",
-            "type": "object"
+            "$ref": "#/defs/namespaces/can_fd"
           },
           {
-            "description": "CAN-via-UDP protocol. Can be used to communicate between RemotiveBrokers.",
-            "properties": {
-              "database": {
-                "$ref": "#/defs/signal_db",
-                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified."
-              },
-              "databases": {
-                "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified.",
-                "type": "array",
-                "items": {
-                  "$ref": "#/defs/signal_db"
-                }
-              },
-              "can_physical_channel_name": {
-                "$ref": "#/defs/can_physical_channel_name"
-              },
-              "fixed_payload_size": {
-                "description": "If set, will use this frame size (bytes) for all packets.",
-                "minimum": 0,
-                "type": "integer"
-              },
-              "namespace": {
-                "$ref": "#/defs/namespace"
-              },
-              "server_host": {
-                "description": "Required when using multicast to select the correct interface.",
-                "$ref": "#/defs/host"
-              },
-              "server_port": {
-                "$ref": "#/defs/port",
-                "description": "UDP port for RemotiveBroker to listen to and receive packets on."
-              },
-              "short_names": {
-                "$ref": "#/defs/short_names"
-              },
-              "target_host": {
-                "description": "For multicast use, addresses in the range `224.0.0.1` to `239.255.255.255` are supported.",
-                "$ref": "#/defs/host"
-              },
-              "target_port": {
-                "$ref": "#/defs/port",
-                "description": "UDP port for RemotiveBroker to send packets to."
-              },
-              "type": {
-                "description": "Specifies a CAN-via-UDP interface.",
-                "default": "udp",
-                "enum": [
-                  "udp"
-                ]
-              },
-              "public": {
-                "$ref": "#/defs/public"
-              }
-            },
-            "allOf": [
-              {
-                "$ref": "#/defs/database_restrictions"
-              }
-            ],
-            "required": [
-              "type",
-              "namespace",
-              "server_port",
-              "target_port",
-              "target_host"
-            ],
-            "title": "UDP",
-            "type": "object"
+            "$ref": "#/defs/namespaces/can_udp"
           },
           {
-            "description": "SOME/IP interface configuration.",
-            "title": "SOME/IP",
-            "type": "object",
-            "properties": {
-              "namespace": {
-                "$ref": "#/defs/namespace"
-              },
-              "database": {
-                "$ref": "#/defs/signal_db",
-                "description": "Path to signal database file. Supporting .xml and .arxml. When using an arxml database"
-              },
-              "databases": {
-                "description": "Path to signal database file. Supporting .xml and .arxml. When using an arxml database",
-                "type": "array",
-                "items": {
-                  "$ref": "#/defs/signal_db"
-                }
-              },
-              "type": {
-                "description": "Specifies a SOME/IP interface.",
-                "default": "someip",
-                "enum": [
-                  "someip"
-                ]
-              },
-              "services": {
-                "description": "List of to include from the provided database, can be used to speed up database parsing.",
-                "type": "array",
-                "items": {
-                  "type": "integer",
-                  "maximum": 65535,
-                  "minimum": 0
-                }
-              },
-              "service_discovery": {
-                "description": "Configuration for SOME/IP service discovery.",
-                "type": "object",
-                "properties": {
-                  "multicast_group_ip": {
-                    "description": "Multicast group IP for discovery.",
-                    "$ref": "#/defs/host"
-                  },
-                  "server_host": {
-                    "$ref": "#/defs/host",
-                    "default": "0.0.0.0"
-                  },
-                  "server_port": {
-                    "description": "Port number for discovery.",
-                    "$ref": "#/defs/port",
-                    "default": 30490
-                  }
-                },
-                "default": {
-                  "multicast_group_ip": "224.0.55.55",
-                  "server_host": "0.0.0.0",
-                  "server_port": 30490
-                }
-              },
-              "endpoints": {
-                "description": "List of SOME/IP endpoints.",
-                "type": "array",
-                "items": {
-                  "description": "SOME/IP endpoint configuration.",
-                  "type": "object",
-                  "properties": {
-                    "mode": {
-                      "description": "Transport protocol",
-                      "enum": [
-                        "udp",
-                        "tcp"
-                      ]
-                    },
-                    "server_host": {
-                      "default": "0.0.0.0",
-                      "$ref": "#/defs/host"
-                    },
-                    "server_port": {
-                      "$ref": "#/defs/port"
-                    },
-                    "service_ids": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/defs/some_ip_service"
-                      }
-                    },
-                    "static_remotes": {
-                      "description": "List of static remote services that this endpoint consumes.",
-                      "type": "array",
-                      "items": {
-                        "description": "Static remote configuration for SOME/IP services.",
-                        "type": "object",
-                        "properties": {
-                          "host": {
-                            "$ref": "#/defs/host"
-                          },
-                          "port": {
-                            "$ref": "#/defs/port"
-                          },
-                          "service_ids": {
-                            "type": "array",
-                            "items": {
-                              "$ref": "#/defs/some_ip_service"
-                            }
-                          },
-                          "discovery_port": {
-                            "description": "Discovery port.",
-                            "default": 30490,
-                            "$ref": "#/defs/port"
-                          }
-                        },
-                        "required": [
-                          "host",
-                          "port"
-                        ]
-                      }
-                    }
-                  },
-                  "required": [
-                    "mode",
-                    "server_port"
-                  ]
-                }
-              }
-            },
-            "allOf": [
-              {
-                "$ref": "#/defs/database_restrictions"
-              }
-            ],
-            "required": [
-              "namespace",
-              "type",
-              "endpoints"
-            ]
+            "$ref": "#/defs/namespaces/some_ip"
           },
           {
-            "description": "LIN master or slave node interface. Connects to a RemotiveLabs LIN ethernet device.",
-            "properties": {
-              "config": {
-                "description": "LIN network configuration for communicating with RemotiveLabs LIN service.",
-                "properties": {
-                  "device_identifier": {
-                    "description": "LIN node ID.",
-                    "maximum": 16,
-                    "minimum": 0,
-                    "type": "integer"
-                  },
-                  "server_port": {
-                    "$ref": "#/defs/port",
-                    "description": "Port for receiving LIN connection to RemotiveBroker."
-                  },
-                  "target_host": {
-                    "$ref": "#/defs/host"
-                  },
-                  "target_port": {
-                    "$ref": "#/defs/port"
-                  }
-                },
-                "required": [
-                  "device_identifier",
-                  "server_port",
-                  "target_port"
-                ],
-                "type": "object"
-              },
-              "database": {
-                "$ref": "#/defs/signal_db",
-                "description": "Path to LIN signal database `.ldf` file."
-              },
-              "databases": {
-                "description": "Path to LIN signal database `.ldf` file.",
-                "type": "array",
-                "items": {
-                  "$ref": "#/defs/signal_db"
-                }
-              },
-              "namespace": {
-                "$ref": "#/defs/namespace"
-              },
-              "node_mode": {
-                "description": "Type of LIN node.",
-                "enum": [
-                  "master",
-                  "slave"
-                ]
-              },
-              "schedule_autostart": {
-                "description": "Should LIN schedules start at boot? Or pause until user command.",
-                "type": "boolean"
-              },
-              "schedule_file": {
-                "description": "Path to `.ldf` file used for schedules.",
-                "type": "string"
-              },
-              "schedule_table_name": {
-                "description": "Path to `.ldf` file used for tables. TODO",
-                "type": "string"
-              },
-              "type": {
-                "description": "Specifies a LIN interface.",
-                "default": "lin",
-                "enum": [
-                  "lin"
-                ]
-              },
-              "public": {
-                "$ref": "#/defs/public"
-              }
-            },
-            "allOf": [
-              {
-                "$ref": "#/defs/database_restrictions"
-              }
-            ],
-            "required": [
-              "namespace",
-              "type",
-              "config",
-              "node_mode"
-            ],
-            "if": {
-              "properties": {
-                "node_mode": {
-                  "const": "master"
-                }
-              }
-            },
-            "then": {
-              "required": [
-                "schedule_file",
-                "schedule_table_name",
-                "schedule_autostart"
-              ]
-            },
-            "title": "LIN",
-            "type": "object"
+            "$ref": "#/defs/namespaces/lin"
           },
           {
-            "description": "LIN-via-UDP protocol. Can be used to communicate between RemotiveBrokers.",
-            "properties": {
-              "database": {
-                "$ref": "#/defs/signal_db",
-                "description": "Path to LIN signal database `.ldf` file."
-              },
-              "databases": {
-                "description": "Path to LIN signal database `.ldf` file.",
-                "type": "array",
-                "items": {
-                  "$ref": "#/defs/signal_db"
-                }
-              },
-              "namespace": {
-                "$ref": "#/defs/namespace"
-              },
-              "server_host": {
-                "$ref": "#/defs/host",
-                "description": "Required when using multicast to select the correct interface."
-              },
-              "server_port": {
-                "$ref": "#/defs/port",
-                "description": "Port for receiving LIN connection to RemotiveBroker."
-              },
-              "target_host": {
-                "$ref": "#/defs/host",
-                "description": "For multicast use, addresses in the range `224.0.0.1` to `239.255.255.255` are supported."
-              },
-              "target_port": {
-                "$ref": "#/defs/port",
-                "description": "UDP port for RemotiveBroker to send packets to."
-              },
-              "node_mode": {
-                "description": "Type of LIN node.",
-                "enum": [
-                  "master",
-                  "slave"
-                ]
-              },
-              "short_names": {
-                "$ref": "#/defs/short_names"
-              },
-              "schedule_autostart": {
-                "description": "Should LIN schedules start at boot? Or pause until user command.",
-                "type": "boolean"
-              },
-              "schedule_file": {
-                "description": "Path to `.ldf` file used for schedules.",
-                "type": "string"
-              },
-              "schedule_table_name": {
-                "description": "Path to `.ldf` file used for tables. TODO",
-                "type": "string"
-              },
-              "type": {
-                "description": "Specifies a LIN-via-UDP interface.",
-                "default": "udp-lin",
-                "enum": [
-                  "udp-lin"
-                ]
-              },
-              "public": {
-                "$ref": "#/defs/public"
-              }
-            },
-            "allOf": [
-              {
-                "$ref": "#/defs/database_restrictions"
-              }
-            ],
-            "required": [
-              "namespace",
-              "type",
-              "node_mode",
-              "server_port",
-              "target_host",
-              "target_port"
-            ],
-            "if": {
-              "properties": {
-                "node_mode": {
-                  "const": "master"
-                }
-              }
-            },
-            "then": {
-              "required": [
-                "schedule_file",
-                "schedule_table_name",
-                "schedule_autostart"
-              ]
-            },
-            "title": "LIN over UDP",
-            "type": "object"
+            "$ref": "#/defs/namespaces/lin_udp"
           },
           {
-            "description": "FlexRay interface.",
-            "properties": {
-              "config": {
-                "oneOf": [
-                  {
-                    "description": "RemotiveLabs software adapter.",
-                    "properties": {
-                      "target_host": {
-                        "$ref": "#/defs/host"
-                      },
-                      "target_port": {
-                        "$ref": "#/defs/port"
-                      }
-                    },
-                    "required": [
-                      "target_host",
-                      "target_port"
-                    ],
-                    "title": "Software adapter",
-                    "type": "object"
-                  },
-                  {
-                    "description": "Technica CAN combo hardware.",
-                    "properties": {
-                      "hardware": {
-                        "description": "What type of hardware.",
-                        "default": "Technica_CM_CAN_COMBO",
-                        "enum": [
-                          "Technica_CM_CAN_COMBO"
-                        ]
-                      },
-                      "target_config": {
-                        "properties": {
-                          "interface": {
-                            "description": "Network interface to use.\nFor example `eth0`.",
-                            "type": "string"
-                          },
-                          "multicast": {
-                            "description": "MAC address to use for multicast.\nFor example `01:00:5e:00:00:00`.",
-                            "type": "string"
-                          }
-                        },
-                        "required": [
-                          "interface",
-                          "multicast"
-                        ],
-                        "type": "object"
-                      },
-                      "target_host": {
-                        "$ref": "#/defs/host"
-                      },
-                      "target_port": {
-                        "$ref": "#/defs/port"
-                      }
-                    },
-                    "required": [
-                      "target_host",
-                      "target_port",
-                      "hardware",
-                      "target_config"
-                    ],
-                    "title": "Technica",
-                    "type": "object"
-                  }
-                ]
-              },
-              "database": {
-                "$ref": "#/defs/signal_db",
-                "description": "Path to FlexRay signal database `.xml` (FIBEX) file."
-              },
-              "databases": {
-                "description": "Path to FlexRay signal database `.xml` (FIBEX) file.",
-                "type": "array",
-                "items": {
-                  "$ref": "#/defs/signal_db"
-                }
-              },
-              "fibex_file": {
-                "$ref": "#/defs/signal_db",
-                "description": "This property is deprecated, use database instead."
-              },
-              "namespace": {
-                "$ref": "#/defs/namespace"
-              },
-              "type": {
-                "description": "Specifies a FlexRay interface.",
-                "default": "flexray",
-                "enum": [
-                  "flexray"
-                ]
-              },
-              "public": {
-                "$ref": "#/defs/public"
-              }
-            },
-            "allOf": [
-              {
-                "$ref": "#/defs/database_restrictions"
-              }
-            ],
-            "required": [
-              "type",
-              "namespace",
-              "config"
-            ],
-            "title": "FlexRay",
-            "type": "object"
+            "$ref": "#/defs/namespaces/flexray"
           }
         ]
       },
@@ -878,6 +200,713 @@
         "instance_id",
         "version_major"
       ]
+    },
+    "namespaces": {
+      "virtual": {
+        "description": "Virtual signaling interface. This device doesn't use a database, any published signals will be sent to subscribers of the given signal.",
+        "properties": {
+          "namespace": {
+            "$ref": "#/defs/namespace"
+          },
+          "type": {
+            "description": "Specifies a virtual interface.",
+            "default": "virtual",
+            "enum": [
+              "virtual"
+            ]
+          }
+        },
+        "required": [
+          "namespace",
+          "type"
+        ],
+        "title": "Virtual",
+        "type": "object"
+      },
+      "scripted": {
+        "title": "Scripted",
+        "description": "Scripted signals",
+        "type": "object",
+        "properties": {
+          "namespace": {
+            "$ref": "#/defs/namespace"
+          },
+          "type": {
+            "description": "Specifies a scripted interface.",
+            "default": "scripted",
+            "enum": [
+              "scripted"
+            ]
+          },
+          "database": {
+            "$ref": "#/defs/signal_db",
+            "description": "Path to a scripted database"
+          },
+          "databases": {
+            "description": "Path to a scripted database",
+            "type": "array",
+            "items": {
+              "$ref": "#/defs/signal_db"
+            }
+          },
+          "public": {
+            "$ref": "#/defs/public"
+          }
+        },
+        "allOf": [
+          {
+            "$ref": "#/defs/database_restrictions"
+          }
+        ],
+        "required": [
+          "namespace",
+          "type"
+        ]
+      },
+      "can": {
+        "description": "CAN interface.",
+        "properties": {
+          "database": {
+            "$ref": "#/defs/signal_db",
+            "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified."
+          },
+          "databases": {
+            "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified.",
+            "type": "array",
+            "items": {
+              "$ref": "#/defs/signal_db"
+            }
+          },
+          "can_physical_channel_name": {
+            "$ref": "#/defs/can_physical_channel_name"
+          },
+          "device_name": {
+            "description": "Name of device in OS.",
+            "type": "string"
+          },
+          "namespace": {
+            "$ref": "#/defs/namespace"
+          },
+          "short_names": {
+            "$ref": "#/defs/short_names"
+          },
+          "type": {
+            "description": "Specifies a CAN interface.",
+            "default": "can",
+            "enum": [
+              "can"
+            ]
+          },
+          "baud_rate": {
+            "description": "baud rate to apply to CAN when starting interface.",
+            "type": "integer"
+          },
+          "public": {
+            "$ref": "#/defs/public"
+          },
+          "auto_recover": {
+            "$ref": "#/defs/auto_recover"
+          }
+        },
+        "allOf": [
+          {
+            "$ref": "#/defs/database_restrictions"
+          }
+        ],
+        "required": [
+          "type",
+          "namespace",
+          "device_name"
+        ],
+        "title": "CAN",
+        "type": "object"
+      },
+      "can_fd": {
+        "description": "CAN-FD interface.",
+        "properties": {
+          "database": {
+            "$ref": "#/defs/signal_db",
+            "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified."
+          },
+          "databases": {
+            "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified.",
+            "type": "array",
+            "items": {
+              "$ref": "#/defs/signal_db"
+            }
+          },
+          "can_physical_channel_name": {
+            "$ref": "#/defs/can_physical_channel_name"
+          },
+          "device_name": {
+            "description": "Name of device in OS.",
+            "type": "string"
+          },
+          "namespace": {
+            "$ref": "#/defs/namespace"
+          },
+          "short_names": {
+            "$ref": "#/defs/short_names"
+          },
+          "type": {
+            "description": "Specifies a CAN-FD interface.",
+            "default": "canfd",
+            "enum": [
+              "canfd"
+            ]
+          },
+          "baud_rate": {
+            "description": "baud rate to apply to CAN when starting interface.",
+            "type": "integer"
+          },
+          "dbaud_rate": {
+            "description": "baud rate to apply to CAN-FD when starting interface.",
+            "type": "integer"
+          },
+          "public": {
+            "$ref": "#/defs/public"
+          },
+          "auto_recover": {
+            "$ref": "#/defs/auto_recover"
+          },
+          "brs": {
+            "$ref": "#/defs/brs"
+          }
+        },
+        "dependencies": {
+          "baud_rate": [
+            "dbaud_rate"
+          ],
+          "dbaud_rate": [
+            "baud_rate"
+          ]
+        },
+        "allOf": [
+          {
+            "$ref": "#/defs/database_restrictions"
+          }
+        ],
+        "required": [
+          "type",
+          "namespace",
+          "device_name"
+        ],
+        "title": "CAN-FD",
+        "type": "object"
+      },
+      "can_udp": {
+        "description": "CAN-via-UDP protocol. Can be used to communicate between RemotiveBrokers.",
+        "properties": {
+          "database": {
+            "$ref": "#/defs/signal_db",
+            "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified."
+          },
+          "databases": {
+            "description": "Path to signal database file. Supporting .dbc and .arxml. When using an arxml database, can_physical_channel_name must be specified.",
+            "type": "array",
+            "items": {
+              "$ref": "#/defs/signal_db"
+            }
+          },
+          "can_physical_channel_name": {
+            "$ref": "#/defs/can_physical_channel_name"
+          },
+          "fixed_payload_size": {
+            "description": "If set, will use this frame size (bytes) for all packets.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "namespace": {
+            "$ref": "#/defs/namespace"
+          },
+          "server_host": {
+            "description": "Required when using multicast to select the correct interface.",
+            "$ref": "#/defs/host"
+          },
+          "server_port": {
+            "$ref": "#/defs/port",
+            "description": "UDP port for RemotiveBroker to listen to and receive packets on."
+          },
+          "short_names": {
+            "$ref": "#/defs/short_names"
+          },
+          "target_host": {
+            "description": "For multicast use, addresses in the range `224.0.0.1` to `239.255.255.255` are supported.",
+            "$ref": "#/defs/host"
+          },
+          "target_port": {
+            "$ref": "#/defs/port",
+            "description": "UDP port for RemotiveBroker to send packets to."
+          },
+          "type": {
+            "description": "Specifies a CAN-via-UDP interface.",
+            "default": "udp",
+            "enum": [
+              "udp"
+            ]
+          },
+          "public": {
+            "$ref": "#/defs/public"
+          }
+        },
+        "allOf": [
+          {
+            "$ref": "#/defs/database_restrictions"
+          }
+        ],
+        "required": [
+          "type",
+          "namespace",
+          "server_port",
+          "target_port",
+          "target_host"
+        ],
+        "title": "UDP",
+        "type": "object"
+      },
+      "some_ip": {
+        "description": "SOME/IP interface configuration.",
+        "title": "SOME/IP",
+        "type": "object",
+        "properties": {
+          "namespace": {
+            "$ref": "#/defs/namespace"
+          },
+          "database": {
+            "$ref": "#/defs/signal_db",
+            "description": "Path to signal database file. Supporting .xml and .arxml. When using an arxml database"
+          },
+          "databases": {
+            "description": "Path to signal database file. Supporting .xml and .arxml. When using an arxml database",
+            "type": "array",
+            "items": {
+              "$ref": "#/defs/signal_db"
+            }
+          },
+          "type": {
+            "description": "Specifies a SOME/IP interface.",
+            "default": "someip",
+            "enum": [
+              "someip"
+            ]
+          },
+          "services": {
+            "description": "List of to include from the provided database, can be used to speed up database parsing.",
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "maximum": 65535,
+              "minimum": 0
+            }
+          },
+          "service_discovery": {
+            "description": "Configuration for SOME/IP service discovery.",
+            "type": "object",
+            "properties": {
+              "multicast_group_ip": {
+                "description": "Multicast group IP for discovery.",
+                "$ref": "#/defs/host"
+              },
+              "server_host": {
+                "$ref": "#/defs/host",
+                "default": "0.0.0.0"
+              },
+              "server_port": {
+                "description": "Port number for discovery.",
+                "$ref": "#/defs/port",
+                "default": 30490
+              }
+            },
+            "default": {
+              "multicast_group_ip": "224.0.55.55",
+              "server_host": "0.0.0.0",
+              "server_port": 30490
+            }
+          },
+          "endpoints": {
+            "description": "List of SOME/IP endpoints.",
+            "type": "array",
+            "items": {
+              "description": "SOME/IP endpoint configuration.",
+              "type": "object",
+              "properties": {
+                "mode": {
+                  "description": "Transport protocol",
+                  "enum": [
+                    "udp",
+                    "tcp"
+                  ]
+                },
+                "server_host": {
+                  "default": "0.0.0.0",
+                  "$ref": "#/defs/host"
+                },
+                "server_port": {
+                  "$ref": "#/defs/port"
+                },
+                "service_ids": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/defs/some_ip_service"
+                  }
+                },
+                "static_remotes": {
+                  "description": "List of static remote services that this endpoint consumes.",
+                  "type": "array",
+                  "items": {
+                    "description": "Static remote configuration for SOME/IP services.",
+                    "type": "object",
+                    "properties": {
+                      "host": {
+                        "$ref": "#/defs/host"
+                      },
+                      "port": {
+                        "$ref": "#/defs/port"
+                      },
+                      "service_ids": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/defs/some_ip_service"
+                        }
+                      },
+                      "discovery_port": {
+                        "description": "Discovery port.",
+                        "default": 30490,
+                        "$ref": "#/defs/port"
+                      }
+                    },
+                    "required": [
+                      "host",
+                      "port"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "mode",
+                "server_port"
+              ]
+            }
+          }
+        },
+        "allOf": [
+          {
+            "$ref": "#/defs/database_restrictions"
+          }
+        ],
+        "required": [
+          "namespace",
+          "type",
+          "endpoints"
+        ]
+      },
+      "lin": {
+        "description": "LIN master or slave node interface. Connects to a RemotiveLabs LIN ethernet device.",
+        "properties": {
+          "config": {
+            "description": "LIN network configuration for communicating with RemotiveLabs LIN service.",
+            "properties": {
+              "device_identifier": {
+                "description": "LIN node ID.",
+                "maximum": 16,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "server_port": {
+                "$ref": "#/defs/port",
+                "description": "Port for receiving LIN connection to RemotiveBroker."
+              },
+              "target_host": {
+                "$ref": "#/defs/host"
+              },
+              "target_port": {
+                "$ref": "#/defs/port"
+              }
+            },
+            "required": [
+              "device_identifier",
+              "server_port",
+              "target_port"
+            ],
+            "type": "object"
+          },
+          "database": {
+            "$ref": "#/defs/signal_db",
+            "description": "Path to LIN signal database `.ldf` file."
+          },
+          "databases": {
+            "description": "Path to LIN signal database `.ldf` file.",
+            "type": "array",
+            "items": {
+              "$ref": "#/defs/signal_db"
+            }
+          },
+          "namespace": {
+            "$ref": "#/defs/namespace"
+          },
+          "node_mode": {
+            "description": "Type of LIN node.",
+            "enum": [
+              "master",
+              "slave"
+            ]
+          },
+          "schedule_autostart": {
+            "description": "Should LIN schedules start at boot? Or pause until user command.",
+            "type": "boolean"
+          },
+          "schedule_file": {
+            "description": "Path to `.ldf` file used for schedules.",
+            "type": "string"
+          },
+          "schedule_table_name": {
+            "description": "Path to `.ldf` file used for tables. TODO",
+            "type": "string"
+          },
+          "type": {
+            "description": "Specifies a LIN interface.",
+            "default": "lin",
+            "enum": [
+              "lin"
+            ]
+          },
+          "public": {
+            "$ref": "#/defs/public"
+          }
+        },
+        "allOf": [
+          {
+            "$ref": "#/defs/database_restrictions"
+          }
+        ],
+        "required": [
+          "namespace",
+          "type",
+          "config",
+          "node_mode"
+        ],
+        "if": {
+          "properties": {
+            "node_mode": {
+              "const": "master"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "schedule_file",
+            "schedule_table_name",
+            "schedule_autostart"
+          ]
+        },
+        "title": "LIN",
+        "type": "object"
+      },
+      "lin_udp": {
+        "description": "LIN-via-UDP protocol. Can be used to communicate between RemotiveBrokers.",
+        "properties": {
+          "database": {
+            "$ref": "#/defs/signal_db",
+            "description": "Path to LIN signal database `.ldf` file."
+          },
+          "databases": {
+            "description": "Path to LIN signal database `.ldf` file.",
+            "type": "array",
+            "items": {
+              "$ref": "#/defs/signal_db"
+            }
+          },
+          "namespace": {
+            "$ref": "#/defs/namespace"
+          },
+          "server_host": {
+            "$ref": "#/defs/host",
+            "description": "Required when using multicast to select the correct interface."
+          },
+          "server_port": {
+            "$ref": "#/defs/port",
+            "description": "Port for receiving LIN connection to RemotiveBroker."
+          },
+          "target_host": {
+            "$ref": "#/defs/host",
+            "description": "For multicast use, addresses in the range `224.0.0.1` to `239.255.255.255` are supported."
+          },
+          "target_port": {
+            "$ref": "#/defs/port",
+            "description": "UDP port for RemotiveBroker to send packets to."
+          },
+          "node_mode": {
+            "description": "Type of LIN node.",
+            "enum": [
+              "master",
+              "slave"
+            ]
+          },
+          "short_names": {
+            "$ref": "#/defs/short_names"
+          },
+          "schedule_autostart": {
+            "description": "Should LIN schedules start at boot? Or pause until user command.",
+            "type": "boolean"
+          },
+          "schedule_file": {
+            "description": "Path to `.ldf` file used for schedules.",
+            "type": "string"
+          },
+          "schedule_table_name": {
+            "description": "Path to `.ldf` file used for tables. TODO",
+            "type": "string"
+          },
+          "type": {
+            "description": "Specifies a LIN-via-UDP interface.",
+            "default": "udp-lin",
+            "enum": [
+              "udp-lin"
+            ]
+          },
+          "public": {
+            "$ref": "#/defs/public"
+          }
+        },
+        "allOf": [
+          {
+            "$ref": "#/defs/database_restrictions"
+          }
+        ],
+        "required": [
+          "namespace",
+          "type",
+          "node_mode",
+          "server_port",
+          "target_host",
+          "target_port"
+        ],
+        "if": {
+          "properties": {
+            "node_mode": {
+              "const": "master"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "schedule_file",
+            "schedule_table_name",
+            "schedule_autostart"
+          ]
+        },
+        "title": "LIN over UDP",
+        "type": "object"
+      },
+      "flexray": {
+        "description": "FlexRay interface.",
+        "properties": {
+          "config": {
+            "oneOf": [
+              {
+                "description": "RemotiveLabs software adapter.",
+                "properties": {
+                  "target_host": {
+                    "$ref": "#/defs/host"
+                  },
+                  "target_port": {
+                    "$ref": "#/defs/port"
+                  }
+                },
+                "required": [
+                  "target_host",
+                  "target_port"
+                ],
+                "title": "Software adapter",
+                "type": "object"
+              },
+              {
+                "description": "Technica CAN combo hardware.",
+                "properties": {
+                  "hardware": {
+                    "description": "What type of hardware.",
+                    "default": "Technica_CM_CAN_COMBO",
+                    "enum": [
+                      "Technica_CM_CAN_COMBO"
+                    ]
+                  },
+                  "target_config": {
+                    "properties": {
+                      "interface": {
+                        "description": "Network interface to use.\nFor example `eth0`.",
+                        "type": "string"
+                      },
+                      "multicast": {
+                        "description": "MAC address to use for multicast.\nFor example `01:00:5e:00:00:00`.",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "interface",
+                      "multicast"
+                    ],
+                    "type": "object"
+                  },
+                  "target_host": {
+                    "$ref": "#/defs/host"
+                  },
+                  "target_port": {
+                    "$ref": "#/defs/port"
+                  }
+                },
+                "required": [
+                  "target_host",
+                  "target_port",
+                  "hardware",
+                  "target_config"
+                ],
+                "title": "Technica",
+                "type": "object"
+              }
+            ]
+          },
+          "database": {
+            "$ref": "#/defs/signal_db",
+            "description": "Path to FlexRay signal database `.xml` (FIBEX) file."
+          },
+          "databases": {
+            "description": "Path to FlexRay signal database `.xml` (FIBEX) file.",
+            "type": "array",
+            "items": {
+              "$ref": "#/defs/signal_db"
+            }
+          },
+          "fibex_file": {
+            "$ref": "#/defs/signal_db",
+            "description": "This property is deprecated, use database instead."
+          },
+          "namespace": {
+            "$ref": "#/defs/namespace"
+          },
+          "type": {
+            "description": "Specifies a FlexRay interface.",
+            "default": "flexray",
+            "enum": [
+              "flexray"
+            ]
+          },
+          "public": {
+            "$ref": "#/defs/public"
+          }
+        },
+        "allOf": [
+          {
+            "$ref": "#/defs/database_restrictions"
+          }
+        ],
+        "required": [
+          "type",
+          "namespace",
+          "config"
+        ],
+        "title": "FlexRay",
+        "type": "object"
+      }
     }
   }
 }
