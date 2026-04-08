@@ -34,6 +34,9 @@
           },
           {
             "$ref": "#/defs/namespaces/flexray"
+          },
+          {
+            "$ref": "#/defs/namespaces/tap"
           }
         ]
       },
@@ -906,6 +909,41 @@
         ],
         "title": "FlexRay",
         "type": "object"
+      },
+      "tap": {
+        "type": "object",
+        "title": "Tap namespace",
+        "description": "Tap interface configuration.",
+        "properties": {
+          "namespace": {
+            "$ref": "#/defs/namespace"
+          },
+          "device": {
+            "type": "string",
+            "description": "This property is required when using a tap namespace. It specifies which network interface should be tapped."
+          },
+          "type": {
+            "description": "Specifies a Tap interface.",
+            "default": "tap",
+            "enum": [
+              "tap"
+            ]
+          },
+          "tap_namespace": {
+            "type": "object",
+            "oneOf": [
+              {
+                "$ref": "#/defs/namespaces/can_udp"
+              }
+            ]
+          }
+        },
+        "required": [
+          "namespace",
+          "device",
+          "type",
+          "tap_namespace"
+        ]
       }
     }
   }
