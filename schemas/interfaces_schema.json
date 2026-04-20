@@ -655,7 +655,7 @@
             ]
           },
           "schedule_autostart": {
-            "description": "Should LIN schedules start at boot? Or pause until user command.",
+            "description": "Deprecated and unused. Just here for backwards compatibility.",
             "type": "boolean"
           },
           "schedule_file": {
@@ -698,8 +698,7 @@
         "then": {
           "required": [
             "schedule_file",
-            "schedule_table_name",
-            "schedule_autostart"
+            "schedule_table_name"
           ]
         },
         "title": "LIN",
@@ -749,7 +748,7 @@
             "$ref": "#/defs/short_names"
           },
           "schedule_autostart": {
-            "description": "Should LIN schedules start at boot? Or pause until user command.",
+            "description": "Deprecated and unused. Just here for backwards compatibility.",
             "type": "boolean"
           },
           "schedule_file": {
@@ -794,8 +793,7 @@
         "then": {
           "required": [
             "schedule_file",
-            "schedule_table_name",
-            "schedule_autostart"
+            "schedule_table_name"
           ]
         },
         "title": "LIN over UDP",
