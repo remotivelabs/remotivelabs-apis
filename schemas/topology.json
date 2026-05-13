@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Remotive Topology 0.15",
+  "title": "Remotive Topology 0.17",
   "oneOf": [
     { "$ref": "#/definitions/platform_schema" },
     { "$ref": "#/definitions/instance_schema" }
@@ -25,7 +25,9 @@
             "remotive-topology-platform:0.12",
             "remotive-topology-platform:0.13",
             "remotive-topology-platform:0.14",
-            "remotive-topology-platform:0.15"
+            "remotive-topology-platform:0.15",
+            "remotive-topology-platform:0.16",
+            "remotive-topology-platform:0.17"
           ]
         },
         "includes": {
@@ -66,7 +68,9 @@
             "remotive-topology-instance:0.12",
             "remotive-topology-instance:0.13",
             "remotive-topology-instance:0.14",
-            "remotive-topology-instance:0.15"
+            "remotive-topology-instance:0.15",
+            "remotive-topology-instance:0.16",
+            "remotive-topology-instance:0.17"
           ]
         },
         "name": {
@@ -442,6 +446,11 @@
             ]
           }
         },
+        "external": {
+          "type": "object",
+          "description": "External ECU not managed by topology",
+          "additionalProperties": false
+        },
         "mock": {
           "type": "object",
           "description": "Optional mock used to automatically send and receive messages",
@@ -580,9 +589,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "type": { "const": "lin" },
-        "schedule_autostart": { "type": "boolean" },
-        "schedule_table_name": { "type": "string" }
+        "type": { "const": "lin" }
       }
     },
     "instance_ecu_channel_config_ethernet": {
@@ -647,7 +654,8 @@
         "type": { "const": "ethernet" },
         "driver": { "$ref": "#/definitions/instance_channel_driver_ethernet" },
         "gateway_ip": { "type": "string" },
-        "topology_broker_ip": { "type": "string" }
+        "topology_broker_ip": { "type": "string" },
+        "tap_config": { "$ref": "#/definitions/instance_channel_tap_config" }
       }
     },
     "instance_channel_driver_can_over_udp": {
@@ -780,7 +788,37 @@
       "additionalProperties": false,
       "properties": {
         "type": { "const": "lin", "description": "Experimental LIN support" },
-        "driver": { "$ref": "#/definitions/instance_channel_can_driver" }
+        "driver": { "$ref": "#/definitions/instance_channel_can_driver" },
+        "schedule_table_name": { "type": "string" }
+      }
+    },
+    "instance_channel_tap_config": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "enum": ["socket"],
+          "description": "Tap type: 'socket' taps at the socket level. More tap types may be added in the future."
+        },
+        "mode": {
+          "enum": ["selection", "all", "none"],
+          "description": "Tap mode: 'all' taps all sockets, 'selection' taps only listed sockets, 'none' disables tap"
+        },
+        "sockets": {
+          "type": "array",
+          "description": "List of socket names. Only used when mode is 'selection'.",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["mode","type"],
+      "if": {
+        "properties": { "mode": { "const": "selection" } }
+      },
+      "then": {
+        "required": ["sockets"],
+        "properties": {
+          "sockets": { "minItems": 1 }
+        }
       }
     },
     "instance_channel_driver_ethernet": {
