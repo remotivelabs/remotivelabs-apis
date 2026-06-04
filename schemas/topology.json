@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Remotive Topology 0.17",
+  "title": "Remotive Topology 0.18",
   "oneOf": [
     { "$ref": "#/definitions/platform_schema" },
     { "$ref": "#/definitions/instance_schema" }
@@ -27,7 +27,8 @@
             "remotive-topology-platform:0.14",
             "remotive-topology-platform:0.15",
             "remotive-topology-platform:0.16",
-            "remotive-topology-platform:0.17"
+            "remotive-topology-platform:0.17",
+            "remotive-topology-platform:0.18"
           ]
         },
         "includes": {
@@ -70,7 +71,8 @@
             "remotive-topology-instance:0.14",
             "remotive-topology-instance:0.15",
             "remotive-topology-instance:0.16",
-            "remotive-topology-instance:0.17"
+            "remotive-topology-instance:0.17",
+            "remotive-topology-instance:0.18"
           ]
         },
         "name": {
@@ -120,6 +122,13 @@
         "database": {
           "type": "string",
           "description": "Signal database for this channel"
+        },
+        "source": {
+          "description": "Files where this channel is declared. Set to `true` to use this file as source. (Tooling will generate a list of paths.)",
+          "oneOf": [
+            { "const": true },
+            { "type": "array", "items": { "type": "string" } }
+          ]
         }
       },
       "required": ["type"],
@@ -141,6 +150,13 @@
           "type": "string",
           "description": "Signal database for this channel"
         },
+        "source": {
+          "description": "Files where this channel is declared. Set to `true` to use this file as source. (Tooling will generate a list of paths.)",
+          "oneOf": [
+            { "const": true },
+            { "type": "array", "items": { "type": "string" } }
+          ]
+        },
         "can_cluster": { "type": "string" },
         "can_physical_channel_name": { "type": "string" }
       }
@@ -153,6 +169,13 @@
         "database": {
           "type": "string",
           "description": "Signal database for this channel"
+        },
+        "source": {
+          "description": "Files where this channel is declared. Set to `true` to use this file as source. (Tooling will generate a list of paths.)",
+          "oneOf": [
+            { "const": true },
+            { "type": "array", "items": { "type": "string" } }
+          ]
         },
         "lin_cluster": { "type": "string" },
         "lin_physical_channel_name": { "type": "string" },
@@ -167,6 +190,13 @@
         "database": {
           "type": "string",
           "description": "Signal database for this channel"
+        },
+        "source": {
+          "description": "Files where this channel is declared. Set to `true` to use this file as source. (Tooling will generate a list of paths.)",
+          "oneOf": [
+            { "const": true },
+            { "type": "array", "items": { "type": "string" } }
+          ]
         },
         "someip": {
           "$ref": "#/definitions/someip"
@@ -254,6 +284,13 @@
         "database": {
           "type": "string",
           "description": "ECU extract signal database. Overrides signal database from channel"
+        },
+        "source": {
+          "description": "Files where this ECU is declared. Set to `true` to use this file as source. (Tooling will generate a list of paths.)",
+          "oneOf": [
+            { "const": true },
+            { "type": "array", "items": { "type": "string" } }
+          ]
         },
         "alias_for": {
           "type": "string",
@@ -366,6 +403,10 @@
             "port": {
               "type": "integer",
               "description": "Port number forwarded from host to API"
+            },
+            "ssl_port": {
+              "type": "integer",
+              "description": "Port number forwarded from host (localhost only) to the TLS-terminating API listener. Requires server-key.pem and full-chain.pem in ~/.config/remotive/certs/."
             }
           }
         },
@@ -685,12 +726,12 @@
         },
         "device_name": {
           "type": "string",
-          "pattern": "^[a-z0-9-]{1,14}$",
+          "pattern": "^[a-z0-9-]{1,15}$",
           "description": "Physical hardware device name on the host"
         },
         "peer": {
           "type": "string",
-          "pattern": "^[a-z0-9-]{1,13}$",
+          "pattern": "^[a-z0-9-]{1,14}$",
           "description": "Optional name of the device inside the docker container"
         }
       },
@@ -714,11 +755,11 @@
                   "description": "Run socketcan connected to a hardware interface"
                 },
                 "device": {
-                  "pattern": "^[a-z0-9-]{1,13}$",
-                  "description": "Name inside of the docker container. Will be suffixed with a \"0\""
+                  "pattern": "^[a-z0-9-]{1,15}$",
+                  "description": "Name inside of the docker container."
                 },
                 "host_device": {
-                  "pattern": "^[a-z0-9-]{1,14}$",
+                  "pattern": "^[a-z0-9-]{1,15}$",
                   "description": "Optional name of host interface to connect to. Will default to {device}."
                 }
               },
@@ -733,11 +774,11 @@
                   "description": "Run virtual can"
                 },
                 "device": {
-                  "pattern": "^[a-z0-9-]{1,13}$",
-                  "description": "Name inside of the docker container. Will be suffixed with a \"0\""
+                  "pattern": "^[a-z0-9-]{1,15}$",
+                  "description": "Name inside of the docker container."
                 },
                 "host_device": {
-                  "pattern": "^[a-z0-9-]{1,14}$",
+                  "pattern": "^[a-z0-9-]{1,15}$",
                   "description": "Optional name of host interface to connect to. Will default to 'v{device}'."
                 },
                 "plugin": {
@@ -844,8 +885,8 @@
           "description": "Use remotivebus to connect physical ethernet device"
         },
         "device": {
-          "pattern": "^[a-z0-9-]{1,14}$",
-          "description": "Name inside of the docker container. Will be suffixed with a \"0\""
+          "pattern": "^[a-z0-9-]{1,15}$",
+          "description": "Name inside of the docker container."
         },
         "host_bridge_device": {
           "type": "string",
