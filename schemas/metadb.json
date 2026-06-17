@@ -1,7 +1,7 @@
 {
    "defs" : {
       "e2e" : {
-         "description" : "E2E information, different profiles need different fields. Se profile field for more information",
+         "description" : "E2E information, different profiles need different fields. See profile field for more information",
          "properties" : {
             "counter" : {
                "description" : "Name of signal containing the E2E counter.",
@@ -50,7 +50,7 @@
                   "groups" : {
                      "description" : "Signal groups, these are byte spanning ranges inside of a frame.",
                      "items" : {
-                        "description" : "Signal group properties. Each groups is limitid to a range of bytes.",
+                        "description" : "Signal group properties. Each group is limited to a range of bytes.",
                         "properties" : {
                            "range" : {
                               "properties" : {
@@ -58,7 +58,7 @@
                                     "$ref" : "#/defs/e2e"
                                  },
                                  "offset" : {
-                                    "description" : "Byte offset insife of the frame signifying the start of this group",
+                                    "description" : "Byte offset inside of the frame signifying the start of this group",
                                     "type" : "integer"
                                  },
                                  "size" : {
