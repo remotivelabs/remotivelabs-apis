@@ -47,7 +47,7 @@
       "type": "string"
     },
     "grpc_server": {
-      "description": "Configuration for build in gRPC server. Documentation for available service is available on <https://docs.remotivelabs.com>.",
+      "description": "Configuration for built-in gRPC server. Documentation for available service is available on <https://docs.remotivelabs.com>.",
       "properties": {
         "port": {
           "description": "Server port for gRPC server.",
@@ -159,7 +159,7 @@
     },
     "short_names": {
       "default": true,
-      "description": "Have signals addressable in the RemotiveBroker by their name in the database.\nIf `false`, signal names with be generated base on their respective name space.",
+      "description": "Have signals addressable in the RemotiveBroker by their name in the database.\nIf `false`, signal names will be generated based on their respective namespace.",
       "type": "boolean"
     },
     "signal_db": {
