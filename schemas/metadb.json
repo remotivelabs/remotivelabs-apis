@@ -79,6 +79,12 @@
                         "type" : "object"
                      },
                      "type" : "array"
+                  },
+                  "unusedBitPattern" : {
+                     "description" : "Value of a single byte, given as a decimal integer, used to fill the frame's unused/padding bits.",
+                     "maximum" : 255,
+                     "minimum" : 0,
+                     "type" : "integer"
                   }
                },
                "type" : "object"
