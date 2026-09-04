@@ -171,7 +171,7 @@
       "description": "This property is required when using an arxml database. Path to the physical channel that should be used. Referenced by SHORT-NAME element, e.g. /Topology/Name/ID"
     },
     "public": {
-      "description": "Configure the interface to be public or private, default is public. Private namespaces are not exposed by the broker. This is useful for example when working with for example scripted VSS signals and you don't want the designer to see the internal vehicle signals.",
+      "description": "Configure the interface to be public or private, default is public. Private namespaces are not exposed by the broker. This is useful for example when working with scripted VSS signals and you don't want the designer to see the internal vehicle signals.",
       "type": "boolean",
       "default": true
     },
@@ -663,7 +663,7 @@
             "type": "string"
           },
           "schedule_table_name": {
-            "description": "Path to `.ldf` file used for tables. TODO",
+            "description": "Name of the schedule table to run, as defined in the schedule `.ldf` file.",
             "type": "string"
           },
           "type": {
@@ -756,7 +756,7 @@
             "type": "string"
           },
           "schedule_table_name": {
-            "description": "Path to `.ldf` file used for tables. TODO",
+            "description": "Name of the schedule table to run, as defined in the schedule `.ldf` file.",
             "type": "string"
           },
           "type": {
