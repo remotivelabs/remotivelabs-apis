@@ -1,0 +1,509 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://releases.remotivelabs.com/schemas/remotive-topology-mapping/remotive-topology-mapping-0.1.schema.json",
+  "title": "Remotive Topology Framework Mapping",
+  "description": "Describes signal and frame routing/transformations executed at runtime by the RemotiveTopology framework.",
+  "type": "object",
+  "required": [
+    "schema",
+    "mappings"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "description": "URL of the schema this mapping file conforms to.",
+      "const": "https://releases.remotivelabs.com/schemas/remotive-topology-mapping/remotive-topology-mapping-0.1.schema.json"
+    },
+    "mappings": {
+      "type": "array",
+      "description": "List of message routing or signal mapping entries.",
+      "items": {
+        "$ref": "#/definitions/entry"
+      }
+    }
+  },
+  "definitions": {
+    "entry": {
+      "description": "A compact message route (many messages, one channel pair), a signal-level mapping, or a message-level mapping.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/route_entry"
+        },
+        {
+          "$ref": "#/definitions/signal_mapping_entry"
+        },
+        {
+          "$ref": "#/definitions/message_mapping_entry"
+        }
+      ]
+    },
+    "route_entry": {
+      "type": "object",
+      "description": "Compact message routing: many messages between one channel pair. Mirrors the remotive-signal-database socket/connections model. Discriminated from the mapping entries by the required 'messages' field.",
+      "required": [
+        "source",
+        "target",
+        "messages"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "$ref": "#/definitions/channel_address"
+        },
+        "target": {
+          "$ref": "#/definitions/channel_address"
+        },
+        "messages": {
+          "type": "object",
+          "description": "Source message name \u2192 target message name. Names may differ between channels (e.g. CAN frame name vs Ethernet PDU name).",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "channel_address": {
+      "type": "object",
+      "description": "A bare channel, for compact route entries. source_socket and target_socket identify the Ethernet sockets; omit for CAN/LIN.",
+      "required": [
+        "type",
+        "channel"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "enum": [
+            "can",
+            "lin",
+            "ethernet.pdu"
+          ],
+          "description": "Channel type discriminator."
+        },
+        "channel": {
+          "type": "string",
+          "description": "Channel identifier, e.g. zc-RightDoor1CAN or zc-Insecure."
+        },
+        "source_socket": {
+          "type": "string",
+          "description": "Ethernet source socket name, e.g. zcInsecureUDP."
+        },
+        "target_socket": {
+          "type": "string",
+          "description": "Ethernet target socket name, e.g. zcInsecureCpEcuUDP."
+        }
+      }
+    },
+    "signal_mapping_entry": {
+      "type": "object",
+      "description": "A signal-level mapping: one source signal to one or more targets with an optional shared value transform.",
+      "required": [
+        "source",
+        "target"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "$ref": "#/definitions/signal_address"
+        },
+        "target": {
+          "description": "One target signal, or a list of target signals for fan-out (one source, shared transform, many targets).",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/signal_address"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/signal_address"
+              },
+              "minItems": 1
+            }
+          ]
+        },
+        "transform": {
+          "$ref": "#/definitions/transform"
+        }
+      }
+    },
+    "can_frame_address": {
+      "type": "object",
+      "description": "CAN frame \u2014 strict, no extra fields.",
+      "required": [
+        "type",
+        "frame",
+        "channel"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "can",
+          "description": "Channel type discriminator."
+        },
+        "frame": {
+          "type": "string",
+          "description": "CAN frame name."
+        },
+        "channel": {
+          "type": "string",
+          "description": "Channel identifier, e.g. zc-RightDoor1CAN."
+        }
+      }
+    },
+    "lin_frame_address": {
+      "type": "object",
+      "description": "LIN frame \u2014 strict, no extra fields.",
+      "required": [
+        "type",
+        "frame",
+        "channel"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "lin",
+          "description": "Channel type discriminator."
+        },
+        "frame": {
+          "type": "string",
+          "description": "LIN frame name."
+        },
+        "channel": {
+          "type": "string",
+          "description": "Channel identifier, e.g. RLCM-lin0."
+        }
+      }
+    },
+    "signal_address": {
+      "description": "A signal within a frame on a channel. Built-in types (can, lin, ethernet.pdu) are strict; custom types (prefixed 'custom.') allow extra fields.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/can_signal_address"
+        },
+        {
+          "$ref": "#/definitions/lin_signal_address"
+        },
+        {
+          "$ref": "#/definitions/ethernet_pdu_signal_address"
+        },
+        {
+          "$ref": "#/definitions/custom_signal_address"
+        }
+      ]
+    },
+    "can_signal_address": {
+      "type": "object",
+      "description": "CAN signal \u2014 strict, no extra fields.",
+      "required": [
+        "type",
+        "frame",
+        "signal",
+        "channel"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "can",
+          "description": "Channel type discriminator."
+        },
+        "frame": {
+          "type": "string",
+          "description": "CAN frame containing the signal, e.g. TurnLightControl."
+        },
+        "signal": {
+          "type": "string",
+          "description": "Signal name within the frame, e.g. LeftTurnLightRequest."
+        },
+        "channel": {
+          "type": "string",
+          "description": "Channel identifier, e.g. BCM-BodyCan0."
+        }
+      }
+    },
+    "lin_signal_address": {
+      "type": "object",
+      "description": "LIN signal \u2014 strict, no extra fields.",
+      "required": [
+        "type",
+        "frame",
+        "signal",
+        "channel"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "lin",
+          "description": "Channel type discriminator."
+        },
+        "frame": {
+          "type": "string",
+          "description": "LIN frame containing the signal, e.g. LpcLpc12LinFr01."
+        },
+        "signal": {
+          "type": "string",
+          "description": "Signal name within the frame."
+        },
+        "channel": {
+          "type": "string",
+          "description": "Channel identifier, e.g. RLCM-lin0."
+        }
+      }
+    },
+    "ethernet_pdu_signal_address": {
+      "type": "object",
+      "description": "Ethernet PDU signal \u2014 strict. source_socket and target_socket identify the ARXML sockets.",
+      "required": [
+        "type",
+        "pdu",
+        "signal",
+        "channel",
+        "source_socket",
+        "target_socket"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "ethernet.pdu",
+          "description": "Channel type discriminator."
+        },
+        "pdu": {
+          "type": "string",
+          "description": "PDU containing the signal, e.g. VehicleDynamics."
+        },
+        "signal": {
+          "type": "string",
+          "description": "Signal name within the PDU, e.g. VehicleSpeed."
+        },
+        "channel": {
+          "type": "string",
+          "description": "Channel identifier, e.g. ZC-Safety."
+        },
+        "source_socket": {
+          "type": "string",
+          "description": "Source socket name, e.g. ZCSafetyUDP."
+        },
+        "target_socket": {
+          "type": "string",
+          "description": "Target socket name, e.g. ZCSafetycpECUUDP."
+        }
+      }
+    },
+    "custom_signal_address": {
+      "type": "object",
+      "description": "Custom/user-defined signal \u2014 extra fields allowed for technology-specific data.",
+      "required": [
+        "type",
+        "signal"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "type": "string",
+          "pattern": "^custom\\.",
+          "description": "Custom technology type, must be prefixed 'custom.', e.g. 'custom.evdev'."
+        },
+        "signal": {
+          "type": "string",
+          "description": "Signal name or identifier."
+        }
+      }
+    },
+    "transform": {
+      "description": "Value transformation applied to the source signal before publishing to the target. Signal-level entries only \u2014 message routing is always passthrough.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/transform_passthrough"
+        },
+        {
+          "$ref": "#/definitions/transform_linear"
+        },
+        {
+          "$ref": "#/definitions/transform_lookup"
+        },
+        {
+          "$ref": "#/definitions/transform_custom"
+        }
+      ]
+    },
+    "transform_passthrough": {
+      "type": "object",
+      "description": "Forward value unchanged. This is the default when 'transform' is omitted.",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "passthrough",
+          "description": "Transform type discriminator."
+        }
+      }
+    },
+    "transform_linear": {
+      "type": "object",
+      "description": "Linear transform: output = clamp(factor * input + offset, min, max).",
+      "required": [
+        "type",
+        "factor"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "linear",
+          "description": "Transform type discriminator."
+        },
+        "factor": {
+          "type": "number",
+          "description": "Scaling factor. Required."
+        },
+        "offset": {
+          "type": "number",
+          "description": "Offset added after scaling. Default 0.",
+          "default": 0
+        },
+        "min": {
+          "type": "number",
+          "description": "Optional lower clamp on output."
+        },
+        "max": {
+          "type": "number",
+          "description": "Optional upper clamp on output."
+        }
+      }
+    },
+    "transform_lookup": {
+      "type": "object",
+      "description": "Discrete value remapping via a lookup table.",
+      "required": [
+        "type",
+        "mapping"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "lookup",
+          "description": "Transform type discriminator."
+        },
+        "mapping": {
+          "type": "object",
+          "description": "Map of input integer values to output integer values.",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "message_mapping_entry": {
+      "type": "object",
+      "description": "A message-level mapping: one source message copied to one or more target messages. Message routing is always passthrough (the raw payload is relayed without decode), so no 'transform' is allowed here.",
+      "required": [
+        "source",
+        "target"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "$ref": "#/definitions/message_address"
+        },
+        "target": {
+          "description": "One target message, or a list of target messages for fan-out.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/message_address"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/message_address"
+              },
+              "minItems": 1
+            }
+          ]
+        }
+      }
+    },
+    "message_address": {
+      "description": "A message on a channel \u2014 the unit field follows the channel type: 'frame' for can/lin, 'pdu' for ethernet.pdu. Built-in types are strict (no extra fields); custom types (prefixed 'custom.') define their own fields.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/can_frame_address"
+        },
+        {
+          "$ref": "#/definitions/lin_frame_address"
+        },
+        {
+          "$ref": "#/definitions/ethernet_pdu_address"
+        },
+        {
+          "$ref": "#/definitions/custom_message_address"
+        }
+      ]
+    },
+    "ethernet_pdu_address": {
+      "type": "object",
+      "description": "Ethernet PDU \u2014 strict. source_socket and target_socket identify the ARXML sockets.",
+      "required": [
+        "type",
+        "pdu",
+        "channel",
+        "source_socket",
+        "target_socket"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "ethernet.pdu",
+          "description": "Channel type discriminator."
+        },
+        "pdu": {
+          "type": "string",
+          "description": "PDU name."
+        },
+        "channel": {
+          "type": "string",
+          "description": "Channel identifier, e.g. zc-Insecure."
+        },
+        "source_socket": {
+          "type": "string",
+          "description": "Source socket name, e.g. zcInsecureUDP."
+        },
+        "target_socket": {
+          "type": "string",
+          "description": "Target socket name, e.g. zcInsecureCpEcuUDP."
+        }
+      }
+    },
+    "custom_message_address": {
+      "type": "object",
+      "description": "Custom/user-defined message-level address: only 'type' is required \u2014 the unit field is type-defined (read from extra fields by the application). Must not carry 'signal' (that makes the payload signal-level). Not executed by the framework; application code dispatches on the type string.",
+      "required": [
+        "type"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "type": "string",
+          "pattern": "^custom\\.",
+          "description": "Custom technology type, must be prefixed 'custom.', e.g. 'custom.flexray'."
+        }
+      },
+      "not": {
+        "required": [
+          "signal"
+        ]
+      }
+    },
+    "transform_custom": {
+      "type": "object",
+      "description": "Custom transform: register a factory for the type with MappingModel.register_transform to run it. Type-specific fields allowed.",
+      "required": [
+        "type"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "type": "string",
+          "pattern": "^custom\\.",
+          "description": "Custom transform type, must be prefixed 'custom.', e.g. 'custom.toggle'."
+        }
+      }
+    }
+  }
+}
