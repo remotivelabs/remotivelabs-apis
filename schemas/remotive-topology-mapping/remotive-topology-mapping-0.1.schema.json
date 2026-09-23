@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://releases.remotivelabs.com/schemas/remotive-topology-mapping/remotive-topology-mapping-0.1.schema.json",
+  "$id": "https://files.remotivelabs.com/schemas/remotive-topology-mapping/remotive-topology-mapping-0.1.schema.json",
   "title": "Remotive Topology Framework Mapping",
   "description": "Describes signal and frame routing/transformations executed at runtime by the RemotiveTopology framework.",
   "type": "object",
@@ -13,7 +13,7 @@
     "schema": {
       "type": "string",
       "description": "URL of the schema this mapping file conforms to.",
-      "const": "https://releases.remotivelabs.com/schemas/remotive-topology-mapping/remotive-topology-mapping-0.1.schema.json"
+      "const": "https://files.remotivelabs.com/schemas/remotive-topology-mapping/remotive-topology-mapping-0.1.schema.json"
     },
     "mappings": {
       "type": "array",
