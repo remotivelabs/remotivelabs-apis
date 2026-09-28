@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Remotive Topology 0.19",
+  "title": "Remotive Topology 0.20",
   "oneOf": [
     { "$ref": "#/definitions/platform_schema" },
     { "$ref": "#/definitions/instance_schema" }
@@ -29,7 +29,8 @@
             "remotive-topology-platform:0.16",
             "remotive-topology-platform:0.17",
             "remotive-topology-platform:0.18",
-            "remotive-topology-platform:0.19"
+            "remotive-topology-platform:0.19",
+            "remotive-topology-platform:0.20"
           ]
         },
         "includes": {
@@ -74,7 +75,8 @@
             "remotive-topology-instance:0.16",
             "remotive-topology-instance:0.17",
             "remotive-topology-instance:0.18",
-            "remotive-topology-instance:0.19"
+            "remotive-topology-instance:0.19",
+            "remotive-topology-instance:0.20"
           ]
         },
         "name": {
@@ -224,7 +226,7 @@
                   "type": "object",
                   "additionalProperties": false,
                   "properties": {
-                    "type": { "enum": ["udp"] },
+                    "type": { "enum": ["udp", "tcp"] },
                     "port": { "type": "integer", "description": "Port number" },
                     "socket_connections": {
                       "type": "array",
@@ -260,7 +262,10 @@
       "description": "Defines which SOME/IP service instances are available. This is a map of service instance names to service instance definitions.",
       "additionalProperties": false,
       "properties": {
-        "service_discovery_socket": {"type": "string", "description": "Multicast socket for SOME/IP-SD communication" },
+        "service_discovery_socket": {
+          "type": "string",
+          "description": "Multicast socket for SOME/IP-SD communication"
+        },
         "services": {
           "type": "object",
           "additionalProperties": {
@@ -857,7 +862,7 @@
           "items": { "type": "string" }
         }
       },
-      "required": ["mode","type"],
+      "required": ["mode", "type"],
       "if": {
         "properties": { "mode": { "const": "selection" } }
       },
@@ -871,7 +876,9 @@
     "instance_channel_driver_ethernet": {
       "type": "object",
       "properties": {
-        "type": { "enum": ["macvlan", "ipvlan", "bridge", "external", "remotivebus"] }
+        "type": {
+          "enum": ["macvlan", "ipvlan", "bridge", "external", "remotivebus"]
+        }
       },
       "required": ["type"],
       "oneOf": [
