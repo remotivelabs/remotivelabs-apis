@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://files.remotivelabs.com/schemas/launcher-0.1.schema.json",
+  "title": "RemotiveTopology Cloud Launcher",
+  "description": "Describes how to launch a RemotiveTopology instance in the cloud. Lives at the root of a launcher archive as <name>.launcher.yaml, where <name> is the topology project directory name. All paths are relative to the topology project root, i.e. the directory the archive is extracted into.",
+  "type": "object",
+  "required": ["schema", "topology_instances"],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {
+      "type": "string",
+      "description": "The JSON schema version of this launcher descriptor.",
+      "const": "https://files.remotivelabs.com/schemas/launcher-0.1.schema.json"
+    },
+    "topology_instances": {
+      "type": "array",
+      "description": "Instance files passed to `remotive topology build` as -f flags, in the order listed. Later files override earlier ones.",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/instance_path"
+      }
+    },
+    "compose_overlays": {
+      "type": "array",
+      "description": "Extra `docker compose -f` overlay files applied on top of the generated docker-compose.yml, in the order listed. Empty when the topology needs no overlays.",
+      "default": [],
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/yaml_path"
+      }
+    },
+    "compose_profiles": {
+      "type": "array",
+      "description": "`docker compose --profile` values enabled for the long-running stack. Do NOT list the test profile here: the launcher runs `test_service` separately so its exit code gives the pass/fail verdict.",
+      "default": [],
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/definitions/compose_name"
+      }
+    },
+    "test_service": {
+      "$ref": "#/definitions/compose_name",
+      "description": "Compose service run with `docker compose run <test_service>` when the launcher is asked to run topology tests (runTopologyTests=true). Its exit code is the test verdict. The service is expected to sit behind a compose profile of the same name that is not part of `compose_profiles`."
+    },
+    "forward_ports": {
+      "type": "array",
+      "description": "Topology ports reachable during the keep-alive window.",
+      "default": [],
+      "items": {
+        "$ref": "#/definitions/named_port"
+      }
+    },
+    "adb_devices": {
+      "type": "array",
+      "description": "Android devices (e.g. Cuttlefish virtual devices) exposed by the topology that the launcher should connect to with `adb connect` on the given port, presented under the given name.",
+      "default": [],
+      "items": {
+        "$ref": "#/definitions/named_port"
+      }
+    }
+  },
+  "definitions": {
+    "relative_path": {
+      "type": "string",
+      "description": "A path relative to the topology project root. Must not be absolute and must not escape the project root.",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!\\.\\.(/|$))(?!.*/\\.\\.(/|$)).+$"
+    },
+    "yaml_path": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/relative_path"
+        },
+        {
+          "pattern": "\\.ya?ml$"
+        }
+      ],
+      "description": "A relative path to a YAML file."
+    },
+    "instance_path": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/relative_path"
+        },
+        {
+          "pattern": "\\.instance\\.ya?ml$"
+        }
+      ],
+      "description": "A relative path to a RemotiveTopology instance file (*.instance.yaml)."
+    },
+    "compose_name": {
+      "type": "string",
+      "description": "A docker compose service or profile name.",
+      "pattern": "^[a-zA-Z0-9][a-zA-Z0-9_.-]*$"
+    },
+    "port": {
+      "type": "integer",
+      "description": "A TCP port number.",
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "named_port": {
+      "type": "object",
+      "description": "A TCP port on the topology host, labelled with a human-readable name. Both fields are required.",
+      "required": ["name", "port"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Display name used when exposing the port, e.g. as the tunnel name or the adb device label.",
+          "minLength": 1,
+          "pattern": "^\\S(.*\\S)?$"
+        },
+        "port": {
+          "$ref": "#/definitions/port"
+        }
+      }
+    }
+  }
+}
