@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Remotive Topology 0.20",
+  "title": "Remotive Topology 0.21",
   "oneOf": [
     { "$ref": "#/definitions/platform_schema" },
     { "$ref": "#/definitions/instance_schema" }
@@ -30,7 +30,8 @@
             "remotive-topology-platform:0.17",
             "remotive-topology-platform:0.18",
             "remotive-topology-platform:0.19",
-            "remotive-topology-platform:0.20"
+            "remotive-topology-platform:0.20",
+            "remotive-topology-platform:0.21"
           ]
         },
         "includes": {
@@ -76,7 +77,8 @@
             "remotive-topology-instance:0.17",
             "remotive-topology-instance:0.18",
             "remotive-topology-instance:0.19",
-            "remotive-topology-instance:0.20"
+            "remotive-topology-instance:0.20",
+            "remotive-topology-instance:0.21"
           ]
         },
         "name": {
@@ -122,7 +124,7 @@
     "platform_channel": {
       "type": "object",
       "properties": {
-        "type": { "enum": ["ethernet", "can", "lin"] },
+        "type": { "enum": ["ethernet", "can", "lin", "flexray"] },
         "database": {
           "type": "string",
           "description": "Signal database for this channel"
@@ -139,7 +141,8 @@
       "oneOf": [
         { "$ref": "#/definitions/platform_channel_ethernet" },
         { "$ref": "#/definitions/platform_channel_can" },
-        { "$ref": "#/definitions/platform_channel_lin" }
+        { "$ref": "#/definitions/platform_channel_lin" },
+        { "$ref": "#/definitions/platform_channel_flexray" }
       ]
     },
     "platform_channel_can": {
@@ -184,6 +187,57 @@
         "lin_cluster": { "type": "string" },
         "lin_physical_channel_name": { "type": "string" },
         "baudrate": { "type": "integer" }
+      }
+    },
+    "platform_channel_flexray": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "A FlexRay channel of a FIBEX database. Tooling reads its cluster parameters from the database.",
+      "properties": {
+        "type": { "const": "flexray" },
+        "database": {
+          "type": "string",
+          "description": "FIBEX database for this channel"
+        },
+        "source": {
+          "description": "Files where this channel is declared. Set to `true` to use this file as source. (Tooling will generate a list of paths.)",
+          "oneOf": [
+            { "const": true },
+            { "type": "array", "items": { "type": "string" } }
+          ]
+        },
+        "flexray_physical_channel_name": {
+          "type": "string",
+          "description": "The channel's name in its FIBEX database"
+        },
+        "speed": {
+          "type": "integer",
+          "description": "The bit rate in bit/s"
+        },
+        "is_high_low_byte_order": {
+          "type": "boolean",
+          "description": "The cluster's bit order"
+        },
+        "macrotick_microseconds": {
+          "type": "number",
+          "description": "The length of a macrotick in microseconds"
+        },
+        "static_slot_macroticks": {
+          "type": "integer",
+          "description": "The length of a static slot in macroticks"
+        },
+        "cycle_microseconds": {
+          "type": "integer",
+          "description": "The length of the communication cycle in microseconds"
+        },
+        "number_of_static_slots": {
+          "type": "integer",
+          "description": "The slots in the static segment"
+        },
+        "number_of_minislots": {
+          "type": "integer",
+          "description": "The minislots in the dynamic segment"
+        }
       }
     },
     "platform_channel_ethernet": {
@@ -530,6 +584,7 @@
       }
     },
     "container": {
+      "type": "object",
       "additionalProperties": false,
       "properties": {
         "build": { "$ref": "#/definitions/container_build" },
@@ -593,6 +648,7 @@
       }
     },
     "container_build": {
+      "type": "object",
       "additionalProperties": false,
       "properties": {
         "dockerfile": { "type": "string", "description": "Path to dockerfile" },
@@ -690,13 +746,14 @@
     "instance_channel": {
       "type": "object",
       "properties": {
-        "type": { "enum": ["ethernet", "can", "lin"] }
+        "type": { "enum": ["ethernet", "can", "lin", "flexray"] }
       },
       "required": ["type"],
       "oneOf": [
         { "$ref": "#/definitions/instance_channel_ethernet" },
         { "$ref": "#/definitions/instance_channel_lin" },
-        { "$ref": "#/definitions/instance_channel_can" }
+        { "$ref": "#/definitions/instance_channel_can" },
+        { "$ref": "#/definitions/instance_channel_flexray" }
       ]
     },
     "instance_channel_ethernet": {
@@ -723,6 +780,17 @@
         "target_host": {
           "type": "string",
           "description": "Optional multicast address to use"
+        }
+      },
+      "required": ["type"]
+    },
+    "instance_channel_driver_virtual": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "virtual",
+          "description": "Emulate FlexRay in the topology broker, over a unix socket"
         }
       },
       "required": ["type"]
@@ -759,6 +827,7 @@
         "config": {
           "oneOf": [
             {
+              "type": "object",
               "description": "Socketcan to map to physical device on host",
               "properties": {
                 "type": {
@@ -766,18 +835,26 @@
                   "description": "Run socketcan connected to a hardware interface"
                 },
                 "device": {
+                  "type": "string",
                   "pattern": "^[a-z0-9-]{1,15}$",
                   "description": "Name inside of the docker container."
                 },
                 "host_device": {
+                  "type": "string",
                   "pattern": "^[a-z0-9-]{1,15}$",
                   "description": "Optional name of host interface to connect to. Will default to {device}."
+                },
+                "txqueuelen": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Optional transmit queue length of the host interface. Applied by RemotiveBus only when it brings the interface up; the system default otherwise."
                 }
               },
               "required": ["type", "device"],
               "additionalProperties": false
             },
             {
+              "type": "object",
               "description": "Virtual CAN for container<->container and container<->host communication",
               "properties": {
                 "type": {
@@ -785,10 +862,12 @@
                   "description": "Run virtual can"
                 },
                 "device": {
+                  "type": "string",
                   "pattern": "^[a-z0-9-]{1,15}$",
                   "description": "Name inside of the docker container."
                 },
                 "host_device": {
+                  "type": "string",
                   "pattern": "^[a-z0-9-]{1,15}$",
                   "description": "Optional name of host interface to connect to. Will default to 'v{device}'."
                 },
@@ -842,6 +921,22 @@
         "type": { "const": "lin", "description": "Experimental LIN support" },
         "driver": { "$ref": "#/definitions/instance_channel_can_driver" },
         "schedule_table_name": { "type": "string" }
+      }
+    },
+    "instance_channel_flexray_driver": {
+      "type": "object",
+      "properties": {
+        "type": { "enum": ["virtual"] }
+      },
+      "required": ["type"],
+      "oneOf": [{ "$ref": "#/definitions/instance_channel_driver_virtual" }]
+    },
+    "instance_channel_flexray": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": { "const": "flexray" },
+        "driver": { "$ref": "#/definitions/instance_channel_flexray_driver" }
       }
     },
     "instance_channel_tap_config": {
@@ -898,6 +993,7 @@
           "description": "Use remotivebus to connect physical ethernet device"
         },
         "device": {
+          "type": "string",
           "pattern": "^[a-z0-9-]{1,15}$",
           "description": "Name inside of the docker container."
         },
