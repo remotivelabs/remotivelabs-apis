@@ -1,8 +1,9 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "title": "RemotiveBroker configuration for multi-node (distributed) setup",
-  "description": "JSON schema of the broker configuration file for a multi-node setup. The configuration file must be named `interfaces.json` and contain configuration for all nodes.",
+  "title": "Deprecated: RemotiveBroker configuration for multi-node (distributed) setup",
+  "deprecated": true,
+  "description": "Deprecated. RemotiveBroker 1.29 and earlier read one `interfaces.json` that lists every broker under `nodes`; RemotiveBroker 1.30.0 and later refuse it. Give each broker its own `interfaces.json` instead, with `master_node` naming the broker it joins, as https://files.remotivelabs.com/schemas/interfaces-1.0.schema.json describes.\n\nJSON schema of the broker configuration file for a multi-node setup. The configuration file must be named `interfaces.json` and contain configuration for all nodes.",
   "properties": {
     "master_node": {
       "description": "The name of the master node in the distributed setup. Individual nodes need to specify `node_name`, the `master_node` references one of them.",
