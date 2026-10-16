@@ -36,4 +36,4 @@ See [examples](./examples/README.md)
 ## Documentation
 
 TODO: We dont have any documentation
-See [https://docs.remotivelabs.com/apis/python/remotivelabs/broker](https://docs.remotivelabs.com/apis/python/remotivelabs/broker).
+See [https://developer.remotivelabs.com/apis/python/remotivelabs/broker](https://developer.remotivelabs.com/apis/python/remotivelabs/broker).

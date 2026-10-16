@@ -3,7 +3,7 @@
 This repo contains all public API from [RemotiveLabs](https://remotivelabs.com/) for integrating with RemotiveBroker using your favorite
 programming language.
 
-[Documentation](https://docs.remotivelabs.com/)
+[Documentation](https://developer.remotivelabs.com/)
 
 ## Protocol buffer definitions
 

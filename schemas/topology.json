@@ -9,7 +9,7 @@
     "platform_schema": {
       "type": "object",
       "additionalProperties": false,
-      "description": "The platform describes which ECUs and services that exist and how they communicate, see [docs](https://docs.remotivelabs.com/docs/remotive-topology/usage/platform)",
+      "description": "The platform describes which ECUs and services that exist and how they communicate, see [docs](https://developer.remotivelabs.com/docs/remotive-topology/usage/platform)",
       "properties": {
         "schema": {
           "type": "string",
@@ -58,7 +58,7 @@
     "instance_schema": {
       "type": "object",
       "additionalProperties": false,
-      "description": "In order to run a topology you need create an instance that describes what parts of the platform you want to run in your virtual environment, see [docs](https://docs.remotivelabs.com/docs/remotive-topology/usage/instance)",
+      "description": "In order to run a topology you need create an instance that describes what parts of the platform you want to run in your virtual environment, see [docs](https://developer.remotivelabs.com/docs/remotive-topology/usage/instance)",
       "properties": {
         "schema": {
           "type": "string",
