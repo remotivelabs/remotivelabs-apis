@@ -47,7 +47,7 @@
       "type": "string"
     },
     "grpc_server": {
-      "description": "Configuration for built-in gRPC server. Documentation for available service is available on <https://docs.remotivelabs.com>.",
+      "description": "Configuration for built-in gRPC server. Documentation for available service is available on <https://developer.remotivelabs.com>.",
       "properties": {
         "port": {
           "description": "Server port for gRPC server.",

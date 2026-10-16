@@ -1,6 +1,6 @@
 # File format schemas
 
-Compiled for documentation available at <https://docs.remotivelabs.com/>.
+Compiled for documentation available at <https://developer.remotivelabs.com/>.
 
 ## Validation of sample `interfaces.json` files
 
