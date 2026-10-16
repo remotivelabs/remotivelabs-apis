@@ -12,5 +12,4 @@ which can be run from RemotiveBroker repository.
 
 ```bash
 mix broker.validate_configuration /path/to/configuration/interfaces.json
-mix broker.validate_configuration --distributed /path/to/distributed/configuration/interfaces.json
 ```
