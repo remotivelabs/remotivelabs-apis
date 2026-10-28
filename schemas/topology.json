@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Remotive Topology 0.21",
+  "title": "Remotive Topology 0.22",
   "oneOf": [
     { "$ref": "#/definitions/platform_schema" },
     { "$ref": "#/definitions/instance_schema" }
@@ -31,7 +31,8 @@
             "remotive-topology-platform:0.18",
             "remotive-topology-platform:0.19",
             "remotive-topology-platform:0.20",
-            "remotive-topology-platform:0.21"
+            "remotive-topology-platform:0.21",
+            "remotive-topology-platform:0.22"
           ]
         },
         "includes": {
@@ -78,7 +79,8 @@
             "remotive-topology-instance:0.18",
             "remotive-topology-instance:0.19",
             "remotive-topology-instance:0.20",
-            "remotive-topology-instance:0.21"
+            "remotive-topology-instance:0.21",
+            "remotive-topology-instance:0.22"
           ]
         },
         "name": {
@@ -164,6 +166,7 @@
             { "type": "array", "items": { "type": "string" } }
           ]
         },
+        "secoc": { "$ref": "#/definitions/secoc" },
         "can_cluster": { "type": "string" },
         "can_physical_channel_name": { "type": "string" }
       }
@@ -184,6 +187,7 @@
             { "type": "array", "items": { "type": "string" } }
           ]
         },
+        "secoc": { "$ref": "#/definitions/secoc" },
         "lin_cluster": { "type": "string" },
         "lin_physical_channel_name": { "type": "string" },
         "baudrate": { "type": "integer" }
@@ -259,6 +263,7 @@
         "someip": {
           "$ref": "#/definitions/someip"
         },
+        "secoc": { "$ref": "#/definitions/secoc" },
         "vlan": { "type": "integer" },
         "cluster_name": { "type": "string" },
         "subnet": { "type": "string" },
@@ -310,6 +315,30 @@
           }
         }
       }
+    },
+    "secoc": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "SecOC on this channel. The platform names the freshness scheme because no signal database format does. CAN, LIN and ethernet channels have it; a FlexRay channel does not, as no signal database holds a FlexRay channel",
+      "properties": {
+        "freshness": {
+          "description": "How the freshness value of a secured PDU is built",
+          "oneOf": [
+            { "const": "counter", "description": "A single AUTOSAR freshness counter per secured PDU (SWS_SecOC UC_SecOC_00200), truncated to its least-significant bits. JASPAR's decoupled counters (UC_SecOC_00202) are a different scheme, which the platform cannot name yet" },
+            { "const": "none", "description": "No freshness value, AUTOSAR profile 2" },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "description": "A freshness scheme the platform's owner names; the runtime maps the name to an implementation, and refuses a name it does not know",
+              "properties": {
+                "custom": { "type": "string", "minLength": 1, "description": "The name of the scheme" }
+              },
+              "required": ["custom"]
+            }
+          ]
+        }
+      },
+      "required": ["freshness"]
     },
     "someip": {
       "type": "object",
