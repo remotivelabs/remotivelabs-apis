@@ -1,0 +1,833 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://files.remotivelabs.com/schemas/dashboard-0.5.schema.json",
+  "type": "object",
+  "required": ["schema", "panels"],
+  "properties": {
+    "schema": {
+      "type": "string",
+      "const": "remotive-dashboard:0.5",
+      "description": "Schema identifier and version (format: name:version)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Optional name for the dashboard layout"
+    },
+    "chartWidthSeconds": {
+      "type": "number",
+      "minimum": 1,
+      "description": "Global chart width in seconds for synced timeseries panels. Default: 30"
+    },
+    "filter": {
+      "type": "object",
+      "description": "Topology filter: the ECUs and channels this dashboard is scoped to, by name. An absent or empty list means that dimension is unfiltered.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Title of the filter section on the dashboard. Default: Dashboard filter"
+        },
+        "ecus": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "channels": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "panels": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/PanelConfig"
+      },
+      "description": "List of panel configurations"
+    }
+  },
+  "additionalProperties": true,
+  "title": "Remotive Dashboard Layout",
+  "description": "A RemotiveStudio dashboard (`*.dashboard.json`) and its panels.",
+  "$comment": "STRICT MODE: This schema uses lenient validation by default (additionalProperties: true). To enable strict validation that rejects unknown properties, search and replace 'additionalProperties\": true' with 'additionalProperties\": false' in this file.",
+  "definitions": {
+    "PanelName": {
+      "type": "string",
+      "maxLength": 128
+    },
+    "PanelDescription": {
+      "type": "string",
+      "maxLength": 1024
+    },
+    "NamespaceName": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "Signal": {
+      "type": "object",
+      "description": "Reference to a signal by namespace, frame, and signal name",
+      "required": ["namespace", "frame", "signal"],
+      "properties": {
+        "namespace": {
+          "type": "string",
+          "description": "Signal namespace identifier"
+        },
+        "frame": {
+          "type": "string",
+          "description": "Frame name containing the signal"
+        },
+        "signal": {
+          "type": "string",
+          "description": "Signal name as reported by the broker's signal metadata. For most namespaces (DBC/ARXML-derived, non-VSS) this is the dotted \"FrameName.SignalName\" form, e.g. \"Engine.RPM\" — NOT just \"RPM\" — even though `frame` above already names the frame separately. VSS namespaces use the bare signal name instead.",
+          "examples": ["Engine.RPM"]
+        }
+      },
+      "additionalProperties": true
+    },
+    "Frame": {
+      "type": "object",
+      "description": "Reference to a signal by namespace, frame, and signal name",
+      "required": ["namespace", "frame"],
+      "properties": {
+        "namespace": {
+          "type": "string",
+          "description": "Signal namespace identifier"
+        },
+        "frame": {
+          "type": "string",
+          "description": "Frame name containing the signal"
+        },
+        "signals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Signal"
+          },
+          "description": "List of signals to display in the frame"
+        },
+        "signalOrder": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Signal names in the order the user arranged them. Signals not listed follow in their default order"
+        }
+      },
+      "additionalProperties": true
+    },
+    "GridConfig": {
+      "type": "object",
+      "description": "Grid position and size for panel layout",
+      "required": ["x", "y", "w", "h"],
+      "properties": {
+        "x": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "X position in grid units"
+        },
+        "y": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Y position in grid units"
+        },
+        "w": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Width in grid units"
+        },
+        "h": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Height in grid units"
+        }
+      },
+      "additionalProperties": true
+    },
+    "SignalValueTimeseriesPanelContent": {
+      "type": "object",
+      "description": "Signal content for a signal-value timeseries panel",
+      "required": ["signals"],
+      "properties": {
+        "signals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Signal"
+          },
+          "description": "List of signals to display in the chart"
+        }
+      },
+      "additionalProperties": true
+    },
+    "CycleTimeTimeseriesPanelContent": {
+      "type": "object",
+      "description": "Frame content for a cycle-time timeseries panel",
+      "required": ["frames"],
+      "properties": {
+        "frames": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Frame"
+          },
+          "description": "List of frames to display as cycle-time charts"
+        }
+      },
+      "additionalProperties": true
+    },
+    "TimeseriesPanelSettings": {
+      "type": "object",
+      "description": "Display settings for a timeseries panel",
+      "properties": {
+        "syncChart": {
+          "type": "boolean",
+          "description": "Whether to sync chart width with global setting. Default: true"
+        },
+        "chartWidthSeconds": {
+          "type": "number",
+          "minimum": 1,
+          "description": "Per-panel chart width in seconds. Only used when syncChart is false"
+        },
+        "useSuggestedMinMax": {
+          "type": "boolean",
+          "description": "Use signal-defined min/max for Y-axis. Default: false"
+        },
+        "valueAsHex": {
+          "type": "boolean",
+          "description": "Deprecated: accepted for backward compatibility but ignored. The rollover tooltip always shows hex now."
+        },
+        "yAxisSettings": {
+          "type": "object",
+          "description": "Y-axis settings. showDecimal/showHex/showNamed select which label representations to render.",
+          "properties": {
+            "showDecimal": {
+              "type": "boolean",
+              "description": "Show the decimal value on Y-axis labels. Default: true"
+            },
+            "showHex": {
+              "type": "boolean",
+              "description": "Show the hex value on Y-axis labels. Default: false"
+            },
+            "showNamed": {
+              "type": "boolean",
+              "description": "Show the named value (enum name) on Y-axis labels where available. Default: true"
+            }
+          },
+          "additionalProperties": false
+        },
+        "maxFps": {
+          "type": "number",
+          "minimum": 5,
+          "maximum": 120,
+          "description": "Max animation frame rate for the chart (increments of 5). Default: 60"
+        }
+      },
+      "additionalProperties": true
+    },
+    "MapPanelContent": {
+      "type": "object",
+      "description": "Data content for a map panel",
+      "properties": {
+        "signals": {
+          "type": "object",
+          "description": "Latitude and longitude signal references",
+          "properties": {
+            "latitude": {
+              "$ref": "#/definitions/Signal"
+            },
+            "longitude": {
+              "$ref": "#/definitions/Signal"
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "FrameDistributionPanelContent": {
+      "type": "object",
+      "description": "Data content for a channel activity panel",
+      "properties": {
+        "namespaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/NamespaceName"
+          },
+          "uniqueItems": true,
+          "description": "Broker namespaces to subscribe to, one per bus channel. Omitted or empty means every topology channel the broker exposes, or every namespace it offers when there are none. Virtual and SOME/IP namespaces are never included: the broker runs no frames-distribution process for them.",
+          "examples": [["topology-BodyCan0", "topology-ChassisCan0"]]
+        },
+        "namespace": {
+          "$ref": "#/definitions/NamespaceName",
+          "description": "Deprecated: single namespace from older files, read as namespaces: [namespace]"
+        }
+      },
+      "additionalProperties": true
+    },
+    "VideoPanelContent": {
+      "type": "object",
+      "description": "Data content for a video panel",
+      "required": ["videoName"],
+      "properties": {
+        "videoName": {
+          "type": "string",
+          "description": "A name like 'front-camera' is used to share one dashboard with multiple recordings/videos"
+        },
+        "videoFilePath": {
+          "type": "string",
+          "description": "Path to the video file"
+        },
+        "recordingSessionPath": {
+          "type": "string",
+          "description": "Path to the recording session"
+        }
+      },
+      "additionalProperties": true
+    },
+    "VideoPanelSettings": {
+      "type": "object",
+      "description": "Stream settings for a video panel",
+      "properties": {
+        "fps": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30,
+          "description": "Frame rate of the video stream. Default: 20"
+        },
+        "quality": {
+          "type": "string",
+          "enum": ["low", "medium", "high"],
+          "description": "JPEG quality of the video stream. Default: medium"
+        }
+      },
+      "additionalProperties": true
+    },
+    "TracePanelContent": {
+      "type": "object",
+      "description": "Data content for a trace panel",
+      "required": ["frames"],
+      "properties": {
+        "frames": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Frame"
+          },
+          "description": "List of frames to display in the trace panel"
+        }
+      },
+      "additionalProperties": true
+    },
+    "TracePanelSettings": {
+      "type": "object",
+      "description": "Display settings for a trace panel",
+      "properties": {
+        "sortOrder": {
+          "type": "string",
+          "enum": ["newest-first", "oldest-first"],
+          "description": "Sort order for the trace panel. Default: newest-first"
+        },
+        "groupByFrame": {
+          "type": "boolean",
+          "description": "Whether to group frames by frame name. Default: false"
+        },
+        "expandSignals": {
+          "type": "boolean",
+          "description": "Whether to expand or collapse signals. Default: false"
+        },
+        "bufferSize": {
+          "type": "integer",
+          "minimum": 100,
+          "description": "The number of entries to display in the trace panel. Default: 10000"
+        }
+      },
+      "additionalProperties": true
+    },
+    "SignalValueTimeseriesPanelConfig": {
+      "type": "object",
+      "description": "Signal-value timeseries chart panel configuration",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["signal-value-timeseries"],
+          "description": "Panel type identifier"
+        },
+        "name": {
+          "$ref": "#/definitions/PanelName",
+          "description": "Optional display name shown as the panel header title"
+        },
+        "description": {
+          "$ref": "#/definitions/PanelDescription",
+          "description": "Optional description shown when hovering the panel name"
+        },
+        "content": {
+          "$ref": "#/definitions/SignalValueTimeseriesPanelContent"
+        },
+        "settings": {
+          "$ref": "#/definitions/TimeseriesPanelSettings"
+        },
+        "grid": {
+          "$ref": "#/definitions/GridConfig"
+        }
+      },
+      "additionalProperties": true
+    },
+    "CycleTimeTimeseriesPanelConfig": {
+      "type": "object",
+      "description": "Cycle-time timeseries chart panel configuration",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["cycle-time-timeseries"],
+          "description": "Panel type identifier"
+        },
+        "name": {
+          "$ref": "#/definitions/PanelName",
+          "description": "Optional display name shown as the panel header title"
+        },
+        "description": {
+          "$ref": "#/definitions/PanelDescription",
+          "description": "Optional description shown when hovering the panel name"
+        },
+        "content": {
+          "$ref": "#/definitions/CycleTimeTimeseriesPanelContent"
+        },
+        "settings": {
+          "$ref": "#/definitions/TimeseriesPanelSettings"
+        },
+        "grid": {
+          "$ref": "#/definitions/GridConfig"
+        }
+      },
+      "additionalProperties": true
+    },
+    "MapPanelConfig": {
+      "type": "object",
+      "description": "Map panel configuration for displaying geographic data",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["map"],
+          "description": "Panel type identifier"
+        },
+        "name": {
+          "$ref": "#/definitions/PanelName",
+          "description": "Optional display name shown as the panel header title"
+        },
+        "description": {
+          "$ref": "#/definitions/PanelDescription",
+          "description": "Optional description shown when hovering the panel name"
+        },
+        "content": {
+          "$ref": "#/definitions/MapPanelContent"
+        },
+        "grid": {
+          "$ref": "#/definitions/GridConfig"
+        }
+      },
+      "additionalProperties": true
+    },
+    "FrameDistributionPanelConfig": {
+      "type": "object",
+      "description": "Channel activity panel: frames per second per channel",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["frameDistribution"],
+          "description": "Panel type identifier. The wire value stays 'frameDistribution' so existing dashboards keep loading; the UI calls this panel 'Channel activity', formerly 'Frame distribution'."
+        },
+        "name": {
+          "$ref": "#/definitions/PanelName",
+          "description": "Optional display name shown as the panel header title"
+        },
+        "description": {
+          "$ref": "#/definitions/PanelDescription",
+          "description": "Optional description shown when hovering the panel name"
+        },
+        "content": {
+          "$ref": "#/definitions/FrameDistributionPanelContent"
+        },
+        "grid": {
+          "$ref": "#/definitions/GridConfig"
+        }
+      },
+      "additionalProperties": true
+    },
+    "VideoPanelConfig": {
+      "type": "object",
+      "description": "Video panel configuration (recording-specific, not portable between recordings)",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["video"],
+          "description": "Panel type identifier"
+        },
+        "name": {
+          "$ref": "#/definitions/PanelName",
+          "description": "Optional display name shown as the panel header title"
+        },
+        "description": {
+          "$ref": "#/definitions/PanelDescription",
+          "description": "Optional description shown when hovering the panel name"
+        },
+        "content": {
+          "$ref": "#/definitions/VideoPanelContent"
+        },
+        "settings": {
+          "$ref": "#/definitions/VideoPanelSettings"
+        },
+        "grid": {
+          "$ref": "#/definitions/GridConfig"
+        }
+      },
+      "additionalProperties": true
+    },
+    "TracePanelConfig": {
+      "type": "object",
+      "description": "Trace panel configuration",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["trace"],
+          "description": "Panel type identifier"
+        },
+        "name": {
+          "$ref": "#/definitions/PanelName",
+          "description": "Optional display name shown as the panel header title"
+        },
+        "description": {
+          "$ref": "#/definitions/PanelDescription",
+          "description": "Optional description shown when hovering the panel name"
+        },
+        "content": {
+          "$ref": "#/definitions/TracePanelContent"
+        },
+        "settings": {
+          "$ref": "#/definitions/TracePanelSettings"
+        },
+        "grid": {
+          "$ref": "#/definitions/GridConfig"
+        }
+      },
+      "additionalProperties": true
+    },
+    "MarkdownPanelContent": {
+      "type": "object",
+      "description": "Data content for a markdown panel",
+      "properties": {
+        "text": {
+          "type": "string",
+          "description": "Markdown text to render"
+        }
+      },
+      "additionalProperties": true
+    },
+    "MarkdownPanelConfig": {
+      "type": "object",
+      "description": "Markdown notes panel configuration",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["markdown"],
+          "description": "Panel type identifier"
+        },
+        "name": {
+          "$ref": "#/definitions/PanelName",
+          "description": "Optional display name shown as the panel header title"
+        },
+        "description": {
+          "$ref": "#/definitions/PanelDescription",
+          "description": "Optional description shown when hovering the panel name"
+        },
+        "content": {
+          "$ref": "#/definitions/MarkdownPanelContent"
+        },
+        "grid": {
+          "$ref": "#/definitions/GridConfig"
+        }
+      },
+      "additionalProperties": true
+    },
+    "RestbusFrame": {
+      "type": "object",
+      "description": "Reference to a frame by channel and frame name",
+      "required": ["channel", "frame"],
+      "properties": {
+        "channel": {
+          "type": "string",
+          "description": "Bus channel the frame belongs to"
+        },
+        "frame": {
+          "type": "string",
+          "description": "Frame name"
+        },
+        "signalOrder": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Signal names in the order the user arranged them. Signals not listed follow in their default order"
+        }
+      },
+      "additionalProperties": true
+    },
+    "RestbusPanelContent": {
+      "type": "object",
+      "description": "Data content for a restbus panel",
+      "properties": {
+        "frames": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RestbusFrame"
+          },
+          "description": "Frames the panel controls"
+        }
+      },
+      "additionalProperties": true
+    },
+    "RestbusPanelConfig": {
+      "type": "object",
+      "description": "Restbus control panel configuration",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["restbus"],
+          "description": "Panel type identifier"
+        },
+        "name": {
+          "$ref": "#/definitions/PanelName",
+          "description": "Optional display name shown as the panel header title"
+        },
+        "description": {
+          "$ref": "#/definitions/PanelDescription",
+          "description": "Optional description shown when hovering the panel name"
+        },
+        "content": {
+          "$ref": "#/definitions/RestbusPanelContent"
+        },
+        "grid": {
+          "$ref": "#/definitions/GridConfig"
+        }
+      },
+      "additionalProperties": true
+    },
+    "IframePanelContent": {
+      "type": "object",
+      "description": "Data content for a web page panel",
+      "required": ["url"],
+      "properties": {
+        "url": {
+          "type": "string",
+          "maxLength": 2048,
+          "description": "HTTP(S) URL on localhost or 127.0.0.1. URL validation and origin approval happen when the panel renders.",
+          "examples": ["http://localhost:8080/my-app?channel=BodyCan0"]
+        }
+      },
+      "additionalProperties": true
+    },
+    "IframePanelConfig": {
+      "type": "object",
+      "description": "Web page panel configuration: embeds a URL in an iframe",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["iframe"],
+          "description": "Panel type identifier"
+        },
+        "name": {
+          "$ref": "#/definitions/PanelName",
+          "description": "Optional display name shown as the panel header title"
+        },
+        "description": {
+          "$ref": "#/definitions/PanelDescription",
+          "description": "Optional description shown when hovering the panel name"
+        },
+        "content": {
+          "$ref": "#/definitions/IframePanelContent"
+        },
+        "grid": {
+          "$ref": "#/definitions/GridConfig"
+        }
+      },
+      "additionalProperties": true
+    },
+    "PanelConfig": {
+      "type": "object",
+      "description": "Union of all panel configuration types. Selected by type with if/then so only the matching panel schema is applied; any other type falls through to UnknownPanelConfig.",
+      "allOf": [
+        {
+          "if": {
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "signal-value-timeseries"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/definitions/SignalValueTimeseriesPanelConfig"
+          }
+        },
+        {
+          "if": {
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "cycle-time-timeseries"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/definitions/CycleTimeTimeseriesPanelConfig"
+          }
+        },
+        {
+          "if": {
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "map"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/definitions/MapPanelConfig"
+          }
+        },
+        {
+          "if": {
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "frameDistribution"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/definitions/FrameDistributionPanelConfig"
+          }
+        },
+        {
+          "if": {
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "video"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/definitions/VideoPanelConfig"
+          }
+        },
+        {
+          "if": {
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "trace"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/definitions/TracePanelConfig"
+          }
+        },
+        {
+          "if": {
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "markdown"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/definitions/MarkdownPanelConfig"
+          }
+        },
+        {
+          "if": {
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "restbus"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/definitions/RestbusPanelConfig"
+          }
+        },
+        {
+          "if": {
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "const": "iframe"
+              }
+            }
+          },
+          "then": {
+            "$ref": "#/definitions/IframePanelConfig"
+          }
+        },
+        {
+          "if": {
+            "required": ["type"],
+            "properties": {
+              "type": {
+                "enum": [
+                  "signal-value-timeseries",
+                  "cycle-time-timeseries",
+                  "map",
+                  "frameDistribution",
+                  "video",
+                  "trace",
+                  "markdown",
+                  "restbus",
+                  "iframe"
+                ]
+              }
+            }
+          },
+          "else": {
+            "$ref": "#/definitions/UnknownPanelConfig"
+          }
+        }
+      ]
+    },
+    "UnknownPanelConfig": {
+      "type": "object",
+      "description": "An unsupported panel, displayed as a placeholder. Omit additionalProperties so strict validation preserves unknown fields without warnings.",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Any panel type identifier not known to this version. PanelConfig only routes unknown types here."
+        },
+        "name": {
+          "$ref": "#/definitions/PanelName"
+        },
+        "description": {
+          "$ref": "#/definitions/PanelDescription"
+        },
+        "grid": {
+          "$ref": "#/definitions/GridConfig"
+        }
+      }
+    }
+  }
+}
