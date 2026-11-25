@@ -1,6 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Remotive Topology 0.22",
+  "$id": "https://files.remotivelabs.com/schemas/topology-0.23.schema.json",
+  "title": "Remotive Topology",
   "oneOf": [
     { "$ref": "#/definitions/platform_schema" },
     { "$ref": "#/definitions/instance_schema" }
@@ -13,27 +14,7 @@
       "properties": {
         "schema": {
           "type": "string",
-          "enum": [
-            "remotive-topology-platform:0.4",
-            "remotive-topology-platform:0.5",
-            "remotive-topology-platform:0.6",
-            "remotive-topology-platform:0.7",
-            "remotive-topology-platform:0.8",
-            "remotive-topology-platform:0.9",
-            "remotive-topology-platform:0.10",
-            "remotive-topology-platform:0.11",
-            "remotive-topology-platform:0.12",
-            "remotive-topology-platform:0.13",
-            "remotive-topology-platform:0.14",
-            "remotive-topology-platform:0.15",
-            "remotive-topology-platform:0.16",
-            "remotive-topology-platform:0.17",
-            "remotive-topology-platform:0.18",
-            "remotive-topology-platform:0.19",
-            "remotive-topology-platform:0.20",
-            "remotive-topology-platform:0.21",
-            "remotive-topology-platform:0.22"
-          ]
+          "const": "remotive-topology-platform:0.23"
         },
         "includes": {
           "type": "array",
@@ -63,25 +44,7 @@
       "properties": {
         "schema": {
           "type": "string",
-          "enum": [
-            "remotive-topology-instance:0.6",
-            "remotive-topology-instance:0.7",
-            "remotive-topology-instance:0.8",
-            "remotive-topology-instance:0.9",
-            "remotive-topology-instance:0.10",
-            "remotive-topology-instance:0.11",
-            "remotive-topology-instance:0.12",
-            "remotive-topology-instance:0.13",
-            "remotive-topology-instance:0.14",
-            "remotive-topology-instance:0.15",
-            "remotive-topology-instance:0.16",
-            "remotive-topology-instance:0.17",
-            "remotive-topology-instance:0.18",
-            "remotive-topology-instance:0.19",
-            "remotive-topology-instance:0.20",
-            "remotive-topology-instance:0.21",
-            "remotive-topology-instance:0.22"
-          ]
+          "const": "remotive-topology-instance:0.23"
         },
         "name": {
           "type": "string",
